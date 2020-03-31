@@ -2,7 +2,8 @@ unit esaModelingResults;
 
 interface
 uses Globals, Classes, ADODb, SysUtils, GLObjects, GLGeomObjects, GLTexture,
-     GLScene, StdCtrls, ComCtrls, GLSpaceText;
+     GLScene, StdCtrls, ComCtrls, GLSpaceText,
+     TXTWriter;
 type
   PGLPolygon=^TGLPolygon;
   //Запись списка данных моделирования
@@ -94,6 +95,8 @@ type
     //для Update
     procedure GetCourseSubBlocks(const quBlocks,quBlockPoints: TADOQuery;
                                  var   ASubBlocks: TList);
+    procedure GetSortedSubBlocks(const startPoint: integer;
+                                 var blocks: TList);
     procedure GetCourseSidePoints(const ASubBlocks: TList; var ATopPoints,ABottomPoints: TList);
     procedure GetPolygons(const ATopPoints, ABottomPoints: TList);
   public
@@ -122,7 +125,9 @@ type
     function GetCount: Integer;
     function GetItem(const Index: Integer): TResultOpenpitCourse3D;
     procedure SetShowSubstrate(const Value: Boolean);
-  public
+  public      
+    //
+    _tmp_n: integer;
     property Items[const Index: Integer]: TResultOpenpitCourse3D read GetItem;default;
     property Count: Integer read GetCount;
     property ShowSubstrate: Boolean read FShowSubstrate write SetShowSubstrate;
@@ -709,7 +714,8 @@ begin
         ASubBlock^.Point1 := POpenpitPoint3D(APoints[I])^;
 
         GetBoundAroundPiece(ASubBlock^.Point0.Coords,ASubBlock^.Point1.Coords,
-                            ABlockStripWidth,ASubBlock^.Top0,ASubBlock^.Top1,
+                            ABlockStripWidth,
+                            ASubBlock^.Top0,ASubBlock^.Top1,
                             ASubBlock^.Bottom1,ASubBlock^.Bottom0);
         ASubBlock^.Exp.isOneLane:= (ABlockStripCount = 1);
         ASubBlocks.Add(ASubBlock);
@@ -729,6 +735,7 @@ begin
   //Удаление временных списков
   ClearList(APoints);
   APoints.Free;
+  GetSortedSubBlocks(FId_Point0, ASubBlocks);
 end;{GetCourseSubBlocks}
 
 //Список точек оси, левой и правой обочины дороги----------------------------------------------
@@ -749,11 +756,15 @@ var
   AOpenpitPoint: POpenpitPoint3D;
   APoint: PPoint3D;
   APointExt: PPoint3DExt;
+  txt: TWriter;
 begin
   //Нахожу точки левой, правой обочины и оси маршрута -----------------------------------------
   for I := 0 to ASubBlocks.Count-1 do
+  // to 1 do//
   begin
     ASubBlock := ASubBlocks[I];
+    //txt.WriteToTXT(format('point0:%d|point1:%d', [ASubBlock.Point0.Id_Point, ASubBlock.Point1.Id_Point]));
+
     if I=0 then//Первая точка
     begin
       New(AOpenpitPoint);//Ось маршрута--------------
@@ -780,8 +791,10 @@ begin
       ASubBlockOld := ASubBlocks[I-1];
       New(APoint);       //Левая обочина маршрута----
       New(APointExt);
-      if ArePiecesCrossed(APoint^, ASubBlockOld^.Top0,ASubBlockOld^.Top1,
-                          ASubBlock^.Top0,ASubBlock^.Top1,0.0001)=pcrParallel then
+      if ArePiecesCrossed(APoint^,
+                          ASubBlockOld^.Top0,ASubBlockOld^.Top1,
+                          ASubBlock^.Top0,ASubBlock^.Top1,
+                          0.0001) = pcrParallel then
       begin
         APoint^.X := ASubBlockOld^.Top1.X;
         APoint^.Y := ASubBlockOld^.Top1.Y;
@@ -811,7 +824,31 @@ procedure TResultOpenpitCourse3D.GetPolygons(const ATopPoints,ABottomPoints: TLi
     APolygon.Material.FrontProperties.Diffuse.SetColor(R,G,B);
     APolygon.Material.BackProperties.Ambient.SetColor(R,G,B);
     APolygon.Material.BackProperties.Diffuse.SetColor(R,G,B);
-  end;{SetColor}
+  end;
+  procedure Check_min(var _minx: single;
+                      var _miny: single;
+                      var _minz: single;
+                      point: PPoint3DExt);//PPoint3DExt
+  begin
+    if _minx > point.X then
+      _minx:= point.X;
+    if _miny > point.Y then
+      _miny:= point.Y;
+    if _minz > point.Z then
+      _minz:= point.Z;
+  end;
+  procedure Check_max(var _maxx: single;
+                      var _maxy: single;
+                      var _maxz: single;
+                      point: PPoint3DExt);//PPoint3DExt
+  begin
+    if _maxx < point.X then
+      _maxx:= point.X;
+    if _maxy < point.Y then
+      _maxy:= point.Y;
+    if _maxz < point.Z then
+      _maxz:= point.Z;
+  end;
 const
   MINVIEWHIGHT = 6;
 var
@@ -821,6 +858,9 @@ var
   ACenter: RPoint3D;
   AMinZ,AHeight: Single;
   ASubstrateSide: PGLPolygon;
+  //
+  _minx, _miny, _minz: single;
+  _maxx, _maxy, _maxz: single;
 begin
   ACenter := Openpit.Center;
   APolygon := TList.Create;
@@ -839,6 +879,14 @@ begin
     APoint^ := PPoint3DExt(ABottomPoints[I])^;
     APolygon.Add(APoint);
   end;
+  //u+
+  _minx:= 10000;
+  _miny:= 10000;
+  _minz:= 10000;
+  _maxx:= 0;
+  _maxy:= 0;
+  _maxz:= 0;
+  //
   //Заполнение полигонов и полилиний OpenGL 3D-------------------------------------------------
   //Поверхность дороги
   for I := 1 to ATopPoints.Count-1 do
@@ -848,6 +896,18 @@ begin
       SetColor(FSubstrateCeil,0.7,0.4,0.4)
     else
       SetColor(FSubstrateCeil,0.4,0.7,0.4);
+
+    //
+    Check_min(_minx, _miny, _minz, PPoint3DExt(ATopPoints[I-1]));
+    Check_min(_minx, _miny, _minz, ATopPoints[I]);
+    Check_min(_minx, _miny, _minz, ABottomPoints[I-1]);
+    Check_min(_minx, _miny, _minz, ABottomPoints[I]);
+    //
+    Check_max(_maxx, _maxy, _maxz, PPoint3DExt(ATopPoints[I-1]));
+    Check_max(_maxx, _maxy, _maxz, ATopPoints[I]);
+    Check_max(_maxx, _maxy, _maxz, ABottomPoints[I-1]);
+    Check_max(_maxx, _maxy, _maxz, ABottomPoints[I]);
+    //
     FSubstrateCeil.AddNode(PPoint3DExt(ATopPoints[I-1])^.X-ACenter.X,
                            PPoint3DExt(ATopPoints[I-1])^.Y-ACenter.Y,
                            PPoint3DExt(ATopPoints[I-1])^.Z-ACenter.Z);
@@ -932,6 +992,9 @@ begin
   inherited;
   FShowSubstrate := true;
   FItems := TList.Create;
+
+  //
+  _tmp_n:= 0;
 end;{Create}
 destructor TResultOpenpitCourses3D.Destroy;
 begin
@@ -977,11 +1040,82 @@ begin
 end;{Clear}
 procedure TResultOpenpitCourses3D.Update(ALabel      : TLabel;
                                          AProgressBar: TProgressBar);
+type
+  TListSortCompare = function (p1, p2:pointer): Integer;
+
+  function SortCompare(p1, p2:pointer):integer;
+  var
+    APoint00, APoint01: POpenpitPoint3D;
+    APoint10, APoint11: POpenpitPoint3D;
+  begin
+    New(APoint00);New(APoint01);New(APoint10);New(APoint11);
+    try
+      APoint00^:= PSubBlock(p1).Point0;
+      APoint01^:= PSubBlock(p1).Point1;
+      APoint10^:= PSubBlock(p2).Point0;
+      APoint11^:= PSubBlock(p2).Point1;
+
+      if (APoint00.Id_Point = APoint10.Id_Point) and
+         (APoint01.Id_Point = APoint11.Id_Point) then
+         Result:= 0
+      else
+      if
+         (APoint00.Id_Point = APoint11.Id_Point) or
+         (APoint00.Id_Point = APoint10.Id_Point) or
+         (APoint01.Id_Point = APoint11.Id_Point) or
+         (APoint01.Id_Point = APoint10.Id_Point) then
+        Result:= 1
+      else
+        Result:= -1;
+    finally
+      Dispose(APoint00);Dispose(APoint01);Dispose(APoint10);Dispose(APoint11);
+    end;
+  end;
+  function check_sort(list:TList):boolean;
+  var
+    APoint00, APoint01: POpenpitPoint3D;
+    APoint10, APoint11: POpenpitPoint3D;
+    Ablock0, Ablock1: PSubBlock;
+    i: integer;
+  begin
+    Result:= true;
+    New(APoint00);New(APoint01);New(APoint10);New(APoint11);
+    try
+      for i:= 1 to list.Count - 1 do
+      begin
+        Ablock0:= list[i-1];
+        Ablock1:= list[i];
+
+        APoint00^:= Ablock0.Point0;
+        APoint01^:= Ablock0.Point1;
+        APoint10^:= Ablock1.Point0;
+        APoint11^:= Ablock1.Point1;
+
+        if (APoint01.Id_Point <> APoint10.Id_Point) and
+           (APoint01.Id_Point <> APoint11.Id_Point) and
+           (APoint00.Id_Point <> APoint10.Id_Point) and
+           (APoint00.Id_Point <> APoint11.Id_Point) then
+          Result:= false;
+
+        if not Result then
+          Break;
+      end;
+    finally
+      Dispose(APoint00);Dispose(APoint01);Dispose(APoint10);Dispose(APoint11);
+    end;
+  end;
+
 var
   ACourse: PResultOpenpitCourse3D;
   ASubBlocks,ATopPoints,ABottomPoints: TList;
   quCourses,quBlocks,quBlockPoints: TADOQuery;
   dsCourses,dsBlocks: TDAtaSource;
+  //
+  i: integer;
+  txt: TWriter;
+  ASubBlock: PSubBlock;
+  APoint0, APoint1: POpenpitPoint3D;
+  ACompFunc: TListSortCompare;
 begin
   Clear;
   if Openpit.Id_Openpit=0 then Exit;
@@ -1033,6 +1167,11 @@ begin
       if (ACourse^.FId_Course>0)or(ACourse^.FId_Point0>0) then
       //if false then
       begin//НЕОБХОДИМО ЗАДАТЬ FId_Course и FId_Point
+
+    inc(_tmp_n);
+    //if _tmp_n < 2 then
+    //if ACourse^.FId_Course in [46] then
+    begin
         //Создаю список подблок-участков SubBlocks с учетом направления -----------------------
         //и вычисляю сразу StripWidth и CourseLength
         ACourse^.GetCourseSubBlocks(quBlocks,quBlockPoints,ASubBlocks);
@@ -1040,6 +1179,9 @@ begin
         ACourse^.GetCourseSidePoints(ASubBlocks,ATopPoints,ABottomPoints);
         //Создание и заполнение списка полигонов поверхности и подложки дороги-----------------
         ACourse^.GetPolygons(ATopPoints,ABottomPoints);
+    //
+    end;
+    //
         //Очистка временных списков------------------------------------------------------------
         ClearList(ASubBlocks);
         ClearList(ATopPoints);
@@ -2547,5 +2689,88 @@ begin
       Openpit.UnLoadingPunkts[I].SetParams(FSelectedResultItemIndex);
   end;{if}
 end;{SetCurTsec}
+//todo: .2
+//u+
+procedure TResultOpenpitCourse3D.GetSortedSubBlocks(const startPoint: integer;
+                                                    var blocks: TList);
+  function Crossed(p0, p1: PSubBlock):boolean;
+  begin
+    Result:= ((p0.Point0.Id_Point = p1.Point0.Id_Point) or (p0.Point0.Id_Point = p1.Point1.Id_Point)) or
+             ((p0.Point1.Id_Point = p1.Point0.Id_Point) or (p0.Point1.Id_Point = p1.Point1.Id_Point));
+  end;
+  function Ordered(p0, p1: PSubBlock):boolean;
+  begin
+    Result:= (p0.Point1.Id_Point = p1.Point0.Id_Point);
+  end;
+  procedure ChangePoints(block: PSubBlock);
+  var
+    _top, _bottom: PPoint3D;
+    _point: POpenpitPoint3D;
+  begin
+    New(_point);New(_top);New(_bottom);
+    _point^:= block.Point0;
+    _top^:= block.Top0;
+    _bottom^:= block.Bottom0;
+    block.Point0:= block.Point1;
+    block.Top0:= block.Top1;
+    block.Bottom0:= block.Bottom1;
+    block.Point1:= _point^;
+    block.Top1:= _top^;
+    block.Bottom1:= _bottom^;
+    Dispose(_point);Dispose(_top);Dispose(_bottom);
+  end;
+  function isStartBlock(block: PSubBlock): boolean;
+  begin
+    Result:= (startPoint = block.Point0.Id_Point) or
+             (startPoint = block.Point1.Id_Point);
+    if (Result) and (block.Point1.Id_Point = startPoint) then
+      ChangePoints(block);
+  end;
+  procedure SetFirstPoint();
+  var
+    i: integer;
+  begin
+    for i:= 0 to blocks.Count - 1 do
+      if isStartBlock(blocks[i]) then
+      begin
+        blocks.Exchange(0, i);
+        Break;
+      end;
+  end;
+var
+  lengthOfList: integer;
+  rightItem: integer;
+  targetItem: integer;
+  ABlockR: PSubBlock;
+  ABlockT: PSubBlock;
+begin
+  SetFirstPoint();
+
+  lengthOfList:= blocks.Count;
+  targetItem:= 1;
+  rightItem:= 0;
+
+  while true do
+  begin
+    if rightItem = lengthOfList-1 then
+      Break;
+
+    ABlockT:= blocks[targetItem];
+    ABlockR:= blocks[rightItem];
+
+    if Crossed(ABlockR, ABlockT) then
+    begin
+      if not Ordered(ABlockR, ABlockT) then
+        ChangePoints(ABlockT);
+      Inc(rightItem);
+      blocks.Exchange(targetItem, rightItem);
+    end;
+
+    if targetItem = lengthOfList-1 then
+      targetItem:= rightItem;
+    Inc(targetItem);
+  end;
+end;
+//u-
 
 end.

@@ -675,27 +675,29 @@ function ArePiecesCrossed(var   APoint: RPoint3D;
   end;{IsBetween}
 var A1,B1,C1,A2,B2,C2,D: Single;
 begin
-  APoint.Z := (APoint1.Z+APoint2.Z)*0.5;
+  APoint.Z:= (APoint1.Z + APoint2.Z) * 0.5;
   //1.нахожу коэф-ты двух прямых
-  A1 := APoint1.Y-APoint0.Y;
-  B1 := -APoint1.X+APoint0.X;
-  C1 := -APoint0.X*APoint1.Y+APoint0.Y*APoint1.X;
-  A2 := APoint3.Y-APoint2.Y;
-  B2 := -APoint3.X+APoint2.X;
-  C2 := -APoint2.X*APoint3.Y+APoint2.Y*APoint3.X;
-  D := A1*B2-A2*B1;
+  A1:= APoint1.Y - APoint0.Y;
+  B1:= -APoint1.X + APoint0.X;
+  C1:= -APoint0.X * APoint1.Y + APoint0.Y * APoint1.X;
+  A2:= APoint3.Y - APoint2.Y;
+  B2:= -APoint3.X + APoint2.X;
+  C2:= -APoint2.X * APoint3.Y + APoint2.Y * APoint3.X;
+  D:= A1 * B2 - A2 * B1;
   if abs(D)<=Accuracy then
   begin                    //параллельны
-    Result := pcrParallel; APoint.X := -1.0; APoint.Y := -1.0;
+    Result:= pcrParallel;
+    APoint.X := -1.0;
+    APoint.Y := -1.0;
   end{if}
   else
   begin                    //не параллельны
-    APoint.X := (B1*C2-B2*C1)/D;
-    APoint.Y := (C1*A2-C2*A1)/D;
-    if IsBetween(APoint.X,APoint0.X,APoint1.X)and
-       IsBetween(APoint.X,APoint2.X,APoint3.X)and
-       IsBetween(APoint.Y,APoint0.Y,APoint1.Y)and
-       IsBetween(APoint.Y,APoint2.Y,APoint3.Y)
+    APoint.X := (B1 * C2 - B2 * C1)/D;
+    APoint.Y := (C1 * A2 - C2 * A1)/D;
+    if IsBetween(APoint.X, APoint0.X, APoint1.X)and
+       IsBetween(APoint.X, APoint2.X, APoint3.X)and
+       IsBetween(APoint.Y, APoint0.Y, APoint1.Y)and
+       IsBetween(APoint.Y, APoint2.Y, APoint3.Y)
     then Result := pcrCrossed       //пересекаются
     else Result := pcrNotCrossed;   //не пересекаются
   end;{else}
