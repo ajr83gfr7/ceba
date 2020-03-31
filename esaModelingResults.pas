@@ -760,13 +760,8 @@ var
 begin
   //Нахожу точки левой, правой обочины и оси маршрута -----------------------------------------
   for I := 0 to ASubBlocks.Count-1 do
-  // to 1 do//
   begin
     ASubBlock := ASubBlocks[I];
-    //txt.WriteToTXT(format('point0:%d|point1:%d', [ASubBlock.Point0.Id_Point, ASubBlock.Point1.Id_Point]));
-
-    if I=0 then//Первая точка
-    begin
       New(AOpenpitPoint);//Ось маршрута--------------
       AOpenpitPoint^ := ASubBlock^.Point0;
       FPoints.Add(AOpenpitPoint);
@@ -782,39 +777,23 @@ begin
       PointTransfer(ASubBlock, APoint, APointExt);
       Dispose(APoint);
       ABottomPoints.Add(APointExt);
-    end;
-    New(AOpenpitPoint);//Ось маршрута----------------
-    AOpenpitPoint^ := ASubBlock^.Point1;
-    FPoints.Add(AOpenpitPoint);
-    if I>0 then
-    begin
-      ASubBlockOld := ASubBlocks[I-1];
+      //
+      New(AOpenpitPoint);//Ось маршрута--------------
+      AOpenpitPoint^ := ASubBlock^.Point1;
+      FPoints.Add(AOpenpitPoint);
       New(APoint);       //Левая обочина маршрута----
       New(APointExt);
-      if ArePiecesCrossed(APoint^,
-                          ASubBlockOld^.Top0,ASubBlockOld^.Top1,
-                          ASubBlock^.Top0,ASubBlock^.Top1,
-                          0.0001) = pcrParallel then
-      begin
-        APoint^.X := ASubBlockOld^.Top1.X;
-        APoint^.Y := ASubBlockOld^.Top1.Y;
-      end;
+      APoint^ := ASubBlock^.Top1;
       PointTransfer(ASubBlock, APoint, APointExt);
       Dispose(APoint);
       ATopPoints.Add(APointExt);
       New(APoint);       //Правая обочина маршрута---
       New(APointExt);
-      if ArePiecesCrossed(APoint^,ASubBlockOld^.Bottom0,ASubBlockOld^.Bottom1,
-                          ASubBlock^.Bottom0,ASubBlock^.Bottom1,0.0001)=pcrParallel then
-      begin
-        APoint^.X := ASubBlockOld^.Bottom1.X;
-        APoint^.Y := ASubBlockOld^.Bottom1.Y;
-      end;
+      APoint^ := ASubBlock^.Bottom1;
       PointTransfer(ASubBlock, APoint, APointExt);
       Dispose(APoint);
       ABottomPoints.Add(APointExt);
-    end;{else}
-  end;{for}
+  end;
 end;{GetCourseSidePoints}
 //Создание и заполнение списка полигонов поверхности и подложки дороги-------------------------
 procedure TResultOpenpitCourse3D.GetPolygons(const ATopPoints,ABottomPoints: TList);
