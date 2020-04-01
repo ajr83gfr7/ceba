@@ -23,6 +23,11 @@ uses
   Dialogs, ExtCtrls, Grids, DBGridEh, ComCtrls, DB, ADODB, StdCtrls, Mask,
   DBCtrls, Menus, DBCtrlsEh, DBGrids, Buttons;//, GridsEh;
 
+const
+  TOEXCEL = 'Открыть в Excel';
+  TOGRAPH = 'Графическое отображение';
+  TOOPEN = 'Открыть';
+
 type
   TfmVariants = class(TForm)
     PageControl: TPageControl;
@@ -310,7 +315,12 @@ type
     dbeCurrStrippingVm3: TDBEdit;
     dbeCurrOreQtn: TDBEdit;
     dbeCurrOreVm3: TDBEdit;
- 
+    Panel1: TPanel;
+    grbToExcel: TGroupBox;
+    btnToExcel: TButton;
+    grbToGraph: TGroupBox;
+    btnToGraph: TButton;
+
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pmiMarkClick(Sender: TObject);
@@ -337,7 +347,10 @@ type
     procedure btnCopyfromBaseClick(Sender: TObject);
 
     procedure sbShowHiddenClick(Sender: TObject);
+    procedure btnToExcelClick(Sender: TObject);
+    procedure btnToGraphClick(Sender: TObject);
   private
+    procedure FormToShow();
     procedure DoVariantsCalcFields(DataSet: TDataSet);
     //Формирование названия ini-файла
     function IniFileName: String;
@@ -349,16 +362,16 @@ type
     procedure  NominalEffectCalculation (DataSet: TDataSet);
     procedure  NEESaveToLocal();
   public
-  end;{TfmVariants}
-   TNEEBaseInput=record
-      ProductOutPutPercent :double;
-      ProductPriceCtg      :double;
-      MTWorkByScheduleCtg  :double;
-      TruckCostCtg         :double;
-      ServiceExpensesCtg  :double;
-      BaseVariantExpenesCtg :double;
-      PlannedRockVolumeCm  :double;
-   end;
+  end;
+  TNEEBaseInput=record
+    ProductOutPutPercent :double;
+    ProductPriceCtg      :double;
+    MTWorkByScheduleCtg  :double;
+    TruckCostCtg         :double;
+    ServiceExpensesCtg  :double;
+    BaseVariantExpenesCtg :double;
+    PlannedRockVolumeCm  :double;
+  end;
 var
   fmVariants: TfmVariants;
   Base_Var_Id_ResultVariant:integer;
@@ -383,7 +396,7 @@ begin
   finally
     fmVariants.Free;
   end;{try}
-end;{esaShowVariantsDlg}
+end;
 procedure TfmVariants.NEESaveToLocal();
 begin
   if   quVariants.Locate('IsBaseVariant',TRUE, []) then
@@ -421,6 +434,7 @@ begin
   finally
     Free;
   end;{try}
+  FormToShow();
 end;{FormCreate}
 procedure TfmVariants.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -492,7 +506,7 @@ begin
   //SEE 8/02/2018: Relative economical effect calculation added
    NominalEffectCalculation(DataSet);
 
- end;{DoVariantsCalcFields}
+end;{DoVariantsCalcFields}
 
 procedure TfmVariants.NominalEffectCalculation(DataSet: TDataSet);
 var RocksVm3,Orevm3,WastVm3,OreQtn,Selic,STyres,UdelQtn,KVsry,Vn,OriUsEco,PeriodCoef : Double;
@@ -548,7 +562,7 @@ begin
   DataSet.FieldByName('RelativeEconomicEffectCtg').AsFloat := BaseUsEco-UsEco;
   {Объем горной массы запланированный к извлечению в рассматриваемом периоде, Vn в м3}
   Vn := DataSet.FieldByName('ExcavatorsPlanRockVm3').AsFloat*PeriodCoef;
-   DataSet.FieldByName('PlannedRockVolumeCm').AsFloat:= Vn/1000;
+  DataSet.FieldByName('PlannedRockVolumeCm').AsFloat:= Vn/1000;
   {Объемно ориентированный условный экономический эффект, млн.тг}
   OriUsEco := Vn*UdelQtn+Vn*(STyres/Vgm)+Cstro+Crem;
   DataSet.FieldByName('VOEconomicEffectCtg').AsFloat := OriUsEco/1E6;
@@ -701,16 +715,13 @@ begin
       ExecSQL;
       SQL.Text := 'UPDATE _ResultVariants SET IsBaseVariant=TRUE WHERE Id_ResultVariant='+quVariantsId_ResultVariant.AsString;
       ExecSQL;
-
     finally
       Free;
     end;{try}
-
   finally
     RequeryVariants();
     NEESaveToLocal();
   end;{try}
-
 end;{pmiMakeBaseClick}
 
 procedure TfmVariants.pmiDeleteClick(Sender: TObject);
@@ -1393,6 +1404,24 @@ begin
     sbShowHidden.Caption:= '-' ;
     gbAdditinal.Visible:=False;
   end
+end;
+
+procedure TfmVariants.FormToShow;
+begin
+  grbToExcel.Caption:= TOEXCEL;
+  grbToGraph.Caption:= TOGRAPH;
+  btnToExcel.Caption:= TOOPEN;
+  btnToGraph.Caption:= TOOPEN;
+end;
+
+procedure TfmVariants.btnToExcelClick(Sender: TObject);
+begin
+  pmiExcelClick(Sender);
+end;
+
+procedure TfmVariants.btnToGraphClick(Sender: TObject);
+begin
+  pmiGraphicsClick(Sender);
 end;
 
 end.
