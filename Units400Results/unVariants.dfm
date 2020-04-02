@@ -22,7 +22,7 @@ object fmVariants: TfmVariants
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 390
+    Top = 422
     Width = 1509
     Height = 2
     Cursor = crVSplit
@@ -30,9 +30,9 @@ object fmVariants: TfmVariants
   end
   object PageControl: TPageControl
     Left = 0
-    Top = 456
+    Top = 424
     Width = 1509
-    Height = 414
+    Height = 446
     ActivePage = tsAutos
     Align = alBottom
     TabOrder = 0
@@ -42,7 +42,7 @@ object fmVariants: TfmVariants
         Left = 0
         Top = 0
         Width = 1501
-        Height = 386
+        Height = 418
         ActivePage = tsAutos0
         Align = alClient
         ParentShowHint = False
@@ -55,7 +55,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -96,7 +96,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -281,7 +280,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -320,7 +319,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -448,7 +446,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -487,7 +485,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -624,7 +621,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -663,7 +660,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -833,7 +829,7 @@ object fmVariants: TfmVariants
         Left = 0
         Top = 0
         Width = 1501
-        Height = 386
+        Height = 418
         ActivePage = tsExcavators0
         Align = alClient
         TabOrder = 0
@@ -844,7 +840,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -885,7 +881,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1101#1082#1089#1082#1072#1074#1072#1090#1086#1088#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -950,7 +945,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -991,7 +986,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1101#1082#1089#1082#1072#1074#1072#1090#1086#1088#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -1029,7 +1023,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1070,7 +1064,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1101#1082#1089#1082#1072#1074#1072#1090#1086#1088#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -1135,7 +1128,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1176,7 +1169,6 @@ object fmVariants: TfmVariants
                 Title.Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
                 Title.Hint = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1101#1082#1089#1082#1072#1074#1072#1090#1086#1088#1086#1074
                 Title.Orientation = tohVertical
-                Width = 64
               end
               item
                 EditButtons = <>
@@ -1299,7 +1291,7 @@ object fmVariants: TfmVariants
         Left = 0
         Top = 0
         Width = 1501
-        Height = 386
+        Height = 418
         ActivePage = tsBlocks1
         Align = alClient
         ParentShowHint = False
@@ -1312,7 +1304,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1524,7 +1516,7 @@ object fmVariants: TfmVariants
             Left = 0
             Top = 0
             Width = 1493
-            Height = 360
+            Height = 392
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1801,7 +1793,7 @@ object fmVariants: TfmVariants
         Left = 0
         Top = 0
         Width = 1501
-        Height = 386
+        Height = 418
         Align = alClient
         DataSource = dsVaraints
         Flat = False
@@ -2496,7 +2488,7 @@ object fmVariants: TfmVariants
     Left = 0
     Top = 0
     Width = 1509
-    Height = 390
+    Height = 422
     Align = alClient
     TabOrder = 2
     Tabs.Strings = (
@@ -2509,7 +2501,7 @@ object fmVariants: TfmVariants
       Left = 4
       Top = 24
       Width = 1501
-      Height = 362
+      Height = 394
       Align = alClient
       DataSource = dsVaraints
       Flat = False
@@ -2742,50 +2734,6 @@ object fmVariants: TfmVariants
           Width = 56
           WordWrap = True
         end>
-    end
-  end
-  object Panel1: TPanel
-    Left = 0
-    Top = 392
-    Width = 1509
-    Height = 64
-    Align = alBottom
-    TabOrder = 3
-    object grbToExcel: TGroupBox
-      Left = 1
-      Top = 1
-      Width = 168
-      Height = 62
-      Align = alLeft
-      Caption = 'grbToExcel'
-      TabOrder = 0
-      object btnToExcel: TButton
-        Left = 72
-        Top = 24
-        Width = 75
-        Height = 25
-        Caption = 'btnToExcel'
-        TabOrder = 0
-        OnClick = btnToExcelClick
-      end
-    end
-    object grbToGraph: TGroupBox
-      Left = 169
-      Top = 1
-      Width = 184
-      Height = 62
-      Align = alLeft
-      Caption = 'grbToGraph'
-      TabOrder = 1
-      object btnToGraph: TButton
-        Left = 72
-        Top = 24
-        Width = 75
-        Height = 25
-        Caption = 'btnToGraph'
-        TabOrder = 0
-        OnClick = btnToGraphClick
-      end
     end
   end
   object quVariants: TADOQuery

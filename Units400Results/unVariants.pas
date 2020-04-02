@@ -23,11 +23,6 @@ uses
   Dialogs, ExtCtrls, Grids, DBGridEh, ComCtrls, DB, ADODB, StdCtrls, Mask,
   DBCtrls, Menus, DBCtrlsEh, DBGrids, Buttons;//, GridsEh;
 
-const
-  TOEXCEL = 'Открыть в Excel';
-  TOGRAPH = 'Графическое отображение';
-  TOOPEN = 'Открыть';
-
 type
   TfmVariants = class(TForm)
     PageControl: TPageControl;
@@ -315,11 +310,6 @@ type
     dbeCurrStrippingVm3: TDBEdit;
     dbeCurrOreQtn: TDBEdit;
     dbeCurrOreVm3: TDBEdit;
-    Panel1: TPanel;
-    grbToExcel: TGroupBox;
-    btnToExcel: TButton;
-    grbToGraph: TGroupBox;
-    btnToGraph: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -347,8 +337,6 @@ type
     procedure btnCopyfromBaseClick(Sender: TObject);
 
     procedure sbShowHiddenClick(Sender: TObject);
-    procedure btnToExcelClick(Sender: TObject);
-    procedure btnToGraphClick(Sender: TObject);
   private
     procedure FormToShow();
     procedure DoVariantsCalcFields(DataSet: TDataSet);
@@ -1408,20 +1396,7 @@ end;
 
 procedure TfmVariants.FormToShow;
 begin
-  grbToExcel.Caption:= TOEXCEL;
-  grbToGraph.Caption:= TOGRAPH;
-  btnToExcel.Caption:= TOOPEN;
-  btnToGraph.Caption:= TOOPEN;
-end;
 
-procedure TfmVariants.btnToExcelClick(Sender: TObject);
-begin
-  pmiExcelClick(Sender);
-end;
-
-procedure TfmVariants.btnToGraphClick(Sender: TObject);
-begin
-  pmiGraphicsClick(Sender);
 end;
 
 end.
