@@ -110,6 +110,8 @@ type        //test
     mmiRunSep2: TMenuItem;
     mmiRunSep6: TMenuItem;
     imgEmblem: TImage;
+    mmiResultEconomEffect: TMenuItem;
+    actResultEconomEffect: TAction;
 
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -146,7 +148,7 @@ uses Graphics, SysUtils, unDM, unAutoModelEngines, Globals, unAutoModels, unExca
   unResultShiftProportionality, unResultShiftProductionCapacities,
   unResultShiftUnLoadingPunkts,
   unResultTechnologicParams, unVariants,
-
+  unResultEconomEffect,
   TXTWriter, unDialogAddEconomParams;
 
 {$R *.dfm}
@@ -262,7 +264,7 @@ begin
   AddPanels();
 
   DefaultParams := TDBDefaultParams.Create;
-  PrintToFile(FloatToStr(DefaultParams.AutoBodySpace));
+  //PrintToFile(FloatToStr(DefaultParams.AutoBodySpace));
 
   with fmDM do
   begin
@@ -415,6 +417,7 @@ begin
     450: esaShowResultEconomParamsDlg();
     460: esaShowResultTechnologicParams();
     470: esaShowVariantsDlg();
+    480: esaShowResultEconomEffect();
   end;{case}
 end;{actRunExecute}
 procedure TfmMain.actHelpExecute(Sender: TObject);

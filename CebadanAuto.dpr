@@ -120,14 +120,15 @@ uses
   esaMath in 'Units000Common\esaMath.pas',
   esaDb in 'Units000Common\esaDb.pas',
   unResultShift in 'Units400Results\unResultShift.pas' {fmResultShift},
-  JRO_TLB in '..\..\..\Program Files\Borland\Delphi7\Imports\JRO_TLB.pas',
+  JRO_TLB in '..\Program Files\Borland\Delphi7\Imports\JRO_TLB.pas',
   StartFromAdis in 'StartFromAdis.pas' {Form1},
   TXTWriter in 'DebugUnit\TXTWriter.pas',
   unResultAutoSpeeds in 'Units400Results\unResultAutoSpeeds.pas' {fmResultAutoSpeeds},
   unResultBlocksFunctioning in 'Units400Results\unResultBlocksFunctioning.pas' {fmResultBlocksFunctioning},
   unResultBlocksPowerConsuming in 'Units400Results\unResultBlocksPowerConsuming.pas' {fmResultBlocksPowerConsuming},
   unDialogAddEconomParams in 'AddEconomParams\unDialogAddEconomParams.pas' {fmDialogAddEconomParams},
-  unResultAddEconomParams in 'AddEconomParams\unResultAddEconomParams.pas' {fmResultAddEconomParams};
+  unResultAddEconomParams in 'AddEconomParams\unResultAddEconomParams.pas' {fmResultAddEconomParams},
+  unResultEconomEffect in 'Units400Results\unResultEconomEffect.pas' {fmResultEconomEffect};
 
 begin
   Application.Initialize;
@@ -138,6 +139,7 @@ begin
   Application.CreateForm(TfmMain, fmMain);
   Application.CreateForm(TfmResultShift, fmResultShift);
   Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TfmResultEconomEffect, fmResultEconomEffect);
   Application.Run;
   FreeAndNil(fmAbout);
 end.

@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 526
-  Top = 118
+  Left = 1314
+  Top = 625
   Width = 600
   Height = 400
   Caption = 'fmMain'
@@ -347,6 +347,12 @@ object fmMain: TfmMain
       Hint = #1042#1072#1088#1080#1072#1085#1090#1099' '#1084#1086#1076#1077#1083#1080#1088#1086#1074#1072#1085#1080#1103'|'#1042#1072#1088#1080#1072#1085#1090#1099' '#1084#1086#1076#1077#1083#1080#1088#1086#1074#1072#1085#1080#1103
       OnExecute = actRunExecute
     end
+    object actResultEconomEffect: TAction
+      Tag = 480
+      Category = '400 '#1052#1086#1076#1077#1083#1080#1088#1086#1074#1072#1085#1080#1077
+      Caption = #1069#1082#1086#1085#1086#1084#1080#1095#1077#1089#1082#1080#1081' '#1101#1092#1092#1077#1082#1090
+      OnExecute = actRunExecute
+    end
   end
   object MainMenu: TMainMenu
     Left = 160
@@ -493,6 +499,9 @@ object fmMain: TfmMain
       end
       object mmiResultEconomParams: TMenuItem
         Action = actResultEconomParams
+      end
+      object mmiResultEconomEffect: TMenuItem
+        Action = actResultEconomEffect
       end
       object mmiRunSep5: TMenuItem
         Caption = '-'
