@@ -9358,13 +9358,19 @@ procedure TDispatcher.SaveEconomResultsNew;
       Free;
     end;{try}
   end;{_GetSummaryBlockParams}
-  procedure _Add(const q: TADOQuery; const ARecName: String; const AKey: ResaKeyParams; ANum: Single; ADen: Single=-1.0);overload; 
-  var I: Integer;
+  procedure _Add(const q: TADOQuery;
+                 const ARecName: String;
+                 const AKey: ResaKeyParams;
+                 ANum: Single;
+                 ADen: Single=-1.0);overload;
+  var
+    I: Integer;
   begin
     if not(ADen<0.0) then
-      if ADen>0.0
-      then ANum := ANum/ADen
-      else ANum := 0.0; 
+      if ADen>0.0 then
+        ANum := ANum/ADen
+      else
+        ANum := 0.0;
     q.Append;
     for I := 1 to q.Fields.Count-1 do
       q.Fields[I].Clear;
@@ -9373,10 +9379,14 @@ procedure TDispatcher.SaveEconomResultsNew;
     q.FieldByName('RecordNo').AsInteger := AKey.No;
     q.FieldByName('RecordName').AsString := ARecName;
     q.FieldByName('Name').AsString := AKey.Key;
-    if ANum>-1.0 then q.FieldByName('Value').AsFloat := ANum;
+    if ANum > -1.0 then
+      q.FieldByName('Value').AsFloat := ANum;
     q.Post;
-  end;{_Add}
-  procedure _Add(const q: TADOQuery; const AKind,ARecNo: Integer; const AName: String; AValue: Single=0.0);overload;
+  end;
+  procedure _Add(const q: TADOQuery;
+                 const AKind,ARecNo: Integer;
+                 const AName: String;
+                 AValue: Single=0.0);overload;
   var I: Integer;
   begin
     q.Append;

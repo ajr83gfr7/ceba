@@ -134,13 +134,13 @@ uses
   unDM;
 const
   // Label
-  WORKFLOW_OF_SHIHT = 'Производительность ГТСК по ГМ за смену, тыс.м3.';
-  WORKFLOW_OF_YEAR = 'Производительность ГТСК по ГМ за год, тыс.м3.';
+  WORKFLOW_OF_SHIHT = 'Производительность ГТСК по ГМ за смену, м3.';
+  WORKFLOW_OF_YEAR = 'Производительность ГТСК по ГМ за год, м3.';
   WEIGHT_OF_ORE = 'Объемный вес руды, т/м3';
   TIMEFLOW_OF_SHIHT = 'Продолжительность смены, мин';
   COST_OF_GTK = 'Затраты по горно-транспортному комплексу, тг';
   COST_OF_M3 = 'Удельные текущие затраты на 1 м3 по ГМ, тг/м3';
-  CASH_EMPLOEE = 'ЗП машинистов и водителей, тыс.тг/мес.';
+  CASH_EMPLOEE = 'ЗП машинистов и водителей, тг.';
   KOEF_OF_ROCK = 'Коэффициент вскрыши Кв, т/т, м3/м3';
   KOEF_SHIHTCHANGE = 'Коэф. перехода сменных показателей на период';
   KOEF_PUNKT_BUZY = 'Коэффициент занятости пункта';
@@ -213,6 +213,16 @@ const
     'BlocksAmortizationCtg, ' +
     'BaseVariantExpenesCtg, ServiceExpensesCtg, EconomExpensesCtg, ' +
     'AutosGxWaiting, AutosGxWork, ' +
+    'AutosUsedTyresCount, ' +
+    //6
+    'AutosWorkSumGxCtg, AutosWorkSumTyresCtg, AutosWorkSparesCtg, ' +
+    'AutosWorkMaterialsCtg, AutosWorkMaintenancesCtg, AutosWorkSalariesCtg, ' +
+    'AutosWaitingSumGxCtg, AutosWaitingSparesCtg, AutosWaitingMaterialsCtg, ' +
+    'AutosWaitingMaintenancesCtg, AutosWaitingSalariesCtg, AutosAmortizationCtg, ' +
+    'BlocksRepairCtg, BlocksAmortizationCtg, ' +
+    'ExcavatorsWorkSumGxCtg, ExcavatorsWorkMaterialsCtg, ExcavatorsWorkUnAccountedCtg, ' +
+    'ExcavatorsWorkSalariesCtg, ExcavatorsWaitingSumGxCtg, ExcavatorsWaitingMaterialsCtg, ' +
+    'ExcavatorsWaitingUnAccountedCtg, ExcavatorsWaitingSalariesCtg, ExcavatorsAmortizationCtg, ' +
     //---------
     'ProductOutPutPercent, ' +
     'ProductPriceCtg, ' +
@@ -264,7 +274,7 @@ end;
 procedure TfmResultEconomEffect.dbgVariantDrawDataCell(Sender: TObject;
   const Rect: TRect; Field: TField; State: TGridDrawState);
 begin
-  GetData();
+//  GetData();
 end;
 
 procedure TfmResultEconomEffect.GetData;
@@ -273,7 +283,8 @@ var
   ResultPeriodCoef, ParamsShiftDuration, Vgm,
   Produk, Cstro, StoiPrib, Crem, Pribil,
   SenaProd, ZatSer, Rashot, UsEco, OtnoEcom,
-  Vn, QtnGM, OriUsEco: Double;
+  Vn, QtnGM, OriUsEco, ProizPeriod, Salary,
+  UdelTyres, Stripping: Double;
 begin
   _currentVariant:= dbgVariant.DataSource.DataSet.FieldValues['Id_ResultVariant'];
   with qryResultVariants do
@@ -284,6 +295,12 @@ begin
     Parameters.ParamByName('IdVariant').Value:= _currentVariant;
     Open;
 
+    //Показатель плотности руды, т/м3
+    Selic:= FieldValues['CurrOreVm3'];
+    edSelic.Text := Format('%.3f',[Selic]);
+    //Объем добытой вскрыши за смену, м3
+    Stripping:= FieldValues['CurrStrippingVm3'];
+    RocksVm3:= Selic + Stripping;
     edBLength.Text := Format('%d',[Integer(FieldValues['BlocksLm'])]);
     edZatrat.Text := Format('%.3f',[Double(FieldValues['BlocksRepairCtg'])]);
     edElectr.Text := Format('%.3f',[Double(FieldValues['ExcavatorsGxWork'])]);
@@ -293,7 +310,19 @@ begin
     STyres:= FieldValues['AutosTyresCtg'];
     edSTyres.Text := Format('%.3f',[STyres]);
     //Удельные текущие затраты по горной массе, тг.
-    UdelQtn:= 0.0;
+    UdelQtn:= (FieldValues['AutosWorkSumGxCtg'] + FieldValues['AutosWorkSumTyresCtg'] +
+              FieldValues['AutosWorkSparesCtg'] + FieldValues['AutosWorkMaterialsCtg'] +
+              FieldValues['AutosWorkMaintenancesCtg'] + FieldValues['AutosWorkSalariesCtg'] +
+              FieldValues['AutosWaitingSumGxCtg'] + FieldValues['AutosWaitingSparesCtg'] +
+              FieldValues['AutosWaitingMaterialsCtg'] + FieldValues['AutosWaitingMaintenancesCtg'] +
+              FieldValues['AutosWaitingSalariesCtg'] + FieldValues['AutosAmortizationCtg'] +
+              FieldValues['BlocksRepairCtg'] + FieldValues['BlocksAmortizationCtg'] +
+              FieldValues['ExcavatorsWorkSumGxCtg'] + FieldValues['ExcavatorsWorkMaterialsCtg'] +
+              FieldValues['ExcavatorsWorkUnAccountedCtg'] + FieldValues['ExcavatorsWorkSalariesCtg'] +
+              FieldValues['ExcavatorsWaitingSumGxCtg'] + FieldValues['ExcavatorsWaitingMaterialsCtg'] +
+              FieldValues['ExcavatorsWaitingUnAccountedCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'] +
+              FieldValues['ExcavatorsAmortizationCtg'])
+              /RocksVm3;
     edUdelQtn.Text := Format('%.3f',[UdelQtn]);//quResultEconomParamsTotalUdCostsCurrent0.AsFloat
     //Коэффициент вскрыши, т/т
     KVsry:= FieldValues['Ks'];
@@ -301,20 +330,20 @@ begin
     edShiftAutos.Text := Format('%d',[Integer(FieldValues['AutosAutosCount0'])]);
     edAVGTransKPD.Text := Format('%.3f',[0.0]);//quAddEconomyAVGTransKPD.AsFloat
     edShiftExcavators.Text := Format('%d',[Integer(FieldValues['ExcavatorsExcavatorsCount0'])]);
-    //Показатель плотности руды, т/м3
-    Selic:= FieldValues['CurrOreVm3'];
-    edSelic.Text := Format('%.3f',[Selic]);
-    //Объем добытой вскрыши, м3
-    RocksVm3:= FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3'];
     edRocksVm3.Text := Format('%.3f',[RocksVm3]);
     edCountUnLodingPunkts.Text := Format('%d',[0]);//quAddEconomySF.AsString;
     edStoiTyre.Text := Format('%.3f',[0.0]);//quAddEconomyAVGTransKPD.AsFloat
     edOstat.Text := Format('%.3f',[0.0]);//Cost+quAddEconomySF.AsFloat
     edElec.Text := Format('%.3f',[Double(FieldValues['ExcavatorsGxWork']) +
                                   Double(FieldValues['ExcavatorsGxWaiting'])]);
-    edUdelTyres.Text := Format('%.3f',[0.0]);//fmDM.quResultAutosSummaryTyresAllowedCount0.AsFloat/StrToFloat(edRocksVm3.Text)
-    edProizPeriod.Text := Format('%.3f',[0.0]);
-    edSalary.Text := Format('%.3f',[0.0]);
+    UdelTyres:=FieldValues['AutosUsedTyresCount'] / RocksVm3;
+    edUdelTyres.Text := Format('%.3f',[UdelTyres]);
+    //Объем добытой вскрыши за год, м3
+    ProizPeriod:= RocksVm3 * 2 * 365;
+    edProizPeriod.Text := Format('%.3f',[ProizPeriod]);
+    Salary:= FieldValues['AutosWorkSalariesCtg'] + FieldValues['AutosWaitingSalariesCtg'] +
+             FieldValues['ExcavatorsWorkSalariesCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'];
+    edSalary.Text := Format('%.3f',[Salary]);
     //Коэффициент перевода сменных параметров на период
     ResultPeriodCoef:= FieldValues['PeriodKshift'];
     edResultPeriodCoef.Text := Format('%.3f',[ResultPeriodCoef]);
