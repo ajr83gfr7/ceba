@@ -1,8 +1,8 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 945
-  Top = 21
-  Width = 958
-  Height = 840
+  Left = 730
+  Top = 6
+  Width = 1176
+  Height = 714
   Caption = 'actLoadVariant'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,25 +17,25 @@ object fmResultEconomEffect: TfmResultEconomEffect
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 145
-    Width = 942
+    Top = 0
+    Width = 1160
     Height = 3
     Cursor = crVSplit
     Align = alTop
   end
   object gbxVariant: TGroupBox
     Left = 0
-    Top = 0
-    Width = 942
-    Height = 145
-    Align = alTop
+    Top = 3
+    Width = 217
+    Height = 673
+    Align = alLeft
     Caption = 'gbxVariant'
     TabOrder = 0
     object dbgVariant: TDBGrid
       Left = 2
       Top = 15
-      Width = 938
-      Height = 128
+      Width = 213
+      Height = 656
       Align = alClient
       DataSource = dsVariants
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgMultiSelect]
@@ -51,17 +51,17 @@ object fmResultEconomEffect: TfmResultEconomEffect
     end
   end
   object gbxValue: TGroupBox
-    Left = 0
-    Top = 148
-    Width = 942
-    Height = 654
+    Left = 217
+    Top = 3
+    Width = 943
+    Height = 673
     Align = alClient
     Caption = 'gbxValue'
     TabOrder = 1
     object gbxCebadan: TGroupBox
       Left = 2
       Top = 15
-      Width = 938
+      Width = 939
       Height = 394
       Align = alTop
       Caption = 'gbxCebadan'
@@ -506,7 +506,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       Left = 2
       Top = 409
       Width = 487
-      Height = 200
+      Height = 262
       Align = alLeft
       Caption = 'gbxInput'
       TabOrder = 1
@@ -558,6 +558,27 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Width = 38
         Height = 13
         Caption = 'Label36'
+      end
+      object Label43: TLabel
+        Left = 40
+        Top = 192
+        Width = 38
+        Height = 13
+        Caption = 'Label43'
+      end
+      object Label44: TLabel
+        Left = 208
+        Top = 192
+        Width = 38
+        Height = 13
+        Caption = 'Label44'
+      end
+      object Label45: TLabel
+        Left = 368
+        Top = 192
+        Width = 38
+        Height = 13
+        Caption = 'Label45'
       end
       object edProduk: TEdit
         Left = 328
@@ -615,31 +636,42 @@ object fmResultEconomEffect: TfmResultEconomEffect
         TabOrder = 6
         Text = 'edSenaProd'
       end
-    end
-    object Panel1: TPanel
-      Left = 2
-      Top = 609
-      Width = 938
-      Height = 43
-      Align = alBottom
-      TabOrder = 2
-      object btnOutput: TButton
-        Left = 24
-        Top = 8
+      object btnEnter: TButton
+        Left = 368
+        Top = 224
         Width = 75
         Height = 25
-        Caption = 'btnOutput'
-        TabOrder = 0
+        Caption = 'btnEnter'
+        TabOrder = 7
+        OnClick = btnEnterClick
+      end
+      object btnBase: TButton
+        Left = 208
+        Top = 224
+        Width = 75
+        Height = 25
+        Caption = 'btnBase'
+        TabOrder = 8
+        OnClick = btnBaseClick
+      end
+      object btnMakeBase: TButton
+        Left = 40
+        Top = 224
+        Width = 75
+        Height = 25
+        Caption = 'btnMakeBase'
+        TabOrder = 9
+        OnClick = btnMakeBaseClick
       end
     end
     object gbxOutput: TGroupBox
       Left = 489
       Top = 409
-      Width = 451
-      Height = 200
+      Width = 452
+      Height = 262
       Align = alClient
       Caption = 'gbxOutput'
-      TabOrder = 3
+      TabOrder = 2
       object Label37: TLabel
         Left = 16
         Top = 24
@@ -681,6 +713,13 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Width = 38
         Height = 13
         Caption = 'Label42'
+      end
+      object Label46: TLabel
+        Left = 344
+        Top = 192
+        Width = 38
+        Height = 13
+        Caption = 'Label46'
       end
       object edPribil: TEdit
         Left = 296
@@ -729,6 +768,15 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Height = 21
         TabOrder = 5
         Text = 'edRashot'
+      end
+      object btnCalc: TButton
+        Left = 344
+        Top = 224
+        Width = 75
+        Height = 25
+        Caption = 'btnCalc'
+        TabOrder = 6
+        OnClick = btnCalcClick
       end
     end
   end

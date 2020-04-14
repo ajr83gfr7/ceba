@@ -128,7 +128,8 @@ uses
   unResultBlocksPowerConsuming in 'Units400Results\unResultBlocksPowerConsuming.pas' {fmResultBlocksPowerConsuming},
   unDialogAddEconomParams in 'AddEconomParams\unDialogAddEconomParams.pas' {fmDialogAddEconomParams},
   unResultAddEconomParams in 'AddEconomParams\unResultAddEconomParams.pas' {fmResultAddEconomParams},
-  unResultEconomEffect in 'Units400Results\unResultEconomEffect.pas' {fmResultEconomEffect};
+  unResultEconomEffect in 'Units400Results\unResultEconomEffect.pas' {fmResultEconomEffect},
+  unEconomEffect in 'Units400Results\unEconomEffect.pas';
 
 begin
   Application.Initialize;

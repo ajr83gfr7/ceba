@@ -9399,6 +9399,47 @@ procedure TDispatcher.SaveEconomResultsNew;
     q.FieldByName('Value').AsFloat := AValue;
     q.Post;
   end;{_Add}
+  procedure _SaveToResultOfVariant(ProductPriceCtg,
+                                   MTWorkByScheduleCtg,
+                                   ServiceExpensesCtg: double);
+
+  //Сохраить в самый последний вариант
+  const
+    SELECT_ID_RESULT_VARIANT = 'SELECT Id_ResultVariant ' +
+                              'FROM _ResultVariants ' +
+                              'WHERE VariantDate = (SELECT MAX(VariantDate) FROM _ResultVariants)';
+    UPDATE_RESULT_VARIANT = 'UPDATE _ResultVariants ' +
+                            'SET ' +
+                            'ProductPriceCtg=:ProductPriceCtg, ' +
+                            'MTWorkByScheduleCtg=:MTWorkByScheduleCtg, ' +
+                            'ServiceExpensesCtg=:ServiceExpensesCtg ' +
+                            'WHERE Id_ResultVariant=:Id_ResultVariant';
+  var
+    _qry: TADOQuery;
+    Id_ResultVariant: integer;
+  begin
+    _qry:= TADOQuery.Create(nil);
+    _qry.Connection:= fmDM.ADOConnection;
+    with _qry do
+    begin
+      Close;
+      SQL.Clear;
+      SQL.Text:= SELECT_ID_RESULT_VARIANT;
+      Open;
+      Id_ResultVariant:= FieldValues['Id_ResultVariant'];
+      Close;
+      SQL.Clear;
+      SQL.Text:= UPDATE_RESULT_VARIANT;
+      Parameters.ParamByName('ProductPriceCtg').Value:= ProductPriceCtg;
+      Parameters.ParamByName('MTWorkByScheduleCtg').Value:= MTWorkByScheduleCtg;
+      Parameters.ParamByName('ServiceExpensesCtg').Value:= ServiceExpensesCtg;
+
+      Parameters.ParamByName('Id_ResultVariant').Value:= Id_ResultVariant;
+      ExecSQL;
+      Close;
+      Free;
+    end;
+  end;
 var
   AWorkCtg0,AWorkCtg1,ARepairCtg2                      : Single;//Затраты в работе, тг
   AWaitingCtg0,AWaitingCtg1                            : Single;//Затраты в простое, тг
@@ -9407,6 +9448,10 @@ var
   ARockVolume                                          : ResaRockVolume;//Производительность, м3. и т.
   AExpensesCtg                                         : Single;//Постоянные и неучтенные расходы, тг
   qu: TADOQuery;
+  //
+  ProductPriceCtg: double;
+  MTWorkByScheduleCtg: double;
+  ServiceExpensesCtg: double;
 begin
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования по экономическим показателям..');
@@ -9473,7 +9518,14 @@ begin
       Variant.SaveEconomParams(AExpensesCtg);
     finally
       qu.Free;
-    end;{try}
+    end;
+    //todo: .1?
+    ProductPriceCtg:= (ACtg0+ACtg1+ACtg2+AExpensesCtg) / (ARockVolume.Qtn);//тыс
+    MTWorkByScheduleCtg:= (ACtg0+ACtg1+ACtg2+AExpensesCtg) / 1000000;
+    ServiceExpensesCtg:= (AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2 +
+                         AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2) / 1000;
+
+    _SaveToResultOfVariant(ProductPriceCtg, MTWorkByScheduleCtg, ServiceExpensesCtg);
     SetGaugeValue(FGauge.MaxValue);
     FOpenpit.SendMessage('Ok');
   finally
