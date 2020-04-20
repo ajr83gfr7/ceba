@@ -54,21 +54,25 @@ resourcestring
   CEBADAN_VARIABLES = 'Данные с CEBADAN';
   INPUT_VARIABLES = 'Входные данные';
   OUTPUT_VARIABLES = 'Выходные данные';
-  _OUTPUT = 'Вывод';
+  TO_OUTPUT = 'Вывод';
   SET_AS_BASE = 'Установить как'+#13#10+'базовый вариант';
-  _SET = 'Установить';
-  GET_BASE_DATA = 'Получить данные'+#13#10+'базового варианта';
-  _GET = 'Получить';
-  ENTER_DATA = 'Ввести'+#13#10+'данные';
-  _ENTER = 'Ввести';
-  TO_CALC = 'Расчитать'+#13#10+'данные';
-  _CALC = 'Расчитать';
-  _PRINT_EXCEL = '..в Excel';  
+  TO_SET = 'Установить';
+  GET_BASE_DATA = 'Получить'+#13#10+'входные данные'+#13#10+'базового варианта';
+  TO_GET = 'Получить';
+  ENTER_DATA = 'Ввести новые'+#13#10+'входные данные';
+  TO_ENTER = 'Ввести';
+  CALC_DATA = 'Расчитать'+#13#10+'выходные данные';
+  TO_CALC = 'Расчитать';
+  DELL_VARIANT = 'Удалить текущий'+#13#10+'вариант';
+  TO_DELL = 'Удалить';
+  PRINT_TO_EXCEL = 'Сохранить в Excel';
+  TO_PRINT = 'Сохранить';
+  TO_PRINT_EXCEL = '..в Excel';//?????????????????????
 
-  NAME_OF_VARIANT = 'Наименование варианта';
-  DATE_OF_VARIANT = 'Дата создания варианта';
+  NAME_OF_VARIANT = 'Наименование';
+  DATE_OF_VARIANT = 'Дата создания';
 
-  GRID_TITLE = 'Основные показатели эффективности.';
+  GRID_TITLE = 'Сравнительная талица показателей эффективности.';
   GRID_DATE = 'Дата создания: %s';
   GRID_PARAM = 'Параметр';
   GRID_VARIANTS = 'Варианты моделирования';
@@ -103,6 +107,9 @@ resourcestring
   UPDATE_BALANCE_AUTOS = 'UPDATE _ResultVariants ' +
                          'SET TruckCostCtg=:TruckCostCtg ' +
                          'WHERE (Id_ResultVariant=:Id_ResultVariant)';
+  SELECT_ID_OF_BASE_VARIANT = 'SELECT Id_ResultVariant ' +
+                        'FROM _ResultVariants ' +
+                        'WHERE IsBaseVariant=True';
   SELECT_BASE_VARIANT = 'SELECT ProductOutPutPercent, ProductPriceCtg, ' +
                                'MTWorkByScheduleCtg, TruckCostCtg, ' +
                                'ServiceExpensesCtg, BaseVariantExpenesCtg, ' +
@@ -132,9 +139,11 @@ resourcestring
   UPDATE_RESULT_BY_TONNE_OF_ORE = 'UPDATE _ResultVariants ' +
                                   'SET ProductOutPutPercent=:ProductOutPutPercent ' +
                                   'WHERE (Id_ResultVariant=:Id_ResultVariant)';
+  DELETE_VARIANT_BY_ID = 'DELETE FROM _ResultVariants WHERE Id_ResultVariant=:Id_ResultVariant';
 
 const
-  WIDTH_VARIANT_NAME = 200;
+  WIDTH_VARIANT_NAME = 100;
+  WIDTH_DATE = 120;
 
 
 implementation

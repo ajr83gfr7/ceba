@@ -164,16 +164,34 @@ begin
   date_range.Borders[xlInsideHorizontal].LineStyle:=xlSolid;
   date_range.Borders[xlInsideVertical].LineStyle:=xlSolid;
   //autofit
-//  document.ActiveWorkBook.ActiveSheet.Columns.Width:= 10;
+  document.ActiveWorkBook.ActiveSheet.Columns.ColumnWidth:= 13;
   document.ActiveWorkBook.ActiveSheet.Columns[1].Autofit;
-  //center
+
+  //Title of Document
   Cell_1:= document.ActiveWorkBook.ActiveSheet.Cells[1, 1];
+  Cell_2:= document.ActiveWorkBook.ActiveSheet.Cells[1, maxcol];
+  date_range:=document.ActiveWorkBook.ActiveSheet.Range[Cell_1, Cell_2];
+  date_range.HorizontalAlignment:= xlCenter;
+  date_range.VerticalAlignment:= xlCenter;
+  date_range.Font.Size:= 14;
+  date_range.Font.Bold:= 4;
+  date_range.RowHeight:= 30;
+  //
+  Cell_1:= document.ActiveWorkBook.ActiveSheet.Cells[2, 1];
+  Cell_2:= document.ActiveWorkBook.ActiveSheet.Cells[2, maxcol];
+  date_range:=document.ActiveWorkBook.ActiveSheet.Range[Cell_1, Cell_2];
+  date_range.HorizontalAlignment:= xlRight;
+  date_range.Font.Size:= 9;
+
+  //Title of Table
+  Cell_1:= document.ActiveWorkBook.ActiveSheet.Cells[3, 1];
   Cell_2:= document.ActiveWorkBook.ActiveSheet.Cells[4, maxcol];
   date_range:=document.ActiveWorkBook.ActiveSheet.Range[Cell_1, Cell_2];
-
   date_range.HorizontalAlignment := xlCenter;
   date_range.VerticalAlignment := xlCenter;
-
+  date_range.Font.Size:= 12;
+  date_range.Font.Bold:= 4;
+  date_range.RowHeight:= 30;
 end;
 
 end.

@@ -110,28 +110,40 @@ type
     edUsEcom: TEdit;
     edRashot: TEdit;
     btnEnter: TButton;
-    btnBase: TButton;
     btnCalc: TButton;
-    btnMakeBase: TButton;
-    Label43: TLabel;
-    Label44: TLabel;
     Label45: TLabel;
     Label46: TLabel;
-    btnExcel: TButton;
     saveas: TSaveDialog;
+    pnlVariant: TPanel;
+    btnDelVariant: TButton;
+    btnSetBase: TButton;
+    ActionList1: TActionList;
+    actSetBaseVariant: TAction;
+    actGetBaseVariant: TAction;
+    Label47: TLabel;
+    Label48: TLabel;
+    btnPrintToExcel: TButton;
+    Label49: TLabel;
+    btnSetLikeBase: TButton;
+    Label43: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure dbgVariantCellClick(Column: TColumn);
     procedure FormShow(Sender: TObject);
     procedure dbgVariantDrawDataCell(Sender: TObject; const Rect: TRect;
       Field: TField; State: TGridDrawState);
-    procedure btnBaseClick(Sender: TObject);
     procedure btnEnterClick(Sender: TObject);
-    procedure btnMakeBaseClick(Sender: TObject);
     procedure btnCalcClick(Sender: TObject);
-    procedure btnExcelClick(Sender: TObject);
+    procedure btnDelVariantClick(Sender: TObject);
+    procedure actSetBaseVariantExecute(Sender: TObject);
+    procedure dbgVariantDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure btnPrintToExcelClick(Sender: TObject);
+    procedure btnSetLikeBaseClick(Sender: TObject);
   private
     _currentVariant: integer;
+    _baseVariant: integer;
     _currentParams: TEffectParams;
+    procedure SelectBaseVariant;
     procedure OpenVariants();
     procedure GetData();
     procedure GetInputData();
@@ -164,6 +176,7 @@ end;
 procedure TfmResultEconomEffect.FormShow(Sender: TObject);
 begin
   OpenVariants();
+  _currentParams:= TEffectParams.Create;
   //
   GetData();
   SetView();
@@ -540,6 +553,25 @@ begin
   end;
 end;
 
+procedure TfmResultEconomEffect.SelectBaseVariant;
+var
+  _qry: TADOQuery;
+begin
+  _baseVariant:= _currentVariant;
+  _qry:= TADOQuery.Create(nil);
+  _qry.Connection:= fmDM.ADOConnection;
+  with _qry do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Text:= SELECT_ID_OF_BASE_VARIANT;
+    Open;
+    _baseVariant:= FieldValues['Id_ResultVariant'];
+    Close;
+    Free;
+  end;
+end;
+
 procedure TfmResultEconomEffect.OpenVariants;
 begin
   with qryVariants do
@@ -548,16 +580,19 @@ begin
     Open;
   end;
   dbgVariant.DataSource.DataSet.Last;
-  //
+  //width
   dbgVariant.Columns[0].Visible:= false;
   dbgVariant.Columns[1].Width:= WIDTH_VARIANT_NAME;
-  dbgVariant.Columns[2].Width:= dbgVariant.Width - (WIDTH_VARIANT_NAME*2);
-  //
+  dbgVariant.Columns[2].Width:= WIDTH_DATE;
+  //titles
   dbgVariant.Columns[1].Title.Caption:= NAME_OF_VARIANT;
   dbgVariant.Columns[2].Title.Caption:= DATE_OF_VARIANT;
+  //scrol bars
+  TDrawGrid(dbgVariant).ScrollBars := ssNone;//ssVertical; //ssHorizontal, ssBoth, ssNone.
   //
+//  DBGrid1.Canvas.Brush.Color
   _currentVariant:= dbgVariant.DataSource.DataSet.FieldValues['Id_ResultVariant'];
-  _currentParams:= TEffectParams.Create;
+  SelectBaseVariant;
 end;
 
 procedure TfmResultEconomEffect.SetView;
@@ -615,45 +650,22 @@ begin
   gbxOutput.Caption:= OUTPUT_VARIABLES;
   //btnOutput.Caption:= _OUTPUT;
 
-  Label43.Caption:= SET_AS_BASE;
-  btnMakeBase.Caption:= _SET;
-  Label44.Caption:= GET_BASE_DATA;
-  btnBase.Caption:= _GET;
   Label45.Caption:= ENTER_DATA;
-  btnEnter.Caption:= _ENTER;
-  Label46.Caption:= TO_CALC;
-  btnCalc.Caption:= _CALC;
-  btnExcel.Caption:= _PRINT_EXCEL;  
-
+  btnEnter.Caption:= TO_ENTER;
+  Label46.Caption:= CALC_DATA;
+  btnCalc.Caption:= TO_CALC;
   btnCalc.Enabled:= False;
 
+  Label47.Caption:= SET_AS_BASE;
+  btnSetBase.Caption:= TO_SET;
+  Label48.Caption:= DELL_VARIANT;
+  btnDelVariant.Caption:= TO_DELL;
+  Label49.Caption:= PRINT_TO_EXCEL;
+  btnPrintToExcel.Caption:= TO_PRINT;
+  Label43.Caption:= GET_BASE_DATA;
+  btnSetLikeBase.Caption:= TO_GET;
+
   saveas.Title:= SAVE_REPORT;
-end;
-
-procedure TfmResultEconomEffect.btnBaseClick(Sender: TObject);
-var
-  _qry: TADOQuery;
-begin
-  _qry:= TADOQuery.Create(nil);
-  _qry.Connection:= fmDM.ADOConnection;
-  with _qry do
-  begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= SELECT_BASE_VARIANT;
-    Open;
-
-    edProduk.Text:= Format('%.3f',[Double(FieldValues['ProductOutPutPercent'])]);
-    edSenaProd.Text:= Format('%.3f',[Double(FieldValues['ProductPriceCtg'])]);
-    edStoiGTR.Text:= Format('%.3f',[Double(FieldValues['MTWorkByScheduleCtg'])]);
-    edStoiPrib.Text:= Format('%.3f',[Double(FieldValues['TruckCostCtg'])]);
-    edZatSer.Text:= Format('%.3f',[Double(FieldValues['ServiceExpensesCtg'])]);
-    edBaseVar.Text:= Format('%.3f',[Double(FieldValues['BaseVariantExpenesCtg'])]);
-    edQtnGM.Text:= Format('%.3f',[Double(FieldValues['PlannedRockVolumeCm'])]);
-
-    Close;
-    Free;
-  end;
 end;
 
 procedure TfmResultEconomEffect.btnEnterClick(Sender: TObject);
@@ -682,29 +694,6 @@ begin
   end;
   if not btnCalc.Enabled then
     btnCalc.Enabled:= True;
-end;
-
-procedure TfmResultEconomEffect.btnMakeBaseClick(Sender: TObject);
-var
-  _qry: TADOQuery;
-  baseVariant: integer;
-begin
-  _qry:= TADOQuery.Create(nil);
-  _qry.Connection:= fmDM.ADOConnection;
-  with _qry do
-  begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= UPDATE_VARIANTS_TO_OFF;
-    ExecSQL;
-    Close;
-    SQL.Clear;
-    SQL.Text:= UPDATE_NEW_BASE_VARIANT;
-    Parameters.ParamByName('NewId_ResultVariant').Value:= _currentVariant;
-    ExecSQL;
-    Close;
-    Free;
-  end;
 end;
 
 procedure TfmResultEconomEffect.btnCalcClick(Sender: TObject);
@@ -787,19 +776,70 @@ begin
       //
       SetData(sg, colcount, rowcount);
       //
-//      saveas.InitialDir := GetCurrentDir;
-//      saveas.Filter := '*.xls|*.xlsx';
-//      saveas.DefaultExt := 'xls';
-//      saveas.FilterIndex := 1;
-//      if saveas.Execute then
-//        filename:= saveas.FileName;
-      SaveWorkBook('filename', 1)
+      saveas.InitialDir := GetCurrentDir;
+      saveas.Filter := '*.xls|*.xlsx';
+      saveas.DefaultExt := 'xls';
+      saveas.FilterIndex := 1;
+      if saveas.Execute then
+        filename:= saveas.FileName;
+      SaveWorkBook(filename, 1)
     finally
       Destroy;
     end;
 end;
 
-procedure TfmResultEconomEffect.btnExcelClick(Sender: TObject);
+procedure TfmResultEconomEffect.btnDelVariantClick(Sender: TObject);
+var
+  _qry: TADOQuery;
+begin
+  _qry:= TADOQuery.Create(nil);
+  _qry.Connection:= fmDM.ADOConnection;
+  with _qry do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Text:= DELETE_VARIANT_BY_ID;
+    Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
+    ExecSQL;
+    Close;
+    Free;
+  end;
+  OpenVariants;
+end;
+
+procedure TfmResultEconomEffect.actSetBaseVariantExecute(Sender: TObject);
+var
+  _qry: TADOQuery;
+begin
+  _qry:= TADOQuery.Create(nil);
+  _qry.Connection:= fmDM.ADOConnection;
+  with _qry do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Text:= UPDATE_VARIANTS_TO_OFF;
+    ExecSQL;
+    Close;
+    SQL.Clear;
+    SQL.Text:= UPDATE_NEW_BASE_VARIANT;
+    Parameters.ParamByName('NewId_ResultVariant').Value:= _currentVariant;
+    ExecSQL;
+    Close;
+    Free;
+  end;
+  OpenVariants;
+end;
+
+procedure TfmResultEconomEffect.dbgVariantDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+begin
+  if dbgVariant.DataSource.DataSet['Id_ResultVariant'] = _baseVariant then
+    dbgVariant.Canvas.Brush.Color:= clGreen;
+  dbgVariant.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+end;
+
+procedure TfmResultEconomEffect.btnPrintToExcelClick(Sender: TObject);
 var
   _sg: TStringGrid;
   _sg_input: TStringGrid;
@@ -993,7 +1033,7 @@ var
 
     Result:= d;
   end;
-  
+
 begin
   _qry:= TADOQuery.Create(nil);
   _qry.Connection:= fmDM.ADOConnection;
@@ -1018,7 +1058,7 @@ begin
       _sg.ColCount:= colcount;
       while not Eof do
       begin
-        _currentDate:= VarToSTR(FieldValues['VariantDate']);
+        _currentDate:= FormatDateTime('MM/DD/YYYY', FieldValues['VariantDate']);
         _sg.Cells[VIndex, 0]:= format('%s'+#13#10+'%s', [_nameVariant, _currentDate]);
         _sg.Cells[VIndex, 1]:= _str(FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']);
         _sg.Cells[VIndex, 2]:= _str((FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']) * 2 * 365);
@@ -1125,6 +1165,32 @@ begin
       data_to_excel[i, j]:=_sg.Cells[j-1, i-1];
 
   ToExcel(data_to_excel, colcount, rowcount);
+end;
+
+procedure TfmResultEconomEffect.btnSetLikeBaseClick(Sender: TObject);
+var
+  _qry: TADOQuery;
+begin
+  _qry:= TADOQuery.Create(nil);
+  _qry.Connection:= fmDM.ADOConnection;
+  with _qry do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Text:= SELECT_BASE_VARIANT;
+    Open;
+
+    edProduk.Text:= Format('%.3f',[Double(FieldValues['ProductOutPutPercent'])]);
+    edSenaProd.Text:= Format('%.3f',[Double(FieldValues['ProductPriceCtg'])]);
+    edStoiGTR.Text:= Format('%.3f',[Double(FieldValues['MTWorkByScheduleCtg'])]);
+    edStoiPrib.Text:= Format('%.3f',[Double(FieldValues['TruckCostCtg'])]);
+    edZatSer.Text:= Format('%.3f',[Double(FieldValues['ServiceExpensesCtg'])]);
+    edBaseVar.Text:= Format('%.3f',[Double(FieldValues['BaseVariantExpenesCtg'])]);
+    edQtnGM.Text:= Format('%.3f',[Double(FieldValues['PlannedRockVolumeCm'])]);
+
+    Close;
+    Free;
+  end;
 end;
 
 end.
