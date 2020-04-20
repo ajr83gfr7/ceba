@@ -1,7 +1,7 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 730
-  Top = 6
-  Width = 1176
+  Left = 759
+  Top = 56
+  Width = 1143
   Height = 714
   Caption = 'actLoadVariant'
   Color = clBtnFace
@@ -18,7 +18,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
   object Splitter1: TSplitter
     Left = 0
     Top = 0
-    Width = 1160
+    Width = 1127
     Height = 3
     Cursor = crVSplit
     Align = alTop
@@ -53,7 +53,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
   object gbxValue: TGroupBox
     Left = 217
     Top = 3
-    Width = 943
+    Width = 910
     Height = 673
     Align = alClient
     Caption = 'gbxValue'
@@ -61,7 +61,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
     object gbxCebadan: TGroupBox
       Left = 2
       Top = 15
-      Width = 939
+      Width = 906
       Height = 394
       Align = alTop
       Caption = 'gbxCebadan'
@@ -667,7 +667,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
     object gbxOutput: TGroupBox
       Left = 489
       Top = 409
-      Width = 452
+      Width = 419
       Height = 262
       Align = alClient
       Caption = 'gbxOutput'
@@ -770,13 +770,22 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Text = 'edRashot'
       end
       object btnCalc: TButton
-        Left = 344
+        Left = 336
         Top = 224
         Width = 75
         Height = 25
         Caption = 'btnCalc'
         TabOrder = 6
         OnClick = btnCalcClick
+      end
+      object btnExcel: TButton
+        Left = 16
+        Top = 224
+        Width = 75
+        Height = 25
+        Caption = 'btnExcel'
+        TabOrder = 7
+        OnClick = btnExcelClick
       end
     end
   end
@@ -796,5 +805,9 @@ object fmResultEconomEffect: TfmResultEconomEffect
     Parameters = <>
     Left = 376
     Top = 164
+  end
+  object saveas: TSaveDialog
+    Left = 411
+    Top = 34
   end
 end

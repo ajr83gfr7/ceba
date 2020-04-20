@@ -129,7 +129,10 @@ uses
   unDialogAddEconomParams in 'AddEconomParams\unDialogAddEconomParams.pas' {fmDialogAddEconomParams},
   unResultAddEconomParams in 'AddEconomParams\unResultAddEconomParams.pas' {fmResultAddEconomParams},
   unResultEconomEffect in 'Units400Results\unResultEconomEffect.pas' {fmResultEconomEffect},
-  unEconomEffect in 'Units400Results\unEconomEffect.pas';
+  unExcel in 'Units000Common\unExcel.pas',
+  unResultEconomEffect_Excel in 'Units400Results\unResultEconomEffect_Excel.pas',
+  unResultEconomEffect_Data in 'Units400Results\unResultEconomEffect_Data.pas',
+  unResultEconomEffect_Const in 'Units400Results\unResultEconomEffect_Const.pas';
 
 begin
   Application.Initialize;

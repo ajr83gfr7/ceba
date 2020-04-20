@@ -1,8 +1,9 @@
 object fmDM: TfmDM
   OldCreateOrder = False
-  Left = 592
-  Height = 780
-  Width = 1075
+  Left = 2
+  Top = 2
+  Height = 439
+  Width = 993
   object ADOConnection: TADOConnection
     ConnectionString = 
       'Provider=Microsoft.Jet.OLEDB.4.0;User ID=Admin;Data Source=Cebad' +
