@@ -126,6 +126,11 @@ type
     Label49: TLabel;
     btnSetLikeBase: TButton;
     Label43: TLabel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    Label44: TLabel;
+    Label50: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure dbgVariantCellClick(Column: TColumn);
     procedure FormShow(Sender: TObject);
@@ -677,6 +682,9 @@ begin
   btnSetLikeBase.Caption:= TO_GET;
 
   saveas.Title:= SAVE_REPORT;
+
+  Label44.Caption:= COLOR_OF_BASE_VARIANT;
+  Label50.Caption:= COLOR_OF_CURRENT_VARIANT;
 end;
 
 procedure TfmResultEconomEffect.btnEnterClick(Sender: TObject);
@@ -846,7 +854,7 @@ procedure TfmResultEconomEffect.dbgVariantDrawColumnCell(Sender: TObject;
   State: TGridDrawState);
 begin
   if dbgVariant.DataSource.DataSet['Id_ResultVariant'] = _baseVariant then
-    dbgVariant.Canvas.Brush.Color:= clGreen;
+    dbgVariant.Canvas.Brush.Color:= clBlue;
   dbgVariant.DefaultDrawColumnCell(Rect,DataCol,Column,State);
 end;
 

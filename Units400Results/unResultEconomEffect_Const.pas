@@ -80,6 +80,9 @@ resourcestring
 
   SAVE_REPORT = 'Сохранить сравнительный отчет';
 
+  COLOR_OF_BASE_VARIANT = 'Базовый вариант';
+  COLOR_OF_CURRENT_VARIANT = 'Текущий вариант';
+
   // SQL
   SELECT_ALL_VARIANTS = 'SELECT Id_ResultVariant, Variant, VariantDate FROM _ResultVariants';
   SELECT_ALL_FROM_RESULT_VARIANT = 'SELECT * ' +

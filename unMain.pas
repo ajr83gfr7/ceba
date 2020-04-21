@@ -243,6 +243,7 @@ begin
   _button.Tag:= 420;
   _button.Caption:= fmMain.actResultGraph.Caption;
 
+  (*
   //add Modeling -> Econom Effect
   _button:= TButton.Create(fmMain);
   _button.Parent:= fmMain;
@@ -255,7 +256,7 @@ begin
 
   _button.Action:= fmMain.actResultEconomEffect;
   _button.Tag:= 480;
-
+    *)
   SetWindowLong(_button.Handle,
                 GWL_STYLE,
                 GetWindowLong(_button.Handle, GWL_STYLE) or BS_MULTILINE);

@@ -1,8 +1,8 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 742
-  Top = 57
+  Left = 183
+  Top = 22
   Width = 1169
-  Height = 688
+  Height = 689
   Caption = 'actLoadVariant'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -27,7 +27,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
     Left = 0
     Top = 3
     Width = 225
-    Height = 647
+    Height = 648
     Align = alLeft
     Caption = 'gbxVariant'
     TabOrder = 0
@@ -54,9 +54,9 @@ object fmResultEconomEffect: TfmResultEconomEffect
     end
     object pnlVariant: TPanel
       Left = 2
-      Top = 409
+      Top = 465
       Width = 221
-      Height = 236
+      Height = 181
       Align = alClient
       TabOrder = 1
       object Label47: TLabel
@@ -75,14 +75,14 @@ object fmResultEconomEffect: TfmResultEconomEffect
       end
       object Label49: TLabel
         Left = 16
-        Top = 200
+        Top = 144
         Width = 38
         Height = 13
         Caption = 'Label49'
       end
       object Label43: TLabel
         Left = 16
-        Top = 96
+        Top = 88
         Width = 38
         Height = 13
         Caption = 'Label43'
@@ -106,7 +106,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       end
       object btnPrintToExcel: TButton
         Left = 128
-        Top = 200
+        Top = 144
         Width = 75
         Height = 25
         Caption = 'btnPrintToExcel'
@@ -115,7 +115,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       end
       object btnSetLikeBase: TButton
         Left = 128
-        Top = 104
+        Top = 96
         Width = 75
         Height = 25
         Caption = 'btnSetLikeBase'
@@ -123,12 +123,50 @@ object fmResultEconomEffect: TfmResultEconomEffect
         OnClick = btnSetLikeBaseClick
       end
     end
+    object Panel1: TPanel
+      Left = 2
+      Top = 409
+      Width = 221
+      Height = 56
+      Align = alTop
+      TabOrder = 2
+      object Label44: TLabel
+        Left = 96
+        Top = 8
+        Width = 38
+        Height = 13
+        Caption = 'Label44'
+      end
+      object Label50: TLabel
+        Left = 96
+        Top = 32
+        Width = 38
+        Height = 13
+        Caption = 'Label50'
+      end
+      object Panel2: TPanel
+        Left = 8
+        Top = 8
+        Width = 73
+        Height = 17
+        Color = clBlue
+        TabOrder = 0
+      end
+      object Panel3: TPanel
+        Left = 8
+        Top = 32
+        Width = 73
+        Height = 17
+        Color = clHighlight
+        TabOrder = 1
+      end
+    end
   end
   object gbxValue: TGroupBox
     Left = 225
     Top = 3
     Width = 928
-    Height = 647
+    Height = 648
     Align = alClient
     Caption = 'gbxValue'
     TabOrder = 1
@@ -580,7 +618,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       Left = 2
       Top = 409
       Width = 487
-      Height = 236
+      Height = 237
       Align = alLeft
       Caption = 'gbxInput'
       TabOrder = 1
@@ -710,7 +748,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       Left = 489
       Top = 409
       Width = 437
-      Height = 236
+      Height = 237
       Align = alClient
       Caption = 'gbxOutput'
       TabOrder = 2
