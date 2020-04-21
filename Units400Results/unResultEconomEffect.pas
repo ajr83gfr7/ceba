@@ -347,6 +347,7 @@ var
       Close;
       SQL.Clear;
       SQL.Text:= SELECT_COST_GTR_OF_BASE;
+      Parameters.ParamByName('Id_ResultVariant').Value:= _baseVariant;
       Open;
       _cost_GTR_of_base:= FieldValues['ServiceExpensesCtg'];
       Close;
@@ -566,7 +567,17 @@ begin
     SQL.Clear;
     SQL.Text:= SELECT_ID_OF_BASE_VARIANT;
     Open;
-    _baseVariant:= FieldValues['Id_ResultVariant'];
+    if FieldValues['Id_ResultVariant'] <> Null then
+      _baseVariant:= FieldValues['Id_ResultVariant']
+    else
+    begin
+      Close;
+      SQL.Clear;
+      SQL.Text:= SELECT_ID_OF_EARLEST_VARIANT;
+      Open;
+      _baseVariant:= FieldValues['Id_ResultVariant'];
+    end;
+    //
     Close;
     Free;
   end;
@@ -986,6 +997,7 @@ var
       Close;
       SQL.Clear;
       SQL.Text:= SELECT_COST_GTR_OF_BASE;
+      Parameters.ParamByName('Id_ResultVariant').Value:= _baseVariant;
       Open;
       _cost_GTR_of_base:= FieldValues['ServiceExpensesCtg'];
       Close;
@@ -1178,6 +1190,7 @@ begin
     Close;
     SQL.Clear;
     SQL.Text:= SELECT_BASE_VARIANT;
+    Parameters.ParamByName('Id_ResultVariant').Value:= _baseVariant;
     Open;
 
     edProduk.Text:= Format('%.3f',[Double(FieldValues['ProductOutPutPercent'])]);

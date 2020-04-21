@@ -107,16 +107,19 @@ resourcestring
   UPDATE_BALANCE_AUTOS = 'UPDATE _ResultVariants ' +
                          'SET TruckCostCtg=:TruckCostCtg ' +
                          'WHERE (Id_ResultVariant=:Id_ResultVariant)';
-  SELECT_ID_OF_BASE_VARIANT = 'SELECT Id_ResultVariant ' +
-                        'FROM _ResultVariants ' +
-                        'WHERE IsBaseVariant=True';
+  SELECT_ID_OF_BASE_VARIANT = 'SELECT TOP 1 Id_ResultVariant ' +
+                              'FROM _ResultVariants ' +
+                              'WHERE IsBaseVariant=True';
+  SELECT_ID_OF_EARLEST_VARIANT = 'SELECT Id_ResultVariant ' +
+                                 'FROM _ResultVariants ' +
+                                 'WHERE VariantDate=(SELECT MIN(VariantDate) FROM _ResultVariants)';
   SELECT_BASE_VARIANT = 'SELECT ProductOutPutPercent, ProductPriceCtg, ' +
                                'MTWorkByScheduleCtg, TruckCostCtg, ' +
                                'ServiceExpensesCtg, BaseVariantExpenesCtg, ' +
                                'PlannedRockVolumeCm ' +
                                ',Id_ResultVariant ' +
                         'FROM _ResultVariants ' +
-                        'WHERE IsBaseVariant=True';
+                        'WHERE Id_ResultVariant=:Id_ResultVariant';
   UPDATE_CURRENT_INPUT_VALUES = 'UPDATE _ResultVariants ' +
                                 'SET ProductOutPutPercent=:ProductOutPutPercent, ' +
                                 'ProductPriceCtg=:ProductPriceCtg, ' +
@@ -130,9 +133,7 @@ resourcestring
   UPDATE_NEW_BASE_VARIANT = 'UPDATE _ResultVariants SET IsBaseVariant=True WHERE Id_ResultVariant=:NewId_ResultVariant';
   SELECT_COST_GTR_OF_BASE = 'SELECT ServiceExpensesCtg ' +
                             'FROM _ResultVariants ' +
-                            'WHERE Id_ResultVariant=(SELECT Id_ResultVariant ' +
-                                                    'FROM _ResultVariants ' +
-                                                    'WHERE IsBaseVariant=True)';
+                            'WHERE Id_ResultVariant=:Id_ResultVariant';
   UPDATE_COST_GTR_OF_BASE = 'UPDATE _ResultVariants ' +
                             'SET BaseVariantExpenesCtg=:BaseVariantExpenesCtg ' +
                             'WHERE (Id_ResultVariant=:Id_ResultVariant)';
