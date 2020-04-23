@@ -4,7 +4,7 @@ interface
 resourcestring
   WORKFLOW_OF_SHIHT = 'Производительность ГТСК по ГМ за смену, тыс.м3.';
   WORKFLOW_OF_YEAR = 'Производительность ГТСК по ГМ за год, тыс.м3.';
-  WEIGHT_OF_ORE = 'Объемный вес руды, т/м3';
+  WEIGHT_OF_ORE = 'Объем добытой руды, м3';
   TIMEFLOW_OF_SHIHT = 'Продолжительность смены, мин';
   COST_OF_GTK = 'Затраты по горно-транспортному комплексу, тг';
   COST_OF_M3 = 'Удельные текущие затраты на 1 м3 по ГМ, тг/м3';
@@ -82,6 +82,19 @@ resourcestring
 
   COLOR_OF_BASE_VARIANT = 'Базовый вариант';
   COLOR_OF_CURRENT_VARIANT = 'Текущий вариант';
+
+  // Messages
+  APP_NAME = 'CEBADAN';
+  SAVE_IS_SUCCESS = 'Отчет успешно сохранен.';
+  SAVE_IS_WARNING = 'Сохранение отчета не выполненно.';
+  NOT_FOUND_ID_OPENPIT = 'Не найден Вариант с именем %s';
+  SET_BASE_VARIANT = 'Установлен новый вазовый вариант.';
+  SQL_ERROR_UPDATE = 'Ошибка обновления таблицы';
+  SQL_ERROR_INSERT = 'Ошибка добавления данных в таблицу';
+  SQL_ERROR_SELECT = 'Ошибка получения выборки данных из таблицы';
+  DO_YOU_SURE_TO_DELL = 'Вы уверенны, что хотите удалить текущий вариант?';
+  DELL_VARIANT_IS_SUCCESS = 'Вариант успешно удален';
+  DO_YOU_SURE_TO_SET_BASE_VARIANT = 'Вы уверенны, что хотите установить текущий вариант в качестве базового?';
 
   // SQL
   SELECT_ALL_VARIANTS = 'SELECT Id_ResultVariant, Variant, VariantDate FROM _ResultVariants';

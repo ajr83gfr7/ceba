@@ -14,7 +14,7 @@ object fmProductivity: TfmProductivity
   Constraints.MinWidth = 600
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
@@ -23,42 +23,42 @@ object fmProductivity: TfmProductivity
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnResize = FormResize
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object Bevel2: TBevel
     Left = 0
-    Top = 310
-    Width = 582
-    Height = 6
+    Top = 341
+    Width = 584
+    Height = 5
     Align = alBottom
     Shape = bsTopLine
   end
   object pnBtns: TPanel
     Left = 0
-    Top = 385
-    Width = 582
-    Height = 50
+    Top = 402
+    Width = 584
+    Height = 40
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     DesignSize = (
-      582
-      50)
+      584
+      40)
     object btClose: TButton
-      Left = 620
-      Top = 10
-      Width = 93
-      Height = 31
+      Left = 504
+      Top = 8
+      Width = 75
+      Height = 25
       Anchors = [akTop, akRight]
       Caption = #1047#1072#1082#1088#1099#1090#1100
       ModalResult = 1
       TabOrder = 0
     end
     object btExcel: TButton
-      Left = 20
-      Top = 10
-      Width = 88
-      Height = 31
+      Left = 16
+      Top = 8
+      Width = 72
+      Height = 25
       Caption = #1074' Excel...'
       TabOrder = 1
       OnClick = pmiExcelClick
@@ -67,34 +67,34 @@ object fmProductivity: TfmProductivity
   object pnClient: TPanel
     Left = 0
     Top = 0
-    Width = 582
-    Height = 310
+    Width = 584
+    Height = 341
     Align = alClient
     BevelOuter = bvNone
     Caption = 'pnClient'
     TabOrder = 1
     object pbLoadingPunktRocks: TPaintBox
       Left = 0
-      Top = 237
-      Width = 582
-      Height = 67
+      Top = 192
+      Width = 584
+      Height = 55
       Align = alTop
       OnPaint = pbLoadingPunktRocksPaint
     end
     object lbLoadingPunkts: TLabel
       Left = 0
       Top = 0
-      Width = 582
-      Height = 16
+      Width = 584
+      Height = 13
       Align = alTop
       Alignment = taCenter
       Caption = #1055#1091#1085#1082#1090#1099' &'#1087#1086#1075#1088#1091#1079#1082#1080
     end
     object dbgLoadingPunktRocks: TDBGrid
       Left = 0
-      Top = 304
-      Width = 582
-      Height = 134
+      Top = 247
+      Width = 584
+      Height = 108
       Align = alTop
       Ctl3D = True
       DataSource = fmDM.dsLoadingPunktRocks
@@ -104,7 +104,7 @@ object fmProductivity: TfmProductivity
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
-      TitleFont.Height = -14
+      TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
       OnDrawColumnCell = dbgLoadingPunktRocksDrawColumnCell
@@ -158,9 +158,9 @@ object fmProductivity: TfmProductivity
     end
     object dbgLoadingPunkts: TDBGrid
       Left = 0
-      Top = 16
-      Width = 582
-      Height = 221
+      Top = 13
+      Width = 584
+      Height = 179
       Align = alTop
       Ctl3D = True
       DataSource = fmDM.dsLoadingPunkts
@@ -172,7 +172,7 @@ object fmProductivity: TfmProductivity
       TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
-      TitleFont.Height = -14
+      TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
       OnDrawColumnCell = dbgLoadingPunktsDrawColumnCell
@@ -199,46 +199,46 @@ object fmProductivity: TfmProductivity
   end
   object pnProductivity: TPanel
     Left = 0
-    Top = 316
-    Width = 582
-    Height = 69
+    Top = 346
+    Width = 584
+    Height = 56
     Align = alBottom
     BevelInner = bvLowered
     BevelOuter = bvLowered
     TabOrder = 2
     object lbProductivityMineralWealth: TLabel
-      Left = 10
-      Top = 10
-      Width = 33
-      Height = 16
+      Left = 8
+      Top = 8
+      Width = 24
+      Height = 13
       Caption = #1056#1091#1076#1072
     end
     object lbProductivityStripping: TLabel
-      Left = 138
-      Top = 10
-      Width = 60
-      Height = 16
+      Left = 112
+      Top = 8
+      Width = 47
+      Height = 13
       Caption = #1042#1089#1082#1088#1099#1096#1072
     end
     object lbProductivityRock: TLabel
-      Left = 266
-      Top = 10
-      Width = 93
-      Height = 16
+      Left = 216
+      Top = 8
+      Width = 71
+      Height = 13
       Caption = #1043#1086#1088#1085#1072#1103' '#1084#1072#1089#1089#1072
     end
     object lbProductivityStrippingCoef: TLabel
-      Left = 512
-      Top = 10
-      Width = 164
-      Height = 16
+      Left = 416
+      Top = 8
+      Width = 119
+      Height = 13
       Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1074#1089#1082#1088#1099#1096#1080
     end
     object sttProductivityMineralWealth: TStaticText
-      Left = 10
-      Top = 30
-      Width = 118
-      Height = 25
+      Left = 8
+      Top = 24
+      Width = 96
+      Height = 21
       Alignment = taRightJustify
       AutoSize = False
       BevelInner = bvLowered
@@ -247,12 +247,12 @@ object fmProductivity: TfmProductivity
       TabOrder = 0
     end
     object cbProductivityUnit: TComboBox
-      Left = 394
-      Top = 30
-      Width = 79
-      Height = 24
+      Left = 320
+      Top = 24
+      Width = 64
+      Height = 21
       Style = csDropDownList
-      ItemHeight = 16
+      ItemHeight = 13
       ItemIndex = 1
       TabOrder = 1
       Text = #1090#1099#1089'.'#1084'3'
@@ -262,10 +262,10 @@ object fmProductivity: TfmProductivity
         #1090#1099#1089'.'#1084'3')
     end
     object sttProductivityStripping: TStaticText
-      Left = 138
-      Top = 30
-      Width = 118
-      Height = 25
+      Left = 112
+      Top = 24
+      Width = 96
+      Height = 21
       Alignment = taRightJustify
       AutoSize = False
       BevelInner = bvLowered
@@ -274,10 +274,10 @@ object fmProductivity: TfmProductivity
       TabOrder = 2
     end
     object sttProductivityRock: TStaticText
-      Left = 266
-      Top = 30
-      Width = 118
-      Height = 25
+      Left = 216
+      Top = 24
+      Width = 96
+      Height = 21
       Alignment = taRightJustify
       AutoSize = False
       BevelInner = bvLowered
@@ -286,9 +286,9 @@ object fmProductivity: TfmProductivity
       TabOrder = 3
     end
     object edProductivityStrippingCoef: TEdit
-      Left = 512
-      Top = 30
-      Width = 118
+      Left = 416
+      Top = 24
+      Width = 96
       Height = 24
       Color = clBtnFace
       ReadOnly = True
@@ -296,12 +296,12 @@ object fmProductivity: TfmProductivity
       Text = '0,000'
     end
     object cbProductivityStrippingCoefUnit: TComboBox
-      Left = 640
-      Top = 30
-      Width = 59
-      Height = 24
+      Left = 520
+      Top = 24
+      Width = 48
+      Height = 21
       Style = csDropDownList
-      ItemHeight = 16
+      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 5
       Text = #1090'/'#1090

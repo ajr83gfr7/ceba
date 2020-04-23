@@ -153,7 +153,7 @@ type
     procedure GetData();
     procedure GetInputData();
     procedure SetView();
-    procedure ToExcel(sg: Variant; colcount, rowcount: integer);
+    function ToExcel(sg: Variant; colcount, rowcount: integer): boolean;
   public
     { Public declarations }
   end;
@@ -231,16 +231,19 @@ var
     _qry:= TADOQuery.Create(nil);
     _qry.Connection:= fmDM.ADOConnection;
     with _qry do
-    begin
-      Close;
-      SQL.Clear;
-      SQL.Text:= SELECT_OPENPIT_BY_NAME;
-      Parameters.ParamByName('OpenpitName').Value:= openpitName;
-      Open;
-      Result:= FieldValues['Id_Openpit'];
-      Close;
-      Free;
-    end;
+      try
+        Close;
+        SQL.Clear;
+        SQL.Text:= SELECT_OPENPIT_BY_NAME;
+        Parameters.ParamByName('OpenpitName').Value:= openpitName;
+        Open;
+        Result:= FieldValues['Id_Openpit'];
+        Close;
+        Free;
+      except
+        MessageBox(0, PAnsiChar(format(NOT_FOUND_ID_OPENPIT, [openpitName])), PAnsiChar(APP_NAME), MB_OK);
+        //MessageDlg('Confirmation', mtError, mbOK, 0);
+      end;
   end;
   function getDataByOpenpit(_sql:string; idOpenpit: integer): double;
   var
@@ -408,7 +411,9 @@ begin
     Stripping:= FieldValues['CurrStrippingVm3'];
     RocksVm3:= Selic + Stripping;
     _currentParams.Add(TFloatParam.Create('RocksVm3', RocksVm3, CatSebadan));
-    ProizPeriod:= RocksVm3 * 2 * 365;
+    ResultPeriodCoef:= FieldValues['ShiftKweek'];
+    _currentParams.Add(TFloatParam.Create('ResultPeriodCoef', ResultPeriodCoef, CatSebadan));
+    ProizPeriod:= RocksVm3 * 2 * 365 * ResultPeriodCoef;
     _currentParams.Add(TFloatParam.Create('ProizPeriod', ProizPeriod, CatSebadan));
     ParamsShiftDuration:= FieldValues['ShiftTmin'];
     _currentParams.Add(TFloatParam.Create('ParamsShiftDuration', ParamsShiftDuration, CatSebadan));
@@ -437,8 +442,6 @@ begin
     _currentParams.Add(TFloatParam.Create('Salary', Salary, CatSebadan));
     KVsry:= FieldValues['Ks'];
     _currentParams.Add(TFloatParam.Create('KVsry', KVsry, CatSebadan));
-    ResultPeriodCoef:= FieldValues['PeriodKshift'];
-    _currentParams.Add(TFloatParam.Create('ResultPeriodCoef', ResultPeriodCoef, CatSebadan));
     dbl:= FieldValues['BlocksEmploymentCoef'];
     _currentParams.Add(TFloatParam.Create('EmploymentRatio', dbl, CatSebadan));
     dbl:= FieldValues['AutosAvgTimeUsingCoef'];
@@ -491,7 +494,7 @@ begin
     edUdelQtn.Text:= _currentParams.ValueOf['UdelQtn'];
     edSalary.Text:= _currentParams.ValueOf['Salary'];
     edKVsry.Text:= _currentParams.ValueOf['KVsry'];
-    edResultPeriodCoef.Text:= _currentParams.ValueOf['ResultPeriodCoef'];
+    edResultPeriodCoef.Text:= _currentParams.ValueOf['ResultPeriodCoef'];//ShiftKweek
     edEmploymentRatio.Text:= _currentParams.ValueOf['EmploymentRatio'];
     edWorkTimeUsingRatio.Text:= _currentParams.ValueOf['WorkTimeUsingRatio'];
     edShiftExcavators.Text:= _currentParams.ValueOf['ShiftExcavators'];
@@ -724,7 +727,7 @@ begin
   with qryResultVariants do
   begin
     ParamsShiftDuration:= FieldValues['ShiftTmin'];
-    ResultPeriodCoef:= FieldValues['PeriodKshift'];
+    ResultPeriodCoef:= FieldValues['ShiftKweek'];
     Stripping:= FieldValues['CurrStrippingVm3'];
     Selic:= FieldValues['CurrOreVm3'];
     RocksVm3:= Selic + Stripping;
@@ -783,13 +786,13 @@ begin
   //
 end;
 
-procedure TfmResultEconomEffect.ToExcel(sg: Variant; colcount, rowcount: integer);
+function TfmResultEconomEffect.ToExcel(sg: Variant; colcount, rowcount: integer): boolean;
 var
   doc: TExcelDocEconomEffect;
   filename: string;
-  isSaved: boolean;
 begin
   doc:= TExcelDocEconomEffect.Create();
+  Result:= false;
   with doc do
     try
       //
@@ -801,7 +804,7 @@ begin
       saveas.FilterIndex := 1;
       if saveas.Execute then
         filename:= saveas.FileName;
-      SaveWorkBook(filename, 1)
+      Result:= SaveWorkBook(filename, 1)
     finally
       Destroy;
     end;
@@ -810,18 +813,25 @@ end;
 procedure TfmResultEconomEffect.btnDelVariantClick(Sender: TObject);
 var
   _qry: TADOQuery;
+  _question: integer;
 begin
-  _qry:= TADOQuery.Create(nil);
-  _qry.Connection:= fmDM.ADOConnection;
-  with _qry do
+  _question:= MessageDlg(DO_YOU_SURE_TO_DELL, mtConfirmation, mbOKCancel, 0);
+  if _question = mrOK then
   begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= DELETE_VARIANT_BY_ID;
-    Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
-    ExecSQL;
-    Close;
-    Free;
+    _qry:= TADOQuery.Create(nil);
+    _qry.Connection:= fmDM.ADOConnection;
+    with _qry do
+      try
+        Close;
+        SQL.Clear;
+        SQL.Text:= DELETE_VARIANT_BY_ID;
+        Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
+        ExecSQL;
+        MessageBox(0, PAnsiChar(DELL_VARIANT_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK);
+      finally
+        Close;
+        Free;
+      end;
   end;
   OpenVariants;
 end;
@@ -829,24 +839,39 @@ end;
 procedure TfmResultEconomEffect.actSetBaseVariantExecute(Sender: TObject);
 var
   _qry: TADOQuery;
+  _question: integer;
 begin
-  _qry:= TADOQuery.Create(nil);
-  _qry.Connection:= fmDM.ADOConnection;
-  with _qry do
+  _question:= MessageDlg(DO_YOU_SURE_TO_SET_BASE_VARIANT, mtConfirmation, mbOKCancel, 0);
+  if _question = mrOk then
   begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= UPDATE_VARIANTS_TO_OFF;
-    ExecSQL;
-    Close;
-    SQL.Clear;
-    SQL.Text:= UPDATE_NEW_BASE_VARIANT;
-    Parameters.ParamByName('NewId_ResultVariant').Value:= _currentVariant;
-    ExecSQL;
-    Close;
-    Free;
+    _qry:= TADOQuery.Create(nil);
+    _qry.Connection:= fmDM.ADOConnection;
+    with _qry do
+      try
+        try
+          Close;
+          SQL.Clear;
+          SQL.Text:= UPDATE_VARIANTS_TO_OFF;
+          ExecSQL;
+        except
+          MessageBox(0, PAnsiChar(SQL_ERROR_UPDATE), PAnsiChar(APP_NAME), MB_OK);
+        end;
+        try
+          Close;
+          SQL.Clear;
+          SQL.Text:= UPDATE_NEW_BASE_VARIANT;
+          Parameters.ParamByName('NewId_ResultVariant').Value:= _currentVariant;
+          ExecSQL;
+          MessageBox(0, PAnsiChar(SET_BASE_VARIANT), PAnsiChar(APP_NAME), MB_OK)
+        except
+          MessageBox(0, PAnsiChar(SQL_ERROR_UPDATE), PAnsiChar(APP_NAME), MB_OK);
+        end;
+      finally
+        Close;
+        Free;
+      end;
+    OpenVariants;
   end;
-  OpenVariants;
 end;
 
 procedure TfmResultEconomEffect.dbgVariantDrawColumnCell(Sender: TObject;
@@ -875,6 +900,8 @@ var
   tmp:string;
   Vgm,Cstro,Crem,Pribil,UdelQtn,Rashot,UsEco,OriUsEco: double;
   _currentDate: string;
+  //
+  _isSaved: boolean;
   //----------------------------------------------------------------------------
   function getOpenpitId(openpitName: string): integer;
   var
@@ -1184,7 +1211,12 @@ begin
     for j:= 1 to VarArrayHighBound(data_to_excel, 2) do
       data_to_excel[i, j]:=_sg.Cells[j-1, i-1];
 
-  ToExcel(data_to_excel, colcount, rowcount);
+  _isSaved:= ToExcel(data_to_excel, colcount, rowcount);
+  if _isSaved then
+    MessageBox(0, PAnsiChar(SAVE_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK)
+  else
+    MessageBox(0, PAnsiChar(SAVE_IS_WARNING), PAnsiChar(APP_NAME), MB_OK);
+
 end;
 
 procedure TfmResultEconomEffect.btnSetLikeBaseClick(Sender: TObject);

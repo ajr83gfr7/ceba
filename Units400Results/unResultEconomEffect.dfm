@@ -1,8 +1,8 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 183
-  Top = 22
-  Width = 1169
-  Height = 689
+  Left = 717
+  Top = 0
+  Width = 1161
+  Height = 684
   Caption = 'actLoadVariant'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
   object Splitter1: TSplitter
     Left = 0
     Top = 0
-    Width = 1153
+    Width = 1145
     Height = 3
     Cursor = crVSplit
     Align = alTop
@@ -27,7 +27,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
     Left = 0
     Top = 3
     Width = 225
-    Height = 648
+    Height = 643
     Align = alLeft
     Caption = 'gbxVariant'
     TabOrder = 0
@@ -56,7 +56,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       Left = 2
       Top = 465
       Width = 221
-      Height = 181
+      Height = 176
       Align = alClient
       TabOrder = 1
       object Label47: TLabel
@@ -165,15 +165,15 @@ object fmResultEconomEffect: TfmResultEconomEffect
   object gbxValue: TGroupBox
     Left = 225
     Top = 3
-    Width = 928
-    Height = 648
+    Width = 920
+    Height = 643
     Align = alClient
     Caption = 'gbxValue'
     TabOrder = 1
     object gbxCebadan: TGroupBox
       Left = 2
       Top = 15
-      Width = 924
+      Width = 916
       Height = 394
       Align = alTop
       Caption = 'gbxCebadan'
@@ -618,7 +618,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       Left = 2
       Top = 409
       Width = 487
-      Height = 237
+      Height = 232
       Align = alLeft
       Caption = 'gbxInput'
       TabOrder = 1
@@ -747,8 +747,8 @@ object fmResultEconomEffect: TfmResultEconomEffect
     object gbxOutput: TGroupBox
       Left = 489
       Top = 409
-      Width = 437
-      Height = 237
+      Width = 429
+      Height = 232
       Align = alClient
       Caption = 'gbxOutput'
       TabOrder = 2

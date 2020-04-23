@@ -632,11 +632,11 @@ begin
   FProductivityStrippingCoef := 0.0;
   case cbProductivityStrippingCoefUnit.ItemIndex of
     0: if FProductivityMineralWealthQ1000tn>0.0 // в т/т
-       then FProductivityStrippingCoef := FProductivityStrippingQ1000tn/
-                                          FProductivityMineralWealthQ1000tn;
+       then FProductivityStrippingCoef := FProductivityStrippingQ1000tn/      //Производительность вскрыши, тыс.т
+                                          FProductivityMineralWealthQ1000tn;  //Производительность руды, тыс.т
     1: if FProductivityMineralWealthQ1000tn>0.0 // в м3/т
-       then FProductivityStrippingCoef := FProductivityStrippingV1000m3/
-                                          FProductivityMineralWealthQ1000tn;
+       then FProductivityStrippingCoef := FProductivityStrippingV1000m3/      //Производительность вскрыши, тыс.м3
+                                          FProductivityMineralWealthQ1000tn;  //Производительность руды, тыс.т
   end;{case}
   edProductivityStrippingCoef.Text := FormatFloat('#,##0.000',FProductivityStrippingCoef);
 end;{cbStrippingCoefChange}
