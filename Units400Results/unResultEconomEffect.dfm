@@ -1,8 +1,8 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 717
-  Top = 0
+  Left = 757
+  Top = 4
   Width = 1161
-  Height = 684
+  Height = 690
   Caption = 'actLoadVariant'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -27,7 +27,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
     Left = 0
     Top = 3
     Width = 225
-    Height = 643
+    Height = 649
     Align = alLeft
     Caption = 'gbxVariant'
     TabOrder = 0
@@ -49,14 +49,13 @@ object fmResultEconomEffect: TfmResultEconomEffect
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
       OnCellClick = dbgVariantCellClick
-      OnDrawDataCell = dbgVariantDrawDataCell
       OnDrawColumnCell = dbgVariantDrawColumnCell
     end
     object pnlVariant: TPanel
       Left = 2
       Top = 465
       Width = 221
-      Height = 176
+      Height = 182
       Align = alClient
       TabOrder = 1
       object Label47: TLabel
@@ -166,7 +165,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
     Left = 225
     Top = 3
     Width = 920
-    Height = 643
+    Height = 649
     Align = alClient
     Caption = 'gbxValue'
     TabOrder = 1
@@ -247,6 +246,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Width = 38
         Height = 13
         Caption = 'Label10'
+        Visible = False
       end
       object Label11: TLabel
         Left = 48
@@ -324,6 +324,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Width = 38
         Height = 13
         Caption = 'Label21'
+        Visible = False
       end
       object Label22: TLabel
         Left = 504
@@ -373,6 +374,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Width = 38
         Height = 13
         Caption = 'Label29'
+        Visible = False
       end
       object Label26: TLabel
         Left = 504
@@ -388,6 +390,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Height = 21
         TabOrder = 0
         Text = 'edEmploymentRatio'
+        Visible = False
       end
       object edResultPeriodCoef: TEdit
         Left = 328
@@ -556,6 +559,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Height = 21
         TabOrder = 21
         Text = 'edAVGTransKPD'
+        Visible = False
       end
       object edUdelTyres: TEdit
         Left = 784
@@ -612,13 +616,14 @@ object fmResultEconomEffect: TfmResultEconomEffect
         Height = 21
         TabOrder = 28
         Text = 'edOstat'
+        Visible = False
       end
     end
     object gbxInput: TGroupBox
       Left = 2
       Top = 409
       Width = 487
-      Height = 232
+      Height = 238
       Align = alLeft
       Caption = 'gbxInput'
       TabOrder = 1
@@ -748,7 +753,7 @@ object fmResultEconomEffect: TfmResultEconomEffect
       Left = 489
       Top = 409
       Width = 429
-      Height = 232
+      Height = 238
       Align = alClient
       Caption = 'gbxOutput'
       TabOrder = 2

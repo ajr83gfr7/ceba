@@ -134,8 +134,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure dbgVariantCellClick(Column: TColumn);
     procedure FormShow(Sender: TObject);
-    procedure dbgVariantDrawDataCell(Sender: TObject; const Rect: TRect;
-      Field: TField; State: TGridDrawState);
     procedure btnEnterClick(Sender: TObject);
     procedure btnCalcClick(Sender: TObject);
     procedure btnDelVariantClick(Sender: TObject);
@@ -146,14 +144,15 @@ type
     procedure btnSetLikeBaseClick(Sender: TObject);
   private
     _currentVariant: integer;
+    _variants: TList;
     _baseVariant: integer;
-    _currentParams: TEffectParams;
     procedure SelectBaseVariant;
     procedure OpenVariants();
+    function GetVariants: TList;
     procedure GetData();
-    procedure GetInputData();
     procedure SetView();
     function ToExcel(sg: Variant; colcount, rowcount: integer): boolean;
+    procedure Calc(_cp: TEffectParams);
   public
     { Public declarations }
   end;
@@ -180,8 +179,8 @@ end;
 
 procedure TfmResultEconomEffect.FormShow(Sender: TObject);
 begin
+  _variants:= GetVariants;
   OpenVariants();
-  _currentParams:= TEffectParams.Create;
   //
   GetData();
   SetView();
@@ -189,10 +188,16 @@ end;
 
 procedure TfmResultEconomEffect.FormClose(Sender: TObject;
   var Action: TCloseAction);
+var
+  i: integer;
 begin
   qryVariants.Close;
   qryResultVariants.Close;
-  _currentParams.Destroy;
+  for i:= 0 to _variants.Count - 1 do
+  begin
+    TEffectParams(_variants[i]).Destroy;
+    _variants[i]:= nil;
+  end;
 end;
 
 procedure TfmResultEconomEffect.dbgVariantCellClick(Column: TColumn);
@@ -200,149 +205,11 @@ begin
   GetData();
 end;
 
-procedure TfmResultEconomEffect.dbgVariantDrawDataCell(Sender: TObject;
-  const Rect: TRect; Field: TField; State: TGridDrawState);
-begin
-//  GetData();
-end;
-
 procedure TfmResultEconomEffect.GetData;
 var
-  STyres, UdelQtn, KVsry, Selic, RocksVm3,
-  ResultPeriodCoef, ParamsShiftDuration, Vgm,
-  Produk, Cstro, StoiPrib, Crem, Pribil,
-  SenaProd, ZatSer, Rashot, UsEco, OtnoEcom,
-  Vn, QtnGM, OriUsEco, ProizPeriod, Salary,
-  UdelTyres, Stripping, KPDs, ostat: Double;
-  CountUnloadingPunkt: integer;
-  //
-  dbl: double;
-  int: integer;
-  str: string;
-  //
-  _openpitId: integer;
-  _nameVariant: string;
+  _currentParams: TEffectParams;
+  i: integer;
 
-  function getOpenpitId(openpitName: string): integer;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= 0;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
-      try
-        Close;
-        SQL.Clear;
-        SQL.Text:= SELECT_OPENPIT_BY_NAME;
-        Parameters.ParamByName('OpenpitName').Value:= openpitName;
-        Open;
-        Result:= FieldValues['Id_Openpit'];
-        Close;
-        Free;
-      except
-        MessageBox(0, PAnsiChar(format(NOT_FOUND_ID_OPENPIT, [openpitName])), PAnsiChar(APP_NAME), MB_OK);
-        //MessageDlg('Confirmation', mtError, mbOK, 0);
-      end;
-  end;
-  function getDataByOpenpit(_sql:string; idOpenpit: integer): double;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= 0;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
-    begin
-      Close;
-      SQL.Clear;
-      SQL.Text:= _sql;
-      Parameters.ParamByName('Id_Openpit').Value:= idOpenpit;
-      Open;
-      Result:= FieldValues['result'];
-      Close;
-      Free;
-    end;
-  end;
-  function getKPDs(idOpenpit: integer): double;
-  begin
-    Result:= getDataByOpenpit(SELECT_TRANSMISSION_KPD, idOpenpit);
-  end;
-  function getCostEquipmqnt(idOpenpit: integer): double;
-  begin
-    Result:= getDataByOpenpit(SELECT_COST_OF_EQUIPMENT, idOpenpit);
-  end;
-  function getCountOfUnloadingPunkts(idOpenpit:integer): integer;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= 0;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
-    begin
-      Close;
-      SQL.Clear;
-      SQL.Text:= SELECT_COUNT_OF_UNLOADING_PUNKTS;
-      Parameters.ParamByName('Id_Openpit').Value:= idOpenpit;
-      Open;
-      Result:= FieldValues['result'];
-      Close;
-      Free;
-    end;
-  end;
-  function getPlanRocks(idOpenpit:integer): double;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= 0;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
-      try
-        Close;
-        SQL.Clear;
-        SQL.Text:= SELECT_PLAN_ROCKS;
-        Parameters.ParamByName('Id_Openpit').Value:= idOpenpit;
-        Open;
-        Result:= FieldValues['result'];
-        Close;
-        SQL.Clear;
-        SQL.Text:= UPDATE_PLAN_ROCKS;
-        Parameters.ParamByName('PlannedRockVolumeCm').Value:= Result;
-        Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
-        ExecSQL;
-      finally
-        Close;
-        Free;
-      end;
-  end;
-  function getBalanceAutos(): double;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= 0;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
-      try
-        Close;
-        SQL.Clear;
-        SQL.Text:= SELECT_BALANCE_AUTOS;
-        Open;
-        if FieldValues['result'] <> Null then
-          Result:= FieldValues['result'];
-        Close;
-        SQL.Clear;
-        SQL.Text:= UPDATE_BALANCE_AUTOS;
-        Parameters.ParamByName('TruckCostCtg').Value:= Result;
-        Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
-        ExecSQL;
-      finally
-        Close;
-        Free;
-      end;
-  end;
   procedure SetBaseVariantExpenesCtg(currentVariant: integer);
   var
     _qry:TADOQuery;
@@ -369,123 +236,18 @@ var
       Free;
     end;
   end;
-  function getResultByTonneOfOre(Selic, RocksVm3: double): double;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= (Selic * 100) / RocksVm3;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
-      try
-        Close;
-        SQL.Clear;
-        SQL.Text:= UPDATE_RESULT_BY_TONNE_OF_ORE;
-        Parameters.ParamByName('ProductOutPutPercent').Value:= Result;
-        Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
-        ExecSQL;
-      finally
-        Close;
-        Free;
-      end;
-  end;
 begin
+  _currentParams:= nil;
   _currentVariant:= dbgVariant.DataSource.DataSet.FieldValues['Id_ResultVariant'];
-  _currentParams.Clear;
+  for i:= 0 to _variants.Count - 1 do
+    if TEffectParams(_variants[i]).Id = _currentVariant then
+      _currentParams:= TEffectParams(_variants[i]);
 
   SetBaseVariantExpenesCtg(_currentVariant);
-  with qryResultVariants do
+
+  if _currentParams <> nil then
   begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= SELECT_FROM_RESULT_VARIANT;
-    Parameters.ParamByName('IdVariant').Value:= _currentVariant;
-    Open;
-
-    _nameVariant:= FieldValues['Variant'];
-    _openpitId:= getOpenpitId(_nameVariant);
-
-    //--------------------------------------------------------------------------
-    Selic:= FieldValues['CurrOreVm3'];
-    _currentParams.Add(TFloatParam.Create('Selic', Selic, CatSebadan));
-    Stripping:= FieldValues['CurrStrippingVm3'];
-    RocksVm3:= Selic + Stripping;
-    _currentParams.Add(TFloatParam.Create('RocksVm3', RocksVm3, CatSebadan));
-    ResultPeriodCoef:= FieldValues['ShiftKweek'];
-    _currentParams.Add(TFloatParam.Create('ResultPeriodCoef', ResultPeriodCoef, CatSebadan));
-    ProizPeriod:= RocksVm3 * 2 * 365 * ResultPeriodCoef;
-    _currentParams.Add(TFloatParam.Create('ProizPeriod', ProizPeriod, CatSebadan));
-    ParamsShiftDuration:= FieldValues['ShiftTmin'];
-    _currentParams.Add(TFloatParam.Create('ParamsShiftDuration', ParamsShiftDuration, CatSebadan));
-    //TotalCostsSummary
-    dbl:= FieldValues['BaseVariantExpenesCtg'] +
-          FieldValues['ServiceExpensesCtg'] +
-          FieldValues['EconomExpensesCtg'];
-    _currentParams.Add(TFloatParam.Create('TotalCostsSummary', dbl, CatSebadan));
-    //Удельные текущие затраты по горной массе, тенге
-    UdelQtn:= (FieldValues['AutosWorkSumGxCtg'] + FieldValues['AutosWorkSumTyresCtg'] +
-              FieldValues['AutosWorkSparesCtg'] + FieldValues['AutosWorkMaterialsCtg'] +
-              FieldValues['AutosWorkMaintenancesCtg'] + FieldValues['AutosWorkSalariesCtg'] +
-              FieldValues['AutosWaitingSumGxCtg'] + FieldValues['AutosWaitingSparesCtg'] +
-              FieldValues['AutosWaitingMaterialsCtg'] + FieldValues['AutosWaitingMaintenancesCtg'] +
-              FieldValues['AutosWaitingSalariesCtg'] + FieldValues['AutosAmortizationCtg'] +
-              FieldValues['BlocksRepairCtg'] + FieldValues['BlocksAmortizationCtg'] +
-              FieldValues['ExcavatorsWorkSumGxCtg'] + FieldValues['ExcavatorsWorkMaterialsCtg'] +
-              FieldValues['ExcavatorsWorkUnAccountedCtg'] + FieldValues['ExcavatorsWorkSalariesCtg'] +
-              FieldValues['ExcavatorsWaitingSumGxCtg'] + FieldValues['ExcavatorsWaitingMaterialsCtg'] +
-              FieldValues['ExcavatorsWaitingUnAccountedCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'] +
-              FieldValues['ExcavatorsAmortizationCtg'])
-              /RocksVm3;
-    _currentParams.Add(TFloatParam.Create('UdelQtn', UdelQtn, CatSebadan));
-    Salary:= FieldValues['AutosWorkSalariesCtg'] + FieldValues['AutosWaitingSalariesCtg'] +
-             FieldValues['ExcavatorsWorkSalariesCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'];
-    _currentParams.Add(TFloatParam.Create('Salary', Salary, CatSebadan));
-    KVsry:= FieldValues['Ks'];
-    _currentParams.Add(TFloatParam.Create('KVsry', KVsry, CatSebadan));
-    dbl:= FieldValues['BlocksEmploymentCoef'];
-    _currentParams.Add(TFloatParam.Create('EmploymentRatio', dbl, CatSebadan));
-    dbl:= FieldValues['AutosAvgTimeUsingCoef'];
-    _currentParams.Add(TFloatParam.Create('WorkTimeUsingRatio', dbl, CatSebadan));
-    int:= FieldValues['ExcavatorsExcavatorsCount0'];
-    _currentParams.Add(TIntParam.Create('ShiftExcavators', int, CatSebadan));
-    dbl:= FieldValues['ExcavatorsGxWork'] +
-          FieldValues['ExcavatorsGxWaiting'];
-    _currentParams.Add(TFloatParam.Create('Elec', dbl, CatSebadan));
-    dbl:= FieldValues['ExcavatorsGxWork'];
-    _currentParams.Add(TFloatParam.Create('Electr', dbl, CatSebadan));
-    dbl:= FieldValues['ExcavatorsAmortizationCtg'];
-    _currentParams.Add(TFloatParam.Create('ExcavsCostsSummary', dbl, CatSebadan));
-    CountUnloadingPunkt:= getCountOfUnloadingPunkts(_openpitId);
-    _currentParams.Add(TIntParam.Create('CountUnLodingPunkts', CountUnloadingPunkt, CatSebadan));
-    dbl:= FieldValues['BlocksAmortizationCtg'];
-    _currentParams.Add(TFloatParam.Create('BlocksCostsSummary', dbl, CatSebadan));
-    int:= FieldValues['BlocksLm'];
-    _currentParams.Add(TIntParam.Create('BLength', int, CatSebadan));
-    dbl:= FieldValues['BlocksRepairCtg'];
-    _currentParams.Add(TFloatParam.Create('Zatrat', dbl, CatSebadan));
-    int:= FieldValues['AutosAutosCount0'];
-    _currentParams.Add(TIntParam.Create('ShiftAutos', int, CatSebadan));
-    KPDs:= getKPDs(_openpitId);
-    _currentParams.Add(TFloatParam.Create('AVGTransKPD', KPDs, CatSebadan));
-    UdelTyres:= FieldValues['AutosUsedTyresCount'] / RocksVm3;
-    _currentParams.Add(TFloatParam.Create('UdelTyres', UdelTyres, CatSebadan));
-    dbl:= 0.0;
-    _currentParams.Add(TFloatParam.Create('StoiTyre', dbl, CatSebadan));
-    STyres:= FieldValues['AutosTyresCtg'];
-    _currentParams.Add(TFloatParam.Create('STyres', STyres, CatSebadan));
-    dbl:= FieldValues['AutosGxCtg'];
-    _currentParams.Add(TFloatParam.Create('StoiGx', dbl, CatSebadan));
-    dbl:= FieldValues['AutosUdGx_gr_tkm'];
-    _currentParams.Add(TFloatParam.Create('UdelGx', dbl, CatSebadan));
-    dbl:= FieldValues['AutosGxWaiting'] +
-          FieldValues['AutosGxWork'];
-    _currentParams.Add(TFloatParam.Create('Gx', dbl, CatSebadan));
-    dbl:= FieldValues['AutosAmortizationCtg'];
-    _currentParams.Add(TFloatParam.Create('AutosCostsSummary', dbl, CatSebadan));
-    ostat:= getCostEquipmqnt(_openpitId);
-    _currentParams.Add(TFloatParam.Create('Ostat', ostat, CatSebadan));
-
-    //----------------------------------------------*****************-----------
+    //-----------------------------------------------------
     edRocksVm3.Text:= _currentParams.ValueOf['RocksVm3'];
     edProizPeriod.Text:= _currentParams.ValueOf['ProizPeriod'];
     edSelic.Text:= _currentParams.ValueOf['Selic'];
@@ -494,8 +256,8 @@ begin
     edUdelQtn.Text:= _currentParams.ValueOf['UdelQtn'];
     edSalary.Text:= _currentParams.ValueOf['Salary'];
     edKVsry.Text:= _currentParams.ValueOf['KVsry'];
-    edResultPeriodCoef.Text:= _currentParams.ValueOf['ResultPeriodCoef'];//ShiftKweek
-    edEmploymentRatio.Text:= _currentParams.ValueOf['EmploymentRatio'];
+    edResultPeriodCoef.Text:= _currentParams.ValueOf['ResultPeriodCoef'];
+    //edEmploymentRatio.Text:= _currentParams.ValueOf['EmploymentRatio'];
     edWorkTimeUsingRatio.Text:= _currentParams.ValueOf['WorkTimeUsingRatio'];
     edShiftExcavators.Text:= _currentParams.ValueOf['ShiftExcavators'];
     edElec.Text:= _currentParams.ValueOf['Elec'];
@@ -507,58 +269,30 @@ begin
     edBLength.Text:= _currentParams.ValueOf['BLength'];
     edZatrat.Text:= _currentParams.ValueOf['Zatrat'];
     edShiftAutos.Text:= _currentParams.ValueOf['ShiftAutos'];
-    edAVGTransKPD.Text:= _currentParams.ValueOf['AVGTransKPD'];
-    edUdelTyres.Text:= Format('%.6f',[TFloatParam(_currentParams.Names['UdelTyres']).Value]);
+//    edAVGTransKPD.Text:= _currentParams.ValueOf['AVGTransKPD'];
+    edUdelTyres.Text:= _currentParams.ValueOf['UdelTyres'];
     edStoiTyre.Text:= _currentParams.ValueOf['StoiTyre'];
     edSTyres.Text:= _currentParams.ValueOf['STyres'];
     edStoiGx.Text:= _currentParams.ValueOf['StoiGx'];
     edUdelGx.Text:= _currentParams.ValueOf['UdelGx'];
     edGx.Text:= _currentParams.ValueOf['Gx'];
     edAutosCostsSummary.Text:= _currentParams.ValueOf['AutosCostsSummary'];
-    edOstat.Text := _currentParams.ValueOf['Ostat'];
-
+//    edOstat.Text := _currentParams.ValueOf['Ostat'];
     //--------------------------------------------------------------------------
-    Produk:= FieldValues['ProductOutPutPercent'];
-    if Produk = 0 then
-      Produk:= getResultByTonneOfOre(Selic, RocksVm3);
-    edProduk.Text:= Format('%.3f',[Produk]);
-    //Oaia iaiie oiiiu i?iaoeoa, oun.oa.
-    SenaProd:= FieldValues['ProductPriceCtg'];
-    edSenaProd.Text:= Format('%.3f',[SenaProd]);
-    edStoiGTR.Text := Format('%.3f',[Double(FieldValues['MTWorkByScheduleCtg'])]);
-    //Noieiinou i?eia?aoaaiiai aaoinaiinaaea, oun.oa.
-    StoiPrib:= FieldValues['TruckCostCtg'];
-    if StoiPrib = 0 then
-      StoiPrib:= getBalanceAutos();
-    edStoiPrib.Text := Format('%.3f',[StoiPrib]);
-    //Cao?aou ia na?aeniia ianeo?eaaiea, oun.oa
-    ZatSer:= FieldValues['ServiceExpensesCtg'];
-    edZatSer.Text := Format('%.3f',[ZatSer]);
-    edBaseVar.Text := Format('%.3f',[Double(FieldValues['BaseVariantExpenesCtg'])]);
-    //Caieaie?iaaiiue iauai AI ca ia?eia, oun.i3
-    QtnGM:= FieldValues['PlannedRockVolumeCm'];
-    if QtnGM = 0 then
-      QtnGM:= getPlanRocks(_openpitId);
-    edQtnGM.Text := Format('%.3f',[QtnGM]);
+    edProduk.Text:= _currentParams.ValueOf['Produk'];
+    edSenaProd.Text:= _currentParams.ValueOf['SenaProd'];
+    edStoiGTR.Text:= _currentParams.ValueOf['StoiGTR'];
+    edStoiPrib.Text:= _currentParams.ValueOf['StoiPrib'];
+    edZatSer.Text:= _currentParams.ValueOf['ZatSer'];
+    edBaseVar.Text:= _currentParams.ValueOf['BaseVar'];
+    edQtnGM.Text:= _currentParams.ValueOf['QtnGM'];
     //--------------------------------------------------------------------------
-    Vgm:= ((1440 / ParamsShiftDuration) * 365 * ResultPeriodCoef) * RocksVm3 * 1000;
-    {Прочие дополнительные единовременные расходы на строительство автодорог и железнодорожных
-    путей, приобретение нового оборудования, строительство дополнительных съездов и т.д., млн.тенге}
-    Cstro:= StoiPrib * 1000;
-    {Сумма затрат связанная с текущими ремонтами автосамосвалов}
-    Crem := ZatSer * 1000;
-    Pribil:= ((Vgm * Selic * Produk * SenaProd)/(( 1 + KVsry) * 100)) / 1000000;
-    edPribil.Text := Format('%.6f',[Pribil]);
-    Rashot:= (Vgm * UdelQtn + STyres + Cstro + Crem) / 1000000;
-    edRashot.Text := Format('%.6f',[Rashot]);
-    UsEco:= ((Vgm * Selic * Produk * SenaProd)/((1 + KVsry) * 100)-(Vgm * UdelQtn + STyres + Cstro + Crem))  / 1000000;
-    edUsEcom.Text := Format('%.6f',[UsEco]);
-    edBaseVari.Text:= Format('%.6f',[0.0]);
-    OtnoEcom:= 0;
-    edOtnoEcom.Text := Format('%.6f',[OtnoEcom]);
-    Vn:= QtnGM * 1000;
-    OriUsEco:= (Vn * UdelQtn + Vn * (STyres / Vgm) + Cstro + Crem) / 1000000;
-    edOriUsEcom.Text := Format('%.6f',[OriUsEco]);
+    edPribil.Text := _currentParams.ValueOf['Pribil'];
+    edRashot.Text := _currentParams.ValueOf['Rashot'];
+    edUsEcom.Text := _currentParams.ValueOf['UsEcom'];
+    edBaseVari.Text:= _currentParams.ValueOf['BaseVari'];
+    edOtnoEcom.Text := _currentParams.ValueOf['OtnoEcom'];
+    edOriUsEcom.Text := _currentParams.ValueOf['OriUsEcom'];
   end;
 end;
 
@@ -609,8 +343,9 @@ begin
   //scrol bars
   TDrawGrid(dbgVariant).ScrollBars := ssNone;//ssVertical; //ssHorizontal, ssBoth, ssNone.
   //
-//  DBGrid1.Canvas.Brush.Color
+  //DBGrid1.Canvas.Brush.Color
   _currentVariant:= dbgVariant.DataSource.DataSet.FieldValues['Id_ResultVariant'];
+  //
   SelectBaseVariant;
 end;
 
@@ -637,7 +372,7 @@ begin
   Label18.Caption:= LENGTH_OF_ROAD;
   Label19.Caption:= COST_OF_ROAD_SUPPORT;
   Label20.Caption:= COUNT_OF_AUTOS;
-  Label21.Caption:= KPD_AUTO_TRANSMISSION;
+//  Label21.Caption:= KPD_AUTO_TRANSMISSION;
   Label22.Caption:= RASHOD_TYRES;
   Label23.Caption:= COST_OF_1TYRE;
   Label24.Caption:= COST_ON_TYRES;
@@ -645,7 +380,7 @@ begin
   Label26.Caption:= RASHOD_GSM;
   Label27.Caption:= RASHOD_GSM_FOR_LITER;
   Label28.Caption:= SUMCOST_OF_AUTOS;
-  Label29.Caption:= OSTAT_COST;
+//  Label29.Caption:= OSTAT_COST;
 
   Label30.Caption:= PRODUCT_FROM_1TONNA;
   Label31.Caption:= PRICE_FOR_1TONNA;
@@ -720,91 +455,55 @@ end;
 
 procedure TfmResultEconomEffect.btnCalcClick(Sender: TObject);
 var
-  Vgm, Cstro, Crem, Pribil, Rashot, UsEco, OtnoEcom, Vn, OriUsEco: double;
-  ParamsShiftDuration, ResultPeriodCoef, RocksVm3, StoiPrib, ZatSer, Stripping,
-  Selic, Produk, SenaProd, KVsry, UdelQtn, STyres, QtnGM: double;
+  i: integer;
+  _currentParams: TEffectParams;
 begin
-  with qryResultVariants do
-  begin
-    ParamsShiftDuration:= FieldValues['ShiftTmin'];
-    ResultPeriodCoef:= FieldValues['ShiftKweek'];
-    Stripping:= FieldValues['CurrStrippingVm3'];
-    Selic:= FieldValues['CurrOreVm3'];
-    RocksVm3:= Selic + Stripping;
-    StoiPrib:= FieldValues['TruckCostCtg'];
-    ZatSer:= FieldValues['ServiceExpensesCtg'];
-    Produk:= FieldValues['ProductOutPutPercent'];
-    SenaProd:= FieldValues['ProductPriceCtg'];
-    KVsry:= FieldValues['Ks'];
-    UdelQtn:= (FieldValues['AutosWorkSumGxCtg'] + FieldValues['AutosWorkSumTyresCtg'] +
-              FieldValues['AutosWorkSparesCtg'] + FieldValues['AutosWorkMaterialsCtg'] +
-              FieldValues['AutosWorkMaintenancesCtg'] + FieldValues['AutosWorkSalariesCtg'] +
-              FieldValues['AutosWaitingSumGxCtg'] + FieldValues['AutosWaitingSparesCtg'] +
-              FieldValues['AutosWaitingMaterialsCtg'] + FieldValues['AutosWaitingMaintenancesCtg'] +
-              FieldValues['AutosWaitingSalariesCtg'] + FieldValues['AutosAmortizationCtg'] +
-              FieldValues['BlocksRepairCtg'] + FieldValues['BlocksAmortizationCtg'] +
-              FieldValues['ExcavatorsWorkSumGxCtg'] + FieldValues['ExcavatorsWorkMaterialsCtg'] +
-              FieldValues['ExcavatorsWorkUnAccountedCtg'] + FieldValues['ExcavatorsWorkSalariesCtg'] +
-              FieldValues['ExcavatorsWaitingSumGxCtg'] + FieldValues['ExcavatorsWaitingMaterialsCtg'] +
-              FieldValues['ExcavatorsWaitingUnAccountedCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'] +
-              FieldValues['ExcavatorsAmortizationCtg'])
-              /RocksVm3;
-    STyres:= FieldValues['AutosTyresCtg'];
-    QtnGM:= FieldValues['PlannedRockVolumeCm'];
-  end;
+  _currentParams:= nil;
+  _currentVariant:= dbgVariant.DataSource.DataSet.FieldValues['Id_ResultVariant'];
+  for i:= 0 to _variants.Count - 1 do
+    if TEffectParams(_variants[i]).Id = _currentVariant then
+      _currentParams:= TEffectParams(_variants[i]);
 
-  //Годовой объем извлекаемой горной массы, получаемый по результатам моделирования, тыс.м3
-  Vgm:= ((1440 / ParamsShiftDuration) * 365 * ResultPeriodCoef) * RocksVm3 * 1000;
-  //Прочие дополнительные единовременные расходы на строительство автодорог и железнодорожных
-  //путей, приобретение нового оборудования, строительство дополнительных съездов и т.д., млн.тенге
-  Cstro:= StoiPrib * 1000;
-  //Сумма затрат связанная с текущими ремонтами автосамосвалов
-  Crem := ZatSer * 1000;
-  //Прибыль, млн.тг
-  Pribil:= ((Vgm * Selic * Produk * SenaProd)/(( 1 + KVsry) * 100)) / 1000000;
-  //Затраты, млн.тг
-  Rashot:= (Vgm * UdelQtn + STyres + Cstro + Crem) / 1000000;
-  //Условный экономический эффект, млн.тг
-  UsEco:= ((Vgm * Selic * Produk * SenaProd)/((1 + KVsry) * 100)-(Vgm * UdelQtn + STyres + Cstro + Crem))  / 1000000;
-  //Относительный экономический эффект, млн.тг
-  OtnoEcom:= 0;
-  //Объем горной массы запланированный к извлечению в рассматриваемом периоде, тыс.м3
-  Vn:= QtnGM * 1000;
-  //Объемно ориентированный условный экономический эффект, млн.тг
-  OriUsEco:= (Vn * UdelQtn + Vn * (STyres / Vgm) + Cstro + Crem) / 1000000;
-
-  edPribil.Text := Format('%.6f',[Pribil]);
-  edRashot.Text := Format('%.6f',[Rashot]);
-  edUsEcom.Text := Format('%.6f',[UsEco]);
-  edBaseVari.Text:= Format('%.6f',[0.0]);
-  edOtnoEcom.Text := Format('%.6f',[OtnoEcom]);
-  edOriUsEcom.Text := Format('%.6f',[OriUsEco]);
-end;
-
-procedure TfmResultEconomEffect.GetInputData;
-begin
-  //
+  if _currentParams <> nil then
+    try
+      Calc(_currentParams);
+      edPribil.Text := _currentParams.ValueOf['Pribil'];
+      edRashot.Text := _currentParams.ValueOf['Rashot'];
+      edUsEcom.Text := _currentParams.ValueOf['UsEcom'];
+      edBaseVari.Text:= _currentParams.ValueOf['BaseVari'];
+      edOtnoEcom.Text := _currentParams.ValueOf['OtnoEcom'];
+      edOriUsEcom.Text := _currentParams.ValueOf['OriUsEcom'];
+    except
+      MessageBox(0, PAnsiChar(IS_ERROR), PAnsiChar(APP_NAME), MB_OK);
+    end;
 end;
 
 function TfmResultEconomEffect.ToExcel(sg: Variant; colcount, rowcount: integer): boolean;
 var
   doc: TExcelDocEconomEffect;
-  filename: string;
+  _filename: string;
+  saver: TSaveDialog;
 begin
-  doc:= TExcelDocEconomEffect.Create();
   Result:= false;
+
+  saver:= TSaveDialog.Create(nil);
+  with saver do
+    try
+      InitialDir := GetCurrentDir;
+      Filter := '*.xls|*.xlsx';
+      DefaultExt := 'xls';
+      FilterIndex := 1;
+      if Execute then
+        _filename:= FileName;
+    finally
+      Destroy;
+    end;
+
+  doc:= TExcelDocEconomEffect.Create();
   with doc do
     try
-      //
       SetData(sg, colcount, rowcount);
-      //
-      saveas.InitialDir := GetCurrentDir;
-      saveas.Filter := '*.xls|*.xlsx';
-      saveas.DefaultExt := 'xls';
-      saveas.FilterIndex := 1;
-      if saveas.Execute then
-        filename:= saveas.FileName;
-      Result:= SaveWorkBook(filename, 1)
+      Result:= SaveWorkBook(_filename, 1);
     finally
       Destroy;
     end;
@@ -886,22 +585,135 @@ end;
 procedure TfmResultEconomEffect.btnPrintToExcelClick(Sender: TObject);
 var
   _sg: TStringGrid;
-  _sg_input: TStringGrid;
-  _sg_output: TStringGrid;
-  _qry: TADOQuery;
   i, j: integer;
-  VIndex: integer;
-  colcount: integer;
-  rowcount: integer;
-  data_to_excel: Variant;
-  _openpitId: integer;
+  _colcount: integer;
+  _rowcount: integer;
   _nameVariant: string;
-  //
-  tmp:string;
-  Vgm,Cstro,Crem,Pribil,UdelQtn,Rashot,UsEco,OriUsEco: double;
   _currentDate: string;
   //
   _isSaved: boolean;
+  data_to_excel: Variant;
+  //
+  _currentParams: TEffectParams;
+begin
+  _sg:= TStringGrid.Create(nil);
+  _colcount:= _variants.Count;
+  _rowcount:= 0;
+  with _sg do
+    try
+      RowCount:= _rowcount;
+      ColCount:= _colcount;
+      for i:= 0 to _colcount - 1 do
+      begin
+        _currentParams:= TEffectParams(_variants[i]);
+        _rowcount:= _currentParams.Count+1;
+        _nameVariant:= _currentParams.Name;
+        _currentDate:= _currentParams.Date;
+        j:= 0;
+
+        Cells[i, j]:= format('%s'+#13#10+'%s', [_nameVariant, _currentDate]);inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['RocksVm3'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ProizPeriod'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Selic'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ParamsShiftDuration'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['TotalCostsSummary'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['UdelQtn'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Salary'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['KVsry'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ResultPeriodCoef'];inc(j);
+//        Cells[i, j]:= _currentParams.ValueOf['EmploymentRatio'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['WorkTimeUsingRatio'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ShiftExcavators'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Elec'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Electr'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ExcavsCostsSummary'];inc(j);
+        //
+        Cells[i, j]:= _currentParams.ValueOf['CountUnLodingPunkts'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['BlocksCostsSummary'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['BLength'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Zatrat'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ShiftAutos'];inc(j);
+//        Cells[i, j]:= _currentParams.ValueOf['AVGTransKPD'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['UdelTyres'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['StoiTyre'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['STyres'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['StoiGx'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['UdelGx'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Gx'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['AutosCostsSummary'];inc(j);
+//        Cells[i, j]:= _currentParams.ValueOf['Ostat'];inc(j);
+        //
+        Cells[i, j]:= _currentParams.ValueOf['Produk'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['SenaProd'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['StoiGTR'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['StoiPrib'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['ZatSer'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['BaseVar'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['QtnGM'];inc(j);
+        //
+        Cells[i, j]:= _currentParams.ValueOf['Pribil'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Rashot'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['UsEcom'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['BaseVari'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['OtnoEcom'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['OriUsEcom'];inc(j);
+      end;
+
+
+      data_to_excel:= VarArrayCreate([1, _rowcount, 1, _colcount],varVariant);
+      for i:= 1 to VarArrayHighBound(data_to_excel, 1) do
+        for j:= 1 to VarArrayHighBound(data_to_excel, 2) do
+          data_to_excel[i, j]:= Cells[j-1, i-1];
+
+      _isSaved:= ToExcel(data_to_excel, _colcount, _rowcount);
+      if _isSaved then
+        MessageBox(0, PAnsiChar(SAVE_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK)
+      else
+        MessageBox(0, PAnsiChar(SAVE_IS_WARNING), PAnsiChar(APP_NAME), MB_OK);
+
+    finally
+      Destroy;
+    end;
+
+end;
+
+procedure TfmResultEconomEffect.btnSetLikeBaseClick(Sender: TObject);
+var
+  _qry: TADOQuery;
+begin
+  _qry:= TADOQuery.Create(nil);
+  _qry.Connection:= fmDM.ADOConnection;
+  with _qry do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Text:= SELECT_BASE_VARIANT;
+    Parameters.ParamByName('Id_ResultVariant').Value:= _baseVariant;
+    Open;
+
+    edProduk.Text:= Format('%.3f',[Double(FieldValues['ProductOutPutPercent'])]);
+    edSenaProd.Text:= Format('%.3f',[Double(FieldValues['ProductPriceCtg'])]);
+    edStoiGTR.Text:= Format('%.3f',[Double(FieldValues['MTWorkByScheduleCtg'])]);
+    edStoiPrib.Text:= Format('%.3f',[Double(FieldValues['TruckCostCtg'])]);
+    edZatSer.Text:= Format('%.3f',[Double(FieldValues['ServiceExpensesCtg'])]);
+    edBaseVar.Text:= Format('%.3f',[Double(FieldValues['BaseVariantExpenesCtg'])]);
+    edQtnGM.Text:= Format('%.3f',[Double(FieldValues['PlannedRockVolumeCm'])]);
+
+    Close;
+    Free;
+  end;
+end;
+
+function TfmResultEconomEffect.GetVariants: TList;
+var
+  _qry: TADOQuery;
+  _params: TEffectParams;
+  //
+  dbl: double;
+  int: integer;
+  str: string;
+  //
+  d0, d1, d2: double;
   //----------------------------------------------------------------------------
   function getOpenpitId(openpitName: string): integer;
   var
@@ -968,6 +780,26 @@ var
       Free;
     end;
   end;
+  function getResultByTonneOfOre(Selic, RocksVm3: double): double;
+  var
+    _qry: TADOQuery;
+  begin
+    Result:= (Selic * 100) / RocksVm3;
+    _qry:= TADOQuery.Create(nil);
+    _qry.Connection:= fmDM.ADOConnection;
+    with _qry do
+      try
+        Close;
+        SQL.Clear;
+        SQL.Text:= UPDATE_RESULT_BY_TONNE_OF_ORE;
+        Parameters.ParamByName('ProductOutPutPercent').Value:= Result;
+        Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
+        ExecSQL;
+      finally
+        Close;
+        Free;
+      end;
+  end;
   function getPlanRocks(idOpenpit:integer): double;
   var
     _qry: TADOQuery;
@@ -1020,230 +852,200 @@ var
         Free;
       end;
   end;
-  procedure SetBaseVariantExpenesCtg(currentVariant: integer);
-  var
-    _qry:TADOQuery;
-    _cost_GTR_of_base: double;
-  begin
+begin
+  Result:= TList.Create;
   _qry:= TADOQuery.Create(nil);
   _qry.Connection:= fmDM.ADOConnection;
   with _qry do
     try
-      Close;
-      SQL.Clear;
-      SQL.Text:= SELECT_COST_GTR_OF_BASE;
-      Parameters.ParamByName('Id_ResultVariant').Value:= _baseVariant;
-      Open;
-      _cost_GTR_of_base:= FieldValues['ServiceExpensesCtg'];
-      Close;
-      SQL.Clear;
-      SQL.Text:= UPDATE_COST_GTR_OF_BASE;
-      Parameters.ParamByName('BaseVariantExpenesCtg').Value:= _cost_GTR_of_base;
-      Parameters.ParamByName('Id_ResultVariant').Value:= currentVariant;
-      ExecSQL;
-    finally
-      Close;
-      Free;
-    end;
-  end;
-  function getResultByTonneOfOre(Selic, RocksVm3: double): double;
-  var
-    _qry: TADOQuery;
-  begin
-    Result:= (Selic * 100) / RocksVm3;
-    _qry:= TADOQuery.Create(nil);
-    _qry.Connection:= fmDM.ADOConnection;
-    with _qry do
       try
         Close;
         SQL.Clear;
-        SQL.Text:= UPDATE_RESULT_BY_TONNE_OF_ORE;
-        Parameters.ParamByName('ProductOutPutPercent').Value:= Result;
-        Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
-        ExecSQL;
-      finally
-        Close;
-        Free;
+        SQL.Text:= SELECT_ALL_FROM_RESULT_VARIANT;
+        Open;
+
+        while not Eof do
+        begin
+          int:= getOpenpitId(FieldValues['Variant']);
+          str:= FormatDateTime('MM/DD/YYYY', FieldValues['VariantDate']);
+          _params:= TEffectParams.Create(FieldValues['Variant'], FieldValues['Id_ResultVariant'], int, str);
+          _params.Clear;
+
+          //--------------------------------------------------------------------------
+          dbl:= FieldValues['CurrOreVm3'];
+          _params.Add(TFloatParam.Create('Selic', dbl, CatSebadan));
+          dbl:= FieldValues['CurrStrippingVm3'];
+          dbl:= (TFloatParam(_params.Names['Selic']).Value +
+                FieldValues['CurrStrippingVm3'] +
+                FieldValues['ExcavatorsRockVm3']) / 2;
+          _params.Add(TFloatParam.Create('RocksVm3', dbl, CatSebadan));
+          dbl:= FieldValues['ShiftKweek'];
+          _params.Add(TFloatParam.Create('ResultPeriodCoef', dbl, CatSebadan));
+          dbl:= TFloatParam(_params.Names['RocksVm3']).Value * 2 * 365 * TFloatParam(_params.Names['ResultPeriodCoef']).Value;
+          _params.Add(TFloatParam.Create('ProizPeriod', dbl, CatSebadan));
+          dbl:= FieldValues['ShiftTmin'];
+          _params.Add(TFloatParam.Create('ParamsShiftDuration', dbl, CatSebadan));
+          //TotalCostsSummary
+          dbl:= FieldValues['BaseVariantExpenesCtg'] +
+                FieldValues['ServiceExpensesCtg'] +
+                FieldValues['EconomExpensesCtg'];
+          _params.Add(TFloatParam.Create('TotalCostsSummary', dbl, CatSebadan));
+          //Удельные текущие затраты по горной массе, тенге
+          dbl:= (FieldValues['AutosWorkSumGxCtg'] + FieldValues['AutosWorkSumTyresCtg'] +
+                    FieldValues['AutosWorkSparesCtg'] + FieldValues['AutosWorkMaterialsCtg'] +
+                    FieldValues['AutosWorkMaintenancesCtg'] + FieldValues['AutosWorkSalariesCtg'] +
+                    FieldValues['AutosWaitingSumGxCtg'] + FieldValues['AutosWaitingSparesCtg'] +
+                    FieldValues['AutosWaitingMaterialsCtg'] + FieldValues['AutosWaitingMaintenancesCtg'] +
+                    FieldValues['AutosWaitingSalariesCtg'] + FieldValues['AutosAmortizationCtg'] +
+                    FieldValues['BlocksRepairCtg'] + FieldValues['BlocksAmortizationCtg'] +
+                    FieldValues['ExcavatorsWorkSumGxCtg'] + FieldValues['ExcavatorsWorkMaterialsCtg'] +
+                    FieldValues['ExcavatorsWorkUnAccountedCtg'] + FieldValues['ExcavatorsWorkSalariesCtg'] +
+                    FieldValues['ExcavatorsWaitingSumGxCtg'] + FieldValues['ExcavatorsWaitingMaterialsCtg'] +
+                    FieldValues['ExcavatorsWaitingUnAccountedCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'] +
+                    FieldValues['ExcavatorsAmortizationCtg'])
+                    /TFloatParam(_params.Names['RocksVm3']).Value;
+          _params.Add(TFloatParam.Create('UdelQtn', dbl, CatSebadan));
+          dbl:= FieldValues['AutosWorkSalariesCtg'] +
+                FieldValues['AutosWaitingSalariesCtg'] +
+                FieldValues['ExcavatorsWorkSalariesCtg'] +
+                FieldValues['ExcavatorsWaitingSalariesCtg'];
+          _params.Add(TFloatParam.Create('Salary', dbl, CatSebadan));
+          // коэффициент вскрыши
+          dbl:= FieldValues['Ks'];
+          _params.Add(TFloatParam.Create('KVsry', dbl, CatSebadan));
+          //Коэффициент занятости пункта
+          //dbl:= FieldValues['BlocksEmploymentCoef'];
+          //_params.Add(TFloatParam.Create('EmploymentRatio', dbl, CatSebadan));
+          //
+          dbl:= FieldValues['AutosAvgTimeUsingCoef'];
+          _params.Add(TFloatParam.Create('WorkTimeUsingRatio', dbl, CatSebadan));
+          int:= FieldValues['ExcavatorsExcavatorsCount0'];
+          _params.Add(TFloatParam.Create('ShiftExcavators', int, CatSebadan));
+          dbl:= FieldValues['ExcavatorsGxWork'] +
+                FieldValues['ExcavatorsGxWaiting'];
+          _params.Add(TFloatParam.Create('Elec', dbl, CatSebadan));
+          dbl:= FieldValues['ExcavatorsGxWork'];
+          _params.Add(TFloatParam.Create('Electr', dbl, CatSebadan));
+          dbl:= FieldValues['ExcavatorsAmortizationCtg'];
+          _params.Add(TFloatParam.Create('ExcavsCostsSummary', dbl, CatSebadan));
+          int:= getCountOfUnloadingPunkts(_params.OpenpitId);
+          _params.Add(TFloatParam.Create('CountUnLodingPunkts', int, CatSebadan));
+          dbl:= FieldValues['BlocksAmortizationCtg'];
+          _params.Add(TFloatParam.Create('BlocksCostsSummary', dbl, CatSebadan));
+          int:= FieldValues['BlocksLm'];
+          _params.Add(TFloatParam.Create('BLength', int, CatSebadan));
+          dbl:= FieldValues['BlocksRepairCtg'];
+          _params.Add(TFloatParam.Create('Zatrat', dbl, CatSebadan));
+          int:= FieldValues['AutosAutosCount0'];
+          _params.Add(TFloatParam.Create('ShiftAutos', int, CatSebadan));
+//          dbl:= getKPDs(_params.OpenpitId);
+//          _params.Add(TFloatParam.Create('AVGTransKPD', dbl, CatSebadan));
+          dbl:= FieldValues['AutosUsedTyresCount'] /
+                TFloatParam(_params.Names['RocksVm3']).Value;
+          _params.Add(TFloatParam.Create('UdelTyres', dbl, CatSebadan));
+          dbl:= 0.0;
+          _params.Add(TFloatParam.Create('StoiTyre', dbl, CatSebadan));
+          dbl:= FieldValues['AutosTyresCtg'];
+          _params.Add(TFloatParam.Create('STyres', dbl, CatSebadan));
+          dbl:= FieldValues['AutosGxCtg'];
+          _params.Add(TFloatParam.Create('StoiGx', dbl, CatSebadan));
+          dbl:= FieldValues['AutosUdGx_gr_tkm'];
+          _params.Add(TFloatParam.Create('UdelGx', dbl, CatSebadan));
+          dbl:= FieldValues['AutosGxWaiting'] +
+                FieldValues['AutosGxWork'];
+          _params.Add(TFloatParam.Create('Gx', dbl, CatSebadan));
+          dbl:= FieldValues['AutosAmortizationCtg'];
+          _params.Add(TFloatParam.Create('AutosCostsSummary', dbl, CatSebadan));
+//          dbl:= getCostEquipmqnt(_params.OpenpitId);
+//          _params.Add(TFloatParam.Create('Ostat', dbl, CatSebadan));
+          //---------------------------------------------
+
+          dbl:= FieldValues['ProductOutPutPercent'];
+          if dbl = 0 then
+            dbl:= getResultByTonneOfOre(TFloatParam(_params.Names['Selic']).Value,
+                                        TFloatParam(_params.Names['RocksVm3']).Value);
+          _params.Add(TFloatParam.Create('Produk', dbl, CatInput));
+          dbl:= FieldValues['ProductPriceCtg'];
+          _params.Add(TFloatParam.Create('SenaProd', dbl, CatInput));
+          dbl:= FieldValues['MTWorkByScheduleCtg'];
+          _params.Add(TFloatParam.Create('StoiGTR', dbl, CatInput));
+          dbl:= FieldValues['TruckCostCtg'];
+          if dbl = 0 then
+            dbl:= getBalanceAutos();
+          _params.Add(TFloatParam.Create('StoiPrib', dbl, CatInput));
+          //
+          dbl:= FieldValues['ServiceExpensesCtg'];
+          _params.Add(TFloatParam.Create('ZatSer', dbl, CatInput));
+          //
+          dbl:= FieldValues['BaseVariantExpenesCtg'];
+          _params.Add(TFloatParam.Create('BaseVar', dbl, CatInput));
+          //
+          dbl:= FieldValues['PlannedRockVolumeCm'];
+          if dbl = 0 then
+            dbl:= getPlanRocks(_params.OpenpitId);
+          _params.Add(TFloatParam.Create('QtnGM', dbl, CatInput));
+          //--------------------------------------------------------------------------
+
+          Calc(_params);
+
+          Result.Add(_params);
+          Next;
+        end;
+
+      except
+        MessageBox(0, PAnsiChar(IS_ERROR), PAnsiChar(APP_NAME), MB_OK);
       end;
-  end;
-  //----------------------------------------------------------------------------
-
-  function _str(dbl: double): string; overload;
-  var
-    d: string;
-    i: integer;
-  begin
-    d:= Format('%.3f',[dbl]);
-    for i:= 0 to length(d) do
-      if d[i] = ',' then
-        d[i]:= '.';
-
-    Result:= d;
-  end;
-
-begin
-  _qry:= TADOQuery.Create(nil);
-  _qry.Connection:= fmDM.ADOConnection;
-  _sg:= TStringGrid.Create(nil);
-  _sg_input:= TStringGrid.Create(nil);
-  colcount:= 0;
-  rowcount:= 43;
-
-  with _qry do
-    try
-      Close;
-      SQL.Clear;
-      SQL.Text:= SELECT_ALL_FROM_RESULT_VARIANT;
-      Open;
-
-      _nameVariant:= FieldValues['Variant'];
-      _openpitId:= getOpenpitId(_nameVariant);
-
-      VIndex:= 0;
-      colcount:= RecordCount;
-      _sg.RowCount:= rowcount;
-      _sg.ColCount:= colcount;
-      while not Eof do
-      begin
-        _currentDate:= FormatDateTime('MM/DD/YYYY', FieldValues['VariantDate']);
-        _sg.Cells[VIndex, 0]:= format('%s'+#13#10+'%s', [_nameVariant, _currentDate]);
-        _sg.Cells[VIndex, 1]:= _str(FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']);
-        _sg.Cells[VIndex, 2]:= _str((FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']) * 2 * 365);
-        _sg.Cells[VIndex, 3]:= _str(FieldValues['CurrOreVm3']);
-        _sg.Cells[VIndex, 4]:= _str(FieldValues['ShiftTmin']);
-        _sg.Cells[VIndex, 5]:= _str(FieldValues['BaseVariantExpenesCtg'] +
-                                    FieldValues['ServiceExpensesCtg'] +
-                                    FieldValues['EconomExpensesCtg']);
-        _sg.Cells[VIndex, 6]:= _str((FieldValues['AutosWorkSumGxCtg'] + FieldValues['AutosWorkSumTyresCtg'] +
-                                    FieldValues['AutosWorkSparesCtg'] + FieldValues['AutosWorkMaterialsCtg'] +
-                                    FieldValues['AutosWorkMaintenancesCtg'] + FieldValues['AutosWorkSalariesCtg'] +
-                                    FieldValues['AutosWaitingSumGxCtg'] + FieldValues['AutosWaitingSparesCtg'] +
-                                    FieldValues['AutosWaitingMaterialsCtg'] + FieldValues['AutosWaitingMaintenancesCtg'] +
-                                    FieldValues['AutosWaitingSalariesCtg'] + FieldValues['AutosAmortizationCtg'] +
-                                    FieldValues['BlocksRepairCtg'] + FieldValues['BlocksAmortizationCtg'] +
-                                    FieldValues['ExcavatorsWorkSumGxCtg'] + FieldValues['ExcavatorsWorkMaterialsCtg'] +
-                                    FieldValues['ExcavatorsWorkUnAccountedCtg'] + FieldValues['ExcavatorsWorkSalariesCtg'] +
-                                    FieldValues['ExcavatorsWaitingSumGxCtg'] + FieldValues['ExcavatorsWaitingMaterialsCtg'] +
-                                    FieldValues['ExcavatorsWaitingUnAccountedCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'] +
-                                    FieldValues['ExcavatorsAmortizationCtg'])
-                                    /(FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']));
-        _sg.Cells[VIndex, 7]:= _str(FieldValues['AutosWorkSalariesCtg'] +
-                                    FieldValues['AutosWaitingSalariesCtg'] +
-                                    FieldValues['ExcavatorsWorkSalariesCtg'] +
-                                    FieldValues['ExcavatorsWaitingSalariesCtg']);
-        _sg.Cells[VIndex, 8]:= _str(FieldValues['Ks']);
-        _sg.Cells[VIndex, 9]:= _str(FieldValues['PeriodKshift']);
-        _sg.Cells[VIndex, 10]:= _str(FieldValues['BlocksEmploymentCoef']);
-        _sg.Cells[VIndex, 11]:= _str(FieldValues['AutosAvgTimeUsingCoef']);
-        _sg.Cells[VIndex, 12]:= _str(FieldValues['ExcavatorsExcavatorsCount0']);
-        _sg.Cells[VIndex, 13]:= _str(FieldValues['ExcavatorsGxWork'] +
-                                     FieldValues['ExcavatorsGxWaiting']);
-        _sg.Cells[VIndex, 14]:= _str(FieldValues['ExcavatorsGxWork']);
-        _sg.Cells[VIndex, 15]:= _str(FieldValues['ExcavatorsAmortizationCtg']);
-        _sg.Cells[VIndex, 16]:= _str(getCountOfUnloadingPunkts(_openpitId));
-        _sg.Cells[VIndex, 17]:= _str(FieldValues['BlocksAmortizationCtg']);
-        _sg.Cells[VIndex, 18]:= _str(FieldValues['BlocksLm']);
-        _sg.Cells[VIndex, 19]:= _str(FieldValues['BlocksRepairCtg']);
-        _sg.Cells[VIndex, 20]:= _str(FieldValues['AutosAutosCount0']);
-        _sg.Cells[VIndex, 21]:= _str(getKPDs(_openpitId));
-        _sg.Cells[VIndex, 22]:= _str(FieldValues['AutosUsedTyresCount'] /
-                                     (FieldValues['CurrOreVm3'] +
-                                      FieldValues['CurrStrippingVm3']));
-        _sg.Cells[VIndex, 23]:= _str(0.0);
-        _sg.Cells[VIndex, 24]:= _str(FieldValues['AutosTyresCtg']);
-        _sg.Cells[VIndex, 25]:= _str(FieldValues['AutosGxCtg']);
-        _sg.Cells[VIndex, 26]:= _str(FieldValues['AutosUdGx_gr_tkm']);
-        _sg.Cells[VIndex, 27]:= _str(FieldValues['AutosGxWaiting'] +
-                                     FieldValues['AutosGxWork']);
-        _sg.Cells[VIndex, 28]:= _str(FieldValues['AutosAmortizationCtg']);
-        _sg.Cells[VIndex, 29]:= _str(getCostEquipmqnt(_openpitId));
-        //
-        _sg.Cells[VIndex, 30]:= _str(FieldValues['ProductOutPutPercent']);
-        _sg.Cells[VIndex, 31]:= _str(FieldValues['ProductPriceCtg']);
-        _sg.Cells[VIndex, 32]:= _str(FieldValues['MTWorkByScheduleCtg']);
-        _sg.Cells[VIndex, 33]:= _str(FieldValues['TruckCostCtg']);
-        _sg.Cells[VIndex, 34]:= _str(FieldValues['ServiceExpensesCtg']);
-        _sg.Cells[VIndex, 35]:= _str(FieldValues['BaseVariantExpenesCtg']);
-        _sg.Cells[VIndex, 36]:= _str(FieldValues['PlannedRockVolumeCm']);
-        //
-        Vgm:= ((1440 / FieldValues['ShiftTmin']) * 365 * FieldValues['PeriodKshift']) * (FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']) * 1000;
-        Cstro:= FieldValues['TruckCostCtg'] * 1000;
-        Crem:= FieldValues['ServiceExpensesCtg'] * 1000;
-        Pribil:= ((Vgm * FieldValues['CurrOreVm3'] * FieldValues['ProductOutPutPercent'] * FieldValues['ProductPriceCtg'])/(( 1 + FieldValues['Ks']) * 100)) / 1000000;
-
-        UdelQtn:= (FieldValues['AutosWorkSumGxCtg'] + FieldValues['AutosWorkSumTyresCtg'] +
-              FieldValues['AutosWorkSparesCtg'] + FieldValues['AutosWorkMaterialsCtg'] +
-              FieldValues['AutosWorkMaintenancesCtg'] + FieldValues['AutosWorkSalariesCtg'] +
-              FieldValues['AutosWaitingSumGxCtg'] + FieldValues['AutosWaitingSparesCtg'] +
-              FieldValues['AutosWaitingMaterialsCtg'] + FieldValues['AutosWaitingMaintenancesCtg'] +
-              FieldValues['AutosWaitingSalariesCtg'] + FieldValues['AutosAmortizationCtg'] +
-              FieldValues['BlocksRepairCtg'] + FieldValues['BlocksAmortizationCtg'] +
-              FieldValues['ExcavatorsWorkSumGxCtg'] + FieldValues['ExcavatorsWorkMaterialsCtg'] +
-              FieldValues['ExcavatorsWorkUnAccountedCtg'] + FieldValues['ExcavatorsWorkSalariesCtg'] +
-              FieldValues['ExcavatorsWaitingSumGxCtg'] + FieldValues['ExcavatorsWaitingMaterialsCtg'] +
-              FieldValues['ExcavatorsWaitingUnAccountedCtg'] + FieldValues['ExcavatorsWaitingSalariesCtg'] +
-              FieldValues['ExcavatorsAmortizationCtg'])
-              /(FieldValues['CurrOreVm3'] + FieldValues['CurrStrippingVm3']);
-        Rashot:= (Vgm * UdelQtn + FieldValues['AutosTyresCtg'] + FieldValues['TruckCostCtg']*1000 + FieldValues['ServiceExpensesCtg']*1000) / 1000000;
-
-        UsEco:= ((Vgm * FieldValues['CurrOreVm3'] * FieldValues['ProductOutPutPercent'] * FieldValues['ProductPriceCtg'])/((1 + FieldValues['Ks']) * 100)-(Vgm * UdelQtn + FieldValues['AutosTyresCtg'] + FieldValues['TruckCostCtg']*1000 + FieldValues['ServiceExpensesCtg']*1000))  / 1000000;
-
-        OriUsEco:= (FieldValues['PlannedRockVolumeCm']*1000 * UdelQtn + FieldValues['PlannedRockVolumeCm']*1000 * (FieldValues['AutosTyresCtg'] / Vgm) + FieldValues['TruckCostCtg']*1000 + FieldValues['ServiceExpensesCtg']*1000) / 1000000;
-
-        _sg.Cells[VIndex, 37]:= _str(Pribil);
-        _sg.Cells[VIndex, 38]:= _str(Rashot);
-        _sg.Cells[VIndex, 39]:= _str(UsEco);
-        _sg.Cells[VIndex, 40]:= _str(0.0);
-        _sg.Cells[VIndex, 41]:= _str(0.0);
-        _sg.Cells[VIndex, 42]:= _str(OriUsEco);
-
-        inc(VIndex);
-        Next;
-      end;
-
     finally
       Close;
       Free;
     end;
-
-  data_to_excel:= VarArrayCreate([1, rowcount, 1, colcount],varVariant);
-  for i:= 1 to VarArrayHighBound(data_to_excel, 1) do
-    for j:= 1 to VarArrayHighBound(data_to_excel, 2) do
-      data_to_excel[i, j]:=_sg.Cells[j-1, i-1];
-
-  _isSaved:= ToExcel(data_to_excel, colcount, rowcount);
-  if _isSaved then
-    MessageBox(0, PAnsiChar(SAVE_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK)
-  else
-    MessageBox(0, PAnsiChar(SAVE_IS_WARNING), PAnsiChar(APP_NAME), MB_OK);
-
 end;
 
-procedure TfmResultEconomEffect.btnSetLikeBaseClick(Sender: TObject);
+procedure TfmResultEconomEffect.Calc(_cp: TEffectParams);
 var
-  _qry: TADOQuery;
+  Vgm, Cstro, Crem, Pribil, Rashot, UsEcom, OtnoEcom, Vn, OriUsEcom: double;
+  ParamsShiftDuration, ResultPeriodCoef, RocksVm3, StoiPrib, ZatSer,
+  Selic, Produk, SenaProd, KVsry, UdelQtn, STyres, QtnGM: double;
 begin
-  _qry:= TADOQuery.Create(nil);
-  _qry.Connection:= fmDM.ADOConnection;
-  with _qry do
-  begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= SELECT_BASE_VARIANT;
-    Parameters.ParamByName('Id_ResultVariant').Value:= _baseVariant;
-    Open;
+  ParamsShiftDuration:= _cp.Value['ParamsShiftDuration'];
+  ResultPeriodCoef:= _cp.Value['ResultPeriodCoef'];
+  Selic:= _cp.Value['Selic'];
+  RocksVm3:= _cp.Value['RocksVm3'];
+  StoiPrib:= _cp.Value['StoiPrib'];
+  ZatSer:= _cp.Value['ZatSer'];
+  Produk:= _cp.Value['Produk'];
+  SenaProd:= _cp.Value['SenaProd'];
+  KVsry:= _cp.Value['KVsry'];
+  UdelQtn:= _cp.Value['UdelQtn'];
+  STyres:= _cp.Value['STyres'];
+  QtnGM:= _cp.Value['QtnGM'];
 
-    edProduk.Text:= Format('%.3f',[Double(FieldValues['ProductOutPutPercent'])]);
-    edSenaProd.Text:= Format('%.3f',[Double(FieldValues['ProductPriceCtg'])]);
-    edStoiGTR.Text:= Format('%.3f',[Double(FieldValues['MTWorkByScheduleCtg'])]);
-    edStoiPrib.Text:= Format('%.3f',[Double(FieldValues['TruckCostCtg'])]);
-    edZatSer.Text:= Format('%.3f',[Double(FieldValues['ServiceExpensesCtg'])]);
-    edBaseVar.Text:= Format('%.3f',[Double(FieldValues['BaseVariantExpenesCtg'])]);
-    edQtnGM.Text:= Format('%.3f',[Double(FieldValues['PlannedRockVolumeCm'])]);
-
-    Close;
-    Free;
-  end;
+  //Годовой объем извлекаемой горной массы, получаемый по результатам моделирования, тыс.м3
+  Vgm:= ((1440 / ParamsShiftDuration) * 365 * ResultPeriodCoef) * RocksVm3 * 1000;
+  //Прочие дополнительные единовременные расходы на строительство автодорог и железнодорожных
+  //путей, приобретение нового оборудования, строительство дополнительных съездов и т.д., млн.тенге
+  Cstro:= StoiPrib * 1000;
+  //Сумма затрат связанная с текущими ремонтами автосамосвалов
+  Crem := ZatSer * 1000;
+  //Прибыль, млн.тг
+  Pribil:= ((Vgm * Selic * Produk * SenaProd)/(( 1 + KVsry) * 100)) / 1000000;
+  _cp.Add(TFloatParam.Create('Pribil', Pribil, CatOutput));
+  //Затраты, млн.тг
+  Rashot:= (Vgm * UdelQtn + STyres + Cstro + Crem) / 1000000;
+  _cp.Add(TFloatParam.Create('Rashot', Rashot, CatOutput));
+  //Условный экономический эффект, млн.тг
+  UsEcom:= ((Vgm * Selic * Produk * SenaProd)/((1 + KVsry) * 100)-(Vgm * UdelQtn + STyres + Cstro + Crem))  / 1000000;
+  _cp.Add(TFloatParam.Create('UsEcom', UsEcom, CatOutput));
+  //BaseVari
+  _cp.Add(TFloatParam.Create('BaseVari', 0, CatOutput));
+  //Относительный экономический эффект, млн.тг
+  OtnoEcom:= 0;
+  _cp.Add(TFloatParam.Create('OtnoEcom', OtnoEcom, CatOutput));
+  //Объем горной массы запланированный к извлечению в рассматриваемом периоде, тыс.м3
+  Vn:= QtnGM * 1000;
+  //Объемно ориентированный условный экономический эффект, млн.тг
+  OriUsEcom:= (Vn * UdelQtn + Vn * (STyres / Vgm) + Cstro + Crem) / 1000000;
+  _cp.Add(TFloatParam.Create('OriUsEcom', OriUsEcom, CatOutput));
 end;
 
 end.

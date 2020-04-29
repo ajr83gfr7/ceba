@@ -2,11 +2,11 @@ unit unResultEconomEffect_Data;
 
 interface
 uses
-  Classes;
+  Classes, Grids;
 
 type
   TTypeOfParams = (StrParam, IntParam, FloatParam);
-  TCatOfParams = (CatSebadan, CatInput, CatOutput);
+  TCatOfParams = (CatBase, CatSebadan, CatInput, CatOutput);
 
   TParam = class
   protected
@@ -62,23 +62,32 @@ type
 
   TEffectParams = class
   protected
+    _name: String;
+    _date: String;
+    _id: integer;
+    _openpitId: integer;
     _items: TList; //of TParam
-//    function _getItem(index: integer): TParam;
-//    procedure _setItem(index: integer; item: TParam);
+    _count: integer;
     function _getItemByName(index: string): TParam;
     procedure _setItemByName(index: string; item: TParam);
     function _getDataByName(index: string): string;
+    function _getValue(index: string): double;
     function _getSebadanItems: TList;
     function _getInputItems: TList;
     function _getOutputItems: TList;
   public
-    constructor Create;
+    constructor Create(AName: string; AId:integer; AOpenpitId: integer; ADate:string);
     destructor Destroy; override;
     procedure Clear;
     procedure Add(param: TParam);
-//    property Items[index: integer]: TParam read _getItem write _setItem;
+    property Count: integer read _count;
+    property Name: string read _name;
+    property Id: integer read _id;
+    property OpenpitId: integer read _openpitId;
+    property Date: string read _date;
     property Names[index: string]: TParam read _getItemByName write _setItemByName;
-    property ValueOf[index: string]: string read _getDataByName;    
+    property ValueOf[index: string]: string read _getDataByName;
+    property Value[index: string]: double read _getValue;
     property CebadanItems: TList read _getSebadanItems;
     property InputItems: TList read _getInputItems;
     property OutputItems: TList read _getOutputItems;
@@ -173,21 +182,15 @@ begin
 end;
 
 { TEffectParams }
-(*
-function TEffectParams._getItem(index: integer): TParam;
-begin
-  Result:= _items[index];
-end;
 
-procedure TEffectParams._setItem(index: integer; item: TParam);
+constructor TEffectParams.Create(AName: string; AId:integer; AOpenpitId: integer; ADate:string);
 begin
-  _items.Add(item);
-end;
-*)
-
-constructor TEffectParams.Create;
-begin
+  _name:= AName;
+  _id:= AId;
+  _openpitId:= AOpenpitId;
+  _date:= ADate;
   _items:= TList.Create();
+  _count:= 0;
 end;
 
 destructor TEffectParams.Destroy;
@@ -243,6 +246,16 @@ end;
 function TEffectParams._getDataByName(index: string): string;
 var
   i: integer;
+
+  function _str(str: string): string; overload;
+  var
+    i: integer;
+  begin
+    for i:= 0 to length(str) do
+      if str[i] = ',' then str[i]:= '.';
+
+    Result:= str;
+  end;
 begin
   Result:= '';
   for i:= 0 to _items.Count - 1 do
@@ -250,8 +263,8 @@ begin
     begin
       case TParam(_items[i])._type of
         StrParam: Result:= TStrParam(_items[i]).Value;
-        IntParam: Result:= Format('%d',[TIntParam(_items[i]).Value]);
-        FloatParam: Result:= Format('%.3f',[TFloatParam(_items[i]).Value]);
+        IntParam: Result:= _str(Format('%d',[TIntParam(_items[i]).Value]));
+        FloatParam: Result:= _str(Format('%.3f',[TFloatParam(_items[i]).Value]));
       end;
       Break;
     end;
@@ -277,6 +290,23 @@ end;
 procedure TEffectParams.Add(param: TParam);
 begin
   _items.Add(param);
+  _count:= _count + 1;
+end;
+
+function TEffectParams._getValue(index: string): double;
+var
+  i: integer;
+begin
+  Result:= 0;
+  for i:= 0 to _items.Count - 1 do
+    if TParam(_items[i]).Name = index then
+    begin
+      case TParam(_items[i])._type of
+//        IntParam: Result:= Double(TIntParam(_items[i]).Value);
+        FloatParam: Result:= TFloatParam(_items[i]).Value;
+      end;
+      Break;
+    end;
 end;
 
 end.

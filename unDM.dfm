@@ -1,6 +1,6 @@
 object fmDM: TfmDM
   OldCreateOrder = False
-  Left = 4
+  Left = 14
   Height = 560
   Width = 993
   object ADOConnection: TADOConnection

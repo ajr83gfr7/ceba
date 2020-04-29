@@ -7355,6 +7355,10 @@ begin
     //2.Доехал до конца тек.БУ? ------------------------------------------------
     if FCurrDt1Sec<1 then
     begin
+
+      if (AAuto.FParkNo=10) then
+        _tmp_test_auto:= '';
+
       //Суммарные показатели авто
       FSumDSmtr[ADir,APos,AState] := FSumDSmtr[ADir,APos,AState] + CurrBlock.Lm;
       FSumDTsec[ADir,APos,AState] := FSumDTsec[ADir,APos,AState] + FCurrDtReqSec;
@@ -7476,13 +7480,13 @@ begin
         end{if}
         else
         begin
-
+(*
           if (_tmp_bool)and(AAuto.FParkNo=2) then
          		TXTWriter.TWriter.WriteToTXT(format('badAuto L%d R%d',
                                                 [CurrCourse.Last.LeftAutoIndex,
                                                  CurrCourse.Last.RightAutoIndex]));
 
-
+  *)
 
           DefineAutosUhozhuVProstoyOnUP__(AAuto);         //Ухожу в простой на пункте
         end;
@@ -8419,7 +8423,7 @@ begin
           begin//Ушел в простой
 
 //            if (_tmp_bool)and(FCurrAutos[I].FParkNo=2) then
-//          		TXTWriter.TWriter.WriteToTXT(format('badAuto %d', [ABlock.LeftAutoIndex]));
+//          		TXTWriter.TWriter.WriteToTXT(format('badAuto %d', [ABlock.LeftAutoIndex]));,
             // todo: .fix autos-standing
             if (FCurrPosition = apOnPunkt1) and (FCurrDirection = adLoading) then
             begin
@@ -8529,9 +8533,9 @@ begin
             adFromSP,adToSP: eDir := edNulled;
           end;{case}
           //todo:
-          tmp_auto_name:= format('%s:%d', [AAuto.Name, AAuto.FParkNo]);
-          if (tmp_auto_name = _tmp_test_auto) then
-            uFLog(format('Waiting=loading:%d', [FCurrDt0Sec]));
+//          tmp_auto_name:= format('%s:%d', [AAuto.Name, AAuto.FParkNo]);
+//          if (tmp_auto_name = _tmp_test_auto) then
+//            uFLog(format('Waiting=loading:%d', [FCurrDt0Sec]));
           //
           Events.Waiting(FCurrGxReq, FCurrDt0Sec + _cut_sec, eDir, FCurrRock, FCurrRockVolume,
             CurrCourse.Punkt1, CurrCourse.Punkt0);
