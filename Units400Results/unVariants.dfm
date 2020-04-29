@@ -1,8 +1,8 @@
 object fmVariants: TfmVariants
-  Left = 523
-  Top = 4
+  Left = 3
+  Top = 0
   Width = 1364
-  Height = 814
+  Height = 728
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = #1042#1072#1088#1080#1072#1085#1090#1099' '#1084#1086#1076#1077#1083#1080#1088#1086#1074#1072#1085#1080#1103
   Color = clBtnFace
@@ -22,7 +22,7 @@ object fmVariants: TfmVariants
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 309
+    Top = 223
     Width = 1348
     Height = 2
     Cursor = crVSplit
@@ -30,7 +30,7 @@ object fmVariants: TfmVariants
   end
   object PageControl: TPageControl
     Left = 0
-    Top = 311
+    Top = 225
     Width = 1348
     Height = 446
     ActivePage = tsAutos
@@ -2478,7 +2478,7 @@ object fmVariants: TfmVariants
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 757
+    Top = 671
     Width = 1348
     Height = 19
     AutoHint = True
@@ -2488,7 +2488,7 @@ object fmVariants: TfmVariants
     Left = 0
     Top = 0
     Width = 1348
-    Height = 309
+    Height = 223
     Align = alClient
     TabOrder = 2
     Tabs.Strings = (
@@ -2501,7 +2501,7 @@ object fmVariants: TfmVariants
       Left = 4
       Top = 24
       Width = 1340
-      Height = 281
+      Height = 195
       Align = alClient
       DataSource = dsVaraints
       Flat = False

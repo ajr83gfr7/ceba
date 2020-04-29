@@ -428,7 +428,22 @@ end;
 procedure TfmResultEconomEffect.btnEnterClick(Sender: TObject);
 var
   _qry: TADOQuery;
+  _currentParams: TEffectParams;
+  i: integer;
+  function fromstr(str: string): double;
+  var
+    i:integer;
+  begin
+    Result:= 0;
+    for i:= 0 to length(str) - 1 do
+      if str[i] = '.' then str[i]:= ',';
+    Result:= strtofloat(str);
+  end;
 begin
+  for i:= 0 to _variants.Count - 1 do
+    if TEffectParams(_variants[i]).Id = _currentVariant then
+      _currentParams:= TEffectParams(_variants[i]);
+
   _qry:= TADOQuery.Create(nil);
   _qry.Connection:= fmDM.ADOConnection;
   with _qry do
@@ -436,13 +451,20 @@ begin
     Close;
     SQL.Clear;
     SQL.Text:= UPDATE_CURRENT_INPUT_VALUES;
-    Parameters.ParamByName('ProductOutPutPercent').Value:= strtofloat(edProduk.Text);
-    Parameters.ParamByName('ProductPriceCtg').Value:= strtofloat(edSenaProd.Text);
-    Parameters.ParamByName('MTWorkByScheduleCtg').Value:= strtofloat(edStoiGTR.Text);
-    Parameters.ParamByName('TruckCostCtg').Value:= strtofloat(edStoiPrib.Text);
-    Parameters.ParamByName('ServiceExpensesCtg').Value:= strtofloat(edZatSer.Text);
-    Parameters.ParamByName('BaseVariantExpenesCtg').Value:= strtofloat(edBaseVar.Text);
-    Parameters.ParamByName('PlannedRockVolumeCm').Value:= strtofloat(edQtnGM.Text);
+    _currentParams.Value['Produk']:= fromstr(edProduk.Text);
+    Parameters.ParamByName('ProductOutPutPercent').Value:= _currentParams.Value['Produk'];
+    _currentParams.Value['SenaProd']:= fromstr(edSenaProd.Text);
+    Parameters.ParamByName('ProductPriceCtg').Value:= _currentParams.Value['SenaProd'];
+    _currentParams.Value['StoiGTR']:= fromstr(edStoiGTR.Text);
+    Parameters.ParamByName('MTWorkByScheduleCtg').Value:= _currentParams.Value['StoiGTR'];
+    _currentParams.Value['StoiPrib']:= fromstr(edStoiPrib.Text);
+    Parameters.ParamByName('TruckCostCtg').Value:= _currentParams.Value['StoiPrib'];
+    _currentParams.Value['ZatSer']:= fromstr(edZatSer.Text);
+    Parameters.ParamByName('ServiceExpensesCtg').Value:= _currentParams.Value['ZatSer'];
+    _currentParams.Value['BaseVar']:= fromstr(edBaseVar.Text);
+    Parameters.ParamByName('BaseVariantExpenesCtg').Value:= _currentParams.Value['BaseVar'];
+    _currentParams.Value['QtnGM']:= fromstr(edQtnGM.Text);
+    Parameters.ParamByName('PlannedRockVolumeCm').Value:= _currentParams.Value['QtnGM'];
 
     Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
     ExecSQL;
@@ -533,6 +555,7 @@ begin
       end;
   end;
   OpenVariants;
+  GetData;
 end;
 
 procedure TfmResultEconomEffect.actSetBaseVariantExecute(Sender: TObject);

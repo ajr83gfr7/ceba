@@ -72,6 +72,7 @@ type
     procedure _setItemByName(index: string; item: TParam);
     function _getDataByName(index: string): string;
     function _getValue(index: string): double;
+    procedure _setValue(index: string; value: double);
     function _getSebadanItems: TList;
     function _getInputItems: TList;
     function _getOutputItems: TList;
@@ -87,7 +88,7 @@ type
     property Date: string read _date;
     property Names[index: string]: TParam read _getItemByName write _setItemByName;
     property ValueOf[index: string]: string read _getDataByName;
-    property Value[index: string]: double read _getValue;
+    property Value[index: string]: double read _getValue write _setValue;
     property CebadanItems: TList read _getSebadanItems;
     property InputItems: TList read _getInputItems;
     property OutputItems: TList read _getOutputItems;
@@ -305,6 +306,18 @@ begin
 //        IntParam: Result:= Double(TIntParam(_items[i]).Value);
         FloatParam: Result:= TFloatParam(_items[i]).Value;
       end;
+      Break;
+    end;
+end;
+
+procedure TEffectParams._setValue(index: string; value: double);
+var
+  i: integer;
+begin
+  for i:= 0 to _items.Count - 1 do
+    if TParam(_items[i]).Name = index then
+    begin
+      TFloatParam(_items[i]).Value:= value;
       Break;
     end;
 end;

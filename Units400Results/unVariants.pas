@@ -639,6 +639,7 @@ begin
     OreVm3:= FieldByName('CurrOreVm3').AsFloat;
     WastVm3:= FieldByName('CurrStrippingVm3').AsFloat;
     OreQtn:= FieldByName('CurrOreQtn').AsFloat;
+    Selic:= 0;
     if OreVm3 > 0 then
       Selic:= OreQtn / OreVm3;//StrToFloat(edSelic.Text);
     FieldByName('SelicTM3').AsFloat:= Selic;
@@ -1458,13 +1459,42 @@ begin
 end;
 
 procedure TfmVariants.dsVaraintsDataChange(Sender: TObject; Field: TField);
+var
+  _Vm3: double;
+  _Vt: double;
+  _Cost: double;
 begin
   if quVariants.Active then
     dbgVariants.Columns[0].Footers[0].Value := Format('%d/%d',[quVariants.RecNo,quVariants.RecordCount])
   else
     dbgVariants.Columns[0].Footers[0].Value := '';
-  //dbgVariants.Columns[4].Footers[0].Value := '11111111111';
-  //dbgVariants.Columns[4].Footers[1].Value := '22222222222';
+
+  _Vm3:= (quVariantsExcavatorsRockVm3.AsVariant +
+          quVariantsCurrOreVm3.AsVariant +
+          quVariantsCurrStrippingVm3.AsVariant
+          ) / 2;
+  dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
+  dbgVariants.Columns[4].Footers[1].Value:= format('%n', [_Vm3]);
+
+  _Vt:= (quVariantsExcavatorsRockQtn.AsVariant +
+         quVariantsCurrOreQtn.AsVariant +
+         quVariantsCurrStrippingQtn.AsVariant
+         ) / 2;
+  dbgVariants.Columns[5].Footers[1].ValueType:= fvtStaticText;
+  dbgVariants.Columns[5].Footers[1].Value:= format('%n', [_Vt]);
+
+  _Cost:= (quVariantsEconomExpensesCtg.AsVariant +
+          (quVariantsServiceExpensesCtg.AsVariant * 1000));
+
+  dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
+  dbgVariants.Columns[6].Footers[1].Value:= format('%n', [_Cost / _Vm3]);
+
+  dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
+  dbgVariants.Columns[7].Footers[1].Value:= format('%n', [_Cost / _Vt]);
+
+//  dbgVariants.Columns[0].Footer.ValueType := fvtStaticText;
+//  dbgVariants.Columns[0].Footer.Value     := 'ИТОГО (актов/сумма)';
+//  dbgVariants.Columns[4].Footer.ValueType := fvtSum; // где 4- номер столбца, который суммируем
 end;
 
 procedure TfmVariants.dbgVariantsDrawFooterCell(Sender: TObject; DataCol,
