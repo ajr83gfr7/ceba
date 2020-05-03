@@ -1463,6 +1463,7 @@ var
   _Vm3: double;
   _Vt: double;
   _Cost: double;
+  _per: double;
 begin
   if quVariants.Active then
     dbgVariants.Columns[0].Footers[0].Value := Format('%d/%d',[quVariants.RecNo,quVariants.RecordCount])
@@ -1475,6 +1476,10 @@ begin
           ) / 2;
   dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
   dbgVariants.Columns[4].Footers[1].Value:= format('%n', [_Vm3]);
+
+  _per:= (_Vm3 * 100) / quVariantsPlannedRockVolumeCm.AsVariant;
+  dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
+  dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_per]);
 
   _Vt:= (quVariantsExcavatorsRockQtn.AsVariant +
          quVariantsCurrOreQtn.AsVariant +

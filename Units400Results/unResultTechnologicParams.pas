@@ -48,23 +48,20 @@ type
     dsResultRocks: TDataSource;
     quResultRocksId_Rock: TIntegerField;
     quResultRocksRock: TWideStringField;
-    quResultRocksRockIsMineralWealth: TBooleanField;
+//    quResultRocksIsChangeable: TBooleanField;
     dbgRocks: TDBGridEh;
     Splitter1: TSplitter;
     quResultRockParams: TADOQuery;
-    BooleanField1: TBooleanField;
-    IntegerField2: TIntegerField;
     WideStringField1: TWideStringField;
     WideStringField2: TWideStringField;
     FloatField1: TFloatField;
     FloatField2: TFloatField;
     FloatField3: TFloatField;
     dsResultRockParams: TDataSource;
-    quResultRockParamsId_ResultTechnologicRockParam: TAutoIncField;
-    quResultRockParamsId_ResultShift: TIntegerField;
     quResultRockParamsId_Rock: TIntegerField;
     dbgRockParams: TDBGridEh;
     btShift: TButton;
+    quResultRockParamsRecordNo: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure quResultShiftsCalcFields(DataSet: TDataSet);
@@ -73,7 +70,9 @@ type
       const Rect: TRect; DataCol: Integer; Column: TColumnEh;
       State: TGridDrawState);
     procedure btShiftClick(Sender: TObject);
+    procedure quResultRockParamsCalcFields(DataSet: TDataSet);
   private
+    procedure SetFooter();
   public
   end;{TfmResultTechnologicParams}
 
@@ -97,7 +96,7 @@ begin
   finally
     fmResultTechnologicParams.Free;
   end;{try}
-end;{esaShowResultTechnologicParams}
+end;
 
 procedure TfmResultTechnologicParams.FormCreate(Sender: TObject);
 begin
@@ -107,7 +106,9 @@ begin
   quResultAutoParams.Open;
   quResultRocks.Open;
   quResultRockParams.Open;
-end;{FormCreate}
+
+  SetFooter;
+end;
 procedure TfmResultTechnologicParams.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   quResultRockParams.Close;
@@ -115,41 +116,68 @@ begin
   quResultAutoParams.Close;
   quResultAutos.Close;
   quResultShifts.Close;
-end;{FormClose}
+end;
 
 procedure TfmResultTechnologicParams.quResultShiftsCalcFields(DataSet: TDataSet);
 begin
   quResultShiftsShiftPlanNaryadTmin.AsFloat :=
     quResultShiftsShiftTmin.AsFloat - quResultShiftsShiftPeresmenkaTmin.AsFloat;
-end;{quResultShiftsCalcFields}
+end;
 
 procedure TfmResultTechnologicParams.quResultAutoParamsCalcFields(DataSet: TDataSet);
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
-  if Dataset.FieldByName('IsChangeable').AsBoolean then
-  begin
-    Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*quResultShiftsShiftKweek.AsFloat;
-    Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*quResultShiftsPeriodKshift.AsFloat;
-  end{if}
-  else
-  begin
-    Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
-    Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
-  end;{else}
-end;{quResultAutoParamsCalcFields}
+    if Dataset.FieldByName('IsChangeable').AsBoolean then
+    begin
+      Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat *
+                                               quResultShiftsShiftKweek.AsFloat;
+      Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat *
+                                               quResultShiftsPeriodKshift.AsFloat;
+    end
+    else
+    begin
+      Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
+      Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
+    end;
+end;
 
 procedure TfmResultTechnologicParams.dbgAutoParamsDrawColumnCell(
   Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
-  if TDBGridEh(Sender).DataSource.Dataset.FieldByName('RecordNo').AsInteger mod 100 = 0
-  then TDBGridEh(Sender).Canvas.Font.Style := [fsBold];
+  if TDBGridEh(Sender).DataSource.Dataset.FieldByName('RecordNo').AsInteger mod 100 = 0 then
+    TDBGridEh(Sender).Canvas.Font.Style := [fsBold];
   TDBGridEh(Sender).DefaultDrawColumnCell(Rect,DataCol,Column,State);
-end;{dbgAutoParamsDrawColumnCell}
+end;
 
 procedure TfmResultTechnologicParams.btShiftClick(Sender: TObject);
 begin
   esaShowResultShiftDlg();
-end;{btShiftClick}
+end;
+
+procedure TfmResultTechnologicParams.SetFooter;
+begin
+//  dbgRocks.Columns[1].Footer.ValueType:= fvtStaticText;
+//  dbgRocks.Columns[1].Footer.Value:= 'Общее производство ГТСК.';
+end;
+
+procedure TfmResultTechnologicParams.quResultRockParamsCalcFields(
+  DataSet: TDataSet);
+begin
+  if not(Dataset.FieldByName('AValue').IsNull) then
+//    if Dataset.FieldByName('IsChangeable').AsBoolean then
+    if Dataset.FieldByName('RecordName').AsInteger = 4 then
+    begin
+      Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('AValue').AsFloat *
+                                               quResultShiftsShiftKweek.AsFloat;
+      Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat *
+                                               quResultShiftsPeriodKshift.AsFloat;
+    end
+    else
+    begin
+      Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('AValue').AsFloat*1.0;
+      Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat*1.0;
+    end;
+end;
 
 end.

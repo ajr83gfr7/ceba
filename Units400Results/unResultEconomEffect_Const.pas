@@ -95,7 +95,9 @@ resourcestring
   DO_YOU_SURE_TO_DELL = 'Вы уверенны, что хотите удалить текущий вариант?';
   DELL_VARIANT_IS_SUCCESS = 'Вариант успешно удален';
   DO_YOU_SURE_TO_SET_BASE_VARIANT = 'Вы уверенны, что хотите установить текущий вариант в качестве базового?';
-  IS_ERROR = 'Произошла ошибка';
+  IS_ERROR = 'Произошла ошибка.';
+  ENTERED_DONE = 'Новые данные введены.';
+  ENTERED_WRONG = 'Новые данные ввести не удалось.';
 
   // SQL
   SELECT_ALL_VARIANTS = 'SELECT Id_ResultVariant, Variant, VariantDate FROM _ResultVariants';

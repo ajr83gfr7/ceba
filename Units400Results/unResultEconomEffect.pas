@@ -430,6 +430,7 @@ var
   _qry: TADOQuery;
   _currentParams: TEffectParams;
   i: integer;
+  _isEntered: boolean;
   function fromstr(str: string): double;
   var
     i:integer;
@@ -440,6 +441,7 @@ var
     Result:= strtofloat(str);
   end;
 begin
+  _isEntered:= false;
   for i:= 0 to _variants.Count - 1 do
     if TEffectParams(_variants[i]).Id = _currentVariant then
       _currentParams:= TEffectParams(_variants[i]);
@@ -447,30 +449,40 @@ begin
   _qry:= TADOQuery.Create(nil);
   _qry.Connection:= fmDM.ADOConnection;
   with _qry do
-  begin
-    Close;
-    SQL.Clear;
-    SQL.Text:= UPDATE_CURRENT_INPUT_VALUES;
-    _currentParams.Value['Produk']:= fromstr(edProduk.Text);
-    Parameters.ParamByName('ProductOutPutPercent').Value:= _currentParams.Value['Produk'];
-    _currentParams.Value['SenaProd']:= fromstr(edSenaProd.Text);
-    Parameters.ParamByName('ProductPriceCtg').Value:= _currentParams.Value['SenaProd'];
-    _currentParams.Value['StoiGTR']:= fromstr(edStoiGTR.Text);
-    Parameters.ParamByName('MTWorkByScheduleCtg').Value:= _currentParams.Value['StoiGTR'];
-    _currentParams.Value['StoiPrib']:= fromstr(edStoiPrib.Text);
-    Parameters.ParamByName('TruckCostCtg').Value:= _currentParams.Value['StoiPrib'];
-    _currentParams.Value['ZatSer']:= fromstr(edZatSer.Text);
-    Parameters.ParamByName('ServiceExpensesCtg').Value:= _currentParams.Value['ZatSer'];
-    _currentParams.Value['BaseVar']:= fromstr(edBaseVar.Text);
-    Parameters.ParamByName('BaseVariantExpenesCtg').Value:= _currentParams.Value['BaseVar'];
-    _currentParams.Value['QtnGM']:= fromstr(edQtnGM.Text);
-    Parameters.ParamByName('PlannedRockVolumeCm').Value:= _currentParams.Value['QtnGM'];
+  try
+    try
+      Close;
+      SQL.Clear;
+      SQL.Text:= UPDATE_CURRENT_INPUT_VALUES;
+      _currentParams.Value['Produk']:= fromstr(edProduk.Text);
+      Parameters.ParamByName('ProductOutPutPercent').Value:= _currentParams.Value['Produk'];
+      _currentParams.Value['SenaProd']:= fromstr(edSenaProd.Text);
+      Parameters.ParamByName('ProductPriceCtg').Value:= _currentParams.Value['SenaProd'];
+      _currentParams.Value['StoiGTR']:= fromstr(edStoiGTR.Text);
+      Parameters.ParamByName('MTWorkByScheduleCtg').Value:= _currentParams.Value['StoiGTR'];
+      _currentParams.Value['StoiPrib']:= fromstr(edStoiPrib.Text);
+      Parameters.ParamByName('TruckCostCtg').Value:= _currentParams.Value['StoiPrib'];
+      _currentParams.Value['ZatSer']:= fromstr(edZatSer.Text);
+      Parameters.ParamByName('ServiceExpensesCtg').Value:= _currentParams.Value['ZatSer'];
+      _currentParams.Value['BaseVar']:= fromstr(edBaseVar.Text);
+      Parameters.ParamByName('BaseVariantExpenesCtg').Value:= _currentParams.Value['BaseVar'];
+      _currentParams.Value['QtnGM']:= fromstr(edQtnGM.Text);
+      Parameters.ParamByName('PlannedRockVolumeCm').Value:= _currentParams.Value['QtnGM'];
 
-    Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
-    ExecSQL;
+      Parameters.ParamByName('Id_ResultVariant').Value:= _currentVariant;
+      ExecSQL;
+      _isEntered:= true;
+    except
+      MessageBox(0, PAnsiChar(ENTERED_WRONG), PAnsiChar(APP_NAME), MB_OK);
+    end;
+  finally
     Close;
     Free;
   end;
+
+  if _isEntered then
+    MessageBox(0, PAnsiChar(ENTERED_DONE), PAnsiChar(APP_NAME), MB_OK);
+
   if not btnCalc.Enabled then
     btnCalc.Enabled:= True;
 end;
