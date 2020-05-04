@@ -959,7 +959,8 @@ begin
           dbl:= FieldValues['ExcavatorsGxWork'] +
                 FieldValues['ExcavatorsGxWaiting'];
           _params.Add(TFloatParam.Create('Elec', dbl, CatSebadan));
-          dbl:= FieldValues['ExcavatorsGxWork'];
+          dbl:= FieldValues['ExcavatorsWorkSumGxCtg'] +
+                FieldValues['ExcavatorsWaitingSumGxCtg'];
           _params.Add(TFloatParam.Create('Electr', dbl, CatSebadan));
           dbl:= FieldValues['ExcavatorsAmortizationCtg'];
           _params.Add(TFloatParam.Create('ExcavsCostsSummary', dbl, CatSebadan));
