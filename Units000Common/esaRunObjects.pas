@@ -9671,7 +9671,7 @@ begin
 end;{SaveEconomResultsNew}
 //Сохранение в БД результатов моделирования за период
 procedure TDispatcher.SavePeriodResultsNew;
-var q0,q1: TADOQuery;
+var q0,q1, q_resultVariants: TADOQuery;
   procedure _Add(const ARecordName: String; const ARecordNo: Integer; const AName: String = ''); overload;
   begin
     q1.Append;
@@ -9716,6 +9716,13 @@ var
   I,J,K: Integer;
   AShiftPlanRockQtn: Single;
   ARockVolume: ResaRockVolume;
+  AShiftPlanRockQtn_sum: Single;
+  ARockVolume_sum: ResaRockVolume;
+  _str: string;
+  _RESARock: RESARock;
+  //
+  AVm3, AQt: double;
+  AVm3_sum, AQt_sum: double;
 begin
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования за период моделирования..');
@@ -9764,7 +9771,10 @@ begin
   q1.SQL.Text := 'SELECT * FROM _ResultTechnologicRockParams';
   q1.Open;
   FGauge.MaxValue := Openpit.Rocks.Count;
-  for I := 0 to Openpit.Rocks.Count-1 do
+  AShiftPlanRockQtn_sum:= 0.0;
+  ARockVolume_sum:= esaRockVolume();
+  AVm3_sum:= 0; AQt_sum:= 0;
+  for I:= 0 to Openpit.Rocks.Count-1 do
   begin
     SetGaugeValue(I);
     AShiftPlanRockQtn := 0.0;
@@ -9772,24 +9782,56 @@ begin
     for J := 0 to LoadingPunkts.Count-1 do
     begin
       for K := 0 to LoadingPunkts[J].RockCount-1 do
-      if LoadingPunkts[J].Rocks[K].Rock.Id_Rock=Openpit.Rocks[I].Id_Rock
-      then AShiftPlanRockQtn := AShiftPlanRockQtn+LoadingPunkts[J].Rocks[K].ShiftPlanQtn;
-      for K := 0 to LoadingPunkts[J].Excavator.Events.Count-1 do
-      begin
-        if (LoadingPunkts[J].Excavator.Events[K].Rock.Id_Rock=Openpit.Rocks[I].Id_Rock)and
-           (LoadingPunkts[J].Excavator.Events[K].Kind=eekLoading) then
+        if LoadingPunkts[J].Rocks[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock then
         begin
-          ARockVolume := esaSum(ARockVolume,LoadingPunkts[J].Excavator.Events[K].RockVolume);
-        end;{if}
-      end;{for}
-    end;{for}
-    _Add(Openpit.Rocks[I],'1',101,True, 'Плановый вес горной массы Q, т',AShiftPlanRockQtn);
-    _Add(Openpit.Rocks[I],'2',102,True, 'Объем погруженной горной массы V, м3',ARockVolume.Vm3);
-    _Add(Openpit.Rocks[I],'3',103,True, 'Вес погруженной горной массы Q, т',ARockVolume.Qtn);
-    if AShiftPlanRockQtn>0.0
-    then _Add(Openpit.Rocks[I],'4',104,False,'Относительно плана, %',100*ARockVolume.Qtn/AShiftPlanRockQtn)
-    else _Add(Openpit.Rocks[I],'4',104,False,'Относительно плана, %',0.0);
-  end;{for}
+          AShiftPlanRockQtn:= AShiftPlanRockQtn + LoadingPunkts[J].Rocks[K].ShiftPlanQtn;
+          AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + LoadingPunkts[J].Rocks[K].ShiftPlanQtn;
+        end;
+      for K := 0 to LoadingPunkts[J].Excavator.Events.Count-1 do
+        if (LoadingPunkts[J].Excavator.Events[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock) and
+           (LoadingPunkts[J].Excavator.Events[K].Kind = eekLoading) then
+        begin
+          ARockVolume:= esaSum(ARockVolume, LoadingPunkts[J].Excavator.Events[K].RockVolume);
+          ARockVolume_sum:= esaSum(ARockVolume_sum, LoadingPunkts[J].Excavator.Events[K].RockVolume);
+        end;
+    end;
+    if Openpit.Rocks[I].IsMineralWealth then
+    begin
+      AVm3:= (ARockVolume.Vm3 + FCurrOreVm3) / 2;
+      AQt:= (ARockVolume.Qtn + FCurrOreQtn) / 2;
+    end
+    else
+    begin
+      AVm3:= (ARockVolume.Vm3 + FCurrStrippingVm3) / 2;
+      AQt:= (ARockVolume.Qtn + FCurrStrippingQtn) / 2;
+    end;
+    AVm3_sum:= AVm3_sum + AVm3;
+    AQt_sum:= AQt_sum + AQt;
+
+    _str:= format('Плановый объем (%s) Q, т', [Openpit.Rocks[I].Name]);
+    _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn);
+    _str:= format('Погруженный объем (%s) V, м3', [Openpit.Rocks[I].Name]);
+    _Add(Openpit.Rocks[I], '2', 102, True, _str, AVm3);
+    _str:= format('Погруженный вес (%s) Q, т', [Openpit.Rocks[I].Name]);
+    _Add(Openpit.Rocks[I], '3', 103, True, _str, AQt);
+    if AShiftPlanRockQtn>0.0 then
+      _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', 100 * AQt / AShiftPlanRockQtn)
+    else
+      _Add(Openpit.Rocks[I],'4',104,False,'Относительно плана, %',0.0);
+  end;
+  // summ
+  _RESARock.Id_Rock:= 1000;
+  _RESARock.Name:= 'Горная масса';
+  _RESARock.IsMineralWealth:= false;
+  _str:= format('Плановый объем (%s) Q, т', ['Горная масса']);
+  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockQtn_sum);
+  _str:= format('Погруженный объем (%s) V, м3', ['Горная масса']);
+  _Add(_RESARock, '2', 102, True, _str, AVm3_sum);
+  _str:= format('Погруженный вес (%s) Q, т', ['Горная масса']);
+  _Add(_RESARock, '3', 103, True, _str, AQt_sum);
+  _str:= 'Относительно плана, %';
+  _Add(_RESARock, '4', 104, False, _str, 100 * (AVm3_sum + AQt_sum) / AShiftPlanRockQtn_sum);
+  //
   q0.Free;
   q1.Free;
   SetGaugeValue(FGauge.MaxValue);
@@ -9801,11 +9843,11 @@ const
   GxPkg_l = 0.84; //Плотность дизтоплива, кг/л
   T = True; F = False;
   procedure _AddReport(const AQuery: TADOQuery; const AKind: Integer; const AItem: TesaResultBlock);
-    procedure _Add(const q: TADOQuery; const ARecName: String; const AKey: ResaKeyParams; ANum: Single; const ADen: Single=-1.0); 
+    procedure _Add(const q: TADOQuery; const ARecName: String; const AKey: ResaKeyParams; ANum: Single; const ADen: Single=-1.0);
     var I: Integer;
     begin
       //Корректировка Value
-      if not(ADen<0.0) then if ADen>0.0 then ANum := ANum/ADen else ANum := 0.0; 
+      if not(ADen<0.0) then if ADen>0.0 then ANum := ANum/ADen else ANum := 0.0;
       //Записываю в БД
       q.Append;
       for I := 1 to q.Fields.Count-1 do

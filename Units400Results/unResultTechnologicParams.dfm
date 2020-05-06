@@ -1,6 +1,6 @@
 object fmResultTechnologicParams: TfmResultTechnologicParams
-  Left = 12
-  Top = 10
+  Left = 907
+  Top = 57
   Width = 800
   Height = 600
   BorderIcons = [biSystemMenu, biMaximize]
@@ -293,7 +293,7 @@ object fmResultTechnologicParams: TfmResultTechnologicParams
           end
           item
             EditButtons = <>
-            FieldName = 'Value'
+            FieldName = 'AValue'
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
@@ -513,13 +513,10 @@ object fmResultTechnologicParams: TfmResultTechnologicParams
         Value = '1'
       end>
     SQL.Strings = (
-      'SELECT Id_Rock, Rock'
+      'SELECT DISTINCT Id_Rock, Rock'
       'FROM _ResultTechnologicRockParams'
       'WHERE Id_ResultShift=:Id_ResultShift'
-      'ORDER BY Id_Rock'
-      'UNION'
-      'SELECT  1000, "'#1054#1073#1097#1080#1081' '#1086#1073#1098#1077#1084' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1099'"'
-      'FROM _ResultTechnologicRockParams')
+      'ORDER BY Id_Rock')
     Left = 464
     Top = 416
     object quResultRocksId_Rock: TIntegerField
@@ -553,24 +550,8 @@ object fmResultTechnologicParams: TfmResultTechnologicParams
         Value = Null
       end>
     SQL.Strings = (
-      'SELECT  Id_Rock, AValue, RecordName, Name, RecordNo '
-      'FROM '
-      '(SELECT Id_Rock, Value as AValue, RecordName, Name, RecordNo '
-      '  FROM _ResultTechnologicRockParams '
-      '  UNION '
-      '  SELECT '
-      '    1000 as Id_Rock, '
-      '    SUM(Value) as AValue, '
-      '    RecordName, '
-      '    (SELECT DISTINCT Name '
-      '     FROM _ResultTechnologicRockParams '
-      '     WHERE RecordName = b.RecordName) as Name, '
-      #9' '
-      '    (SELECT DISTINCT RecordNo '
-      '     FROM _ResultTechnologicRockParams '
-      '     WHERE RecordName = b.RecordName) as RecordNo '#9' '
-      '  FROM _ResultTechnologicRockParams as b '
-      '  GROUP BY RecordName) '
+      'SELECT Id_Rock, Value as AValue, RecordName, Name, RecordNo '
+      'FROM _ResultTechnologicRockParams '
       'WHERE Id_Rock=:Id_Rock '
       'ORDER BY RecordName')
     Left = 584

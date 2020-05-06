@@ -166,7 +166,7 @@ procedure TfmResultTechnologicParams.quResultRockParamsCalcFields(
 begin
   if not(Dataset.FieldByName('AValue').IsNull) then
 //    if Dataset.FieldByName('IsChangeable').AsBoolean then
-    if Dataset.FieldByName('RecordName').AsInteger = 4 then
+    if Dataset.FieldByName('RecordName').AsInteger <> 4 then
     begin
       Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('AValue').AsFloat *
                                                quResultShiftsShiftKweek.AsFloat;

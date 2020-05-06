@@ -1,5 +1,5 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 4
+  Left = 6
   Top = 0
   Width = 1161
   Height = 690

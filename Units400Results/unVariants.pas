@@ -1477,7 +1477,7 @@ begin
   dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
   dbgVariants.Columns[4].Footers[1].Value:= format('%n', [_Vm3]);
 
-  _per:= (_Vm3 * 100) / quVariantsPlannedRockVolumeCm.AsVariant;
+  _per:= (_Vm3 * 100) / (quVariantsPlannedRockVolumeCm.AsVariant * 1000 / 2 / 365 / 0.85);
   dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
   dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_per]);
 

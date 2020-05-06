@@ -250,7 +250,7 @@ begin
     //-----------------------------------------------------
     edRocksVm3.Text:= _currentParams.ValueOf['RocksVm3'];
     edProizPeriod.Text:= _currentParams.ValueOf['ProizPeriod'];
-    edSelic.Text:= _currentParams.ValueOf['Selic'];
+    edSelic.Text:= _currentParams.ValueOf['Selic_avg'];
     edParamsShiftDuration.Text:= _currentParams.ValueOf['ParamsShiftDuration'];
     edTotalCostsSummary.Text:= _currentParams.ValueOf['TotalCostsSummary'];
     edUdelQtn.Text:= _currentParams.ValueOf['UdelQtn'];
@@ -649,7 +649,7 @@ begin
         Cells[i, j]:= format('%s'+#13#10+'%s', [_nameVariant, _currentDate]);inc(j);
         Cells[i, j]:= _currentParams.ValueOf['RocksVm3'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['ProizPeriod'];inc(j);
-        Cells[i, j]:= _currentParams.ValueOf['Selic'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Selic_avg'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['ParamsShiftDuration'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['TotalCostsSummary'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['UdelQtn'];inc(j);
@@ -909,11 +909,25 @@ begin
           //--------------------------------------------------------------------------
           dbl:= FieldValues['CurrOreVm3'];
           _params.Add(TFloatParam.Create('Selic', dbl, CatSebadan));
+          // коэффициент вскрыши
+          dbl:= FieldValues['Ks'];
+          _params.Add(TFloatParam.Create('KVsry', dbl, CatSebadan));
           dbl:= FieldValues['CurrStrippingVm3'];
           dbl:= (TFloatParam(_params.Names['Selic']).Value +
                 FieldValues['CurrStrippingVm3'] +
                 FieldValues['ExcavatorsRockVm3']) / 2;
           _params.Add(TFloatParam.Create('RocksVm3', dbl, CatSebadan));
+          //
+          dbl:= TFloatParam(_params.Names['Selic']).Value;
+          dbl:= FieldValues['CurrStrippingVm3'];
+          dbl:= FieldValues['ExcavatorsRockVm3'];
+
+          dbl:= ((TFloatParam(_params.Names['Selic']).Value +    //Объем добытой руды, м3
+                FieldValues['CurrStrippingVm3'] +                //Объем добытой вскрыши, м3
+                FieldValues['ExcavatorsRockVm3']) / 2) /         //Погруженная горная масса, м3
+                (1 + FieldValues['Ks']);                         //Коэффциент вскрыши, м3/м3
+          _params.Add(TFloatParam.Create('Selic_avg', dbl, CatSebadan));
+          //
           dbl:= FieldValues['ShiftKweek'];
           _params.Add(TFloatParam.Create('ResultPeriodCoef', dbl, CatSebadan));
           dbl:= TFloatParam(_params.Names['RocksVm3']).Value * 2 * 365 * TFloatParam(_params.Names['ResultPeriodCoef']).Value;
@@ -945,9 +959,6 @@ begin
                 FieldValues['ExcavatorsWorkSalariesCtg'] +
                 FieldValues['ExcavatorsWaitingSalariesCtg'];
           _params.Add(TFloatParam.Create('Salary', dbl, CatSebadan));
-          // коэффициент вскрыши
-          dbl:= FieldValues['Ks'];
-          _params.Add(TFloatParam.Create('KVsry', dbl, CatSebadan));
           //Коэффициент занятости пункта
           //dbl:= FieldValues['BlocksEmploymentCoef'];
           //_params.Add(TFloatParam.Create('EmploymentRatio', dbl, CatSebadan));
