@@ -14,8 +14,8 @@ type
 const
   //Количественные показатели
   CesaAutosQuantity             : ResaKeyParams = (No:100; IsChangeable:False; Key:'Количественные показатели');
-  CesaAutosAutosCount           : ResaKeyParams = (No:101; IsChangeable:False; Key:'Количество автосамосвалов');
-  CesaAutosTripsCount           : ResaKeyParams = (No:102; IsChangeable:True;  Key:'Количество рейсов');
+  CesaAutosAutosCount           : ResaKeyParams = (No:101; IsChangeable:False; Key:'Количество автосамосвалов, шт.');
+  CesaAutosTripsCount           : ResaKeyParams = (No:102; IsChangeable:True;  Key:'Количество рейсов, рейс.');
   CesaAutosTripsCountNulled     : ResaKeyParams = (No:103; IsChangeable:True;  Key:' - в нулевом направлении');
   CesaAutosTripsCountLoading    : ResaKeyParams = (No:104; IsChangeable:True;  Key:' - в грузовом направлении');
   CesaAutosTripsCountUnLoading  : ResaKeyParams = (No:105; IsChangeable:True;  Key:' - в порожняковом направлении');

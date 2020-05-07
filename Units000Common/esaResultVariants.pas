@@ -117,7 +117,10 @@ begin
   inherited;
 end;{Destroy}
 //Добавление варианта
-procedure TesaResultVariant.Append(const AOpenpit: String; const AShift: ResaShift; const APeriod: ResaPeriod; const ACommon: ResaCommon);
+procedure TesaResultVariant.Append( const AOpenpit: String;
+                                    const AShift: ResaShift;
+                                    const APeriod: ResaPeriod;
+                                    const ACommon: ResaCommon);
 var ASortIndex: Integer;
 begin
   UpdateProductivity();

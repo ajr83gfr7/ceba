@@ -922,15 +922,23 @@ begin
           dbl:= FieldValues['CurrStrippingVm3'];
           dbl:= FieldValues['ExcavatorsRockVm3'];
 
+          (*
           dbl:= ((TFloatParam(_params.Names['Selic']).Value +    //Объем добытой руды, м3
                 FieldValues['CurrStrippingVm3'] +                //Объем добытой вскрыши, м3
                 FieldValues['ExcavatorsRockVm3']) / 2) /         //Погруженная горная масса, м3
                 (1 + FieldValues['Ks']);                         //Коэффциент вскрыши, м3/м3
+            *)
+          //погруженная порода
+          dbl:= (TFloatParam(_params.Names['Selic']).Value +    //Объем добытой руды, м3
+                FieldValues['CurrStrippingVm3']) /         //Погруженная горная масса, м3
+                (1 + FieldValues['Ks']);                         //Коэффциент вскрыши, м3/м3
+
           _params.Add(TFloatParam.Create('Selic_avg', dbl, CatSebadan));
           //
           dbl:= FieldValues['ShiftKweek'];
           _params.Add(TFloatParam.Create('ResultPeriodCoef', dbl, CatSebadan));
           dbl:= TFloatParam(_params.Names['RocksVm3']).Value * 2 * 365 * TFloatParam(_params.Names['ResultPeriodCoef']).Value;
+          dbl:= dbl / 1000;
           _params.Add(TFloatParam.Create('ProizPeriod', dbl, CatSebadan));
           dbl:= FieldValues['ShiftTmin'];
           _params.Add(TFloatParam.Create('ParamsShiftDuration', dbl, CatSebadan));

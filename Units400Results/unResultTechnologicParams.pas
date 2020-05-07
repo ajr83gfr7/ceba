@@ -163,11 +163,16 @@ end;
 
 procedure TfmResultTechnologicParams.quResultRockParamsCalcFields(
   DataSet: TDataSet);
+var
+  dbl: double;
 begin
   if not(Dataset.FieldByName('AValue').IsNull) then
 //    if Dataset.FieldByName('IsChangeable').AsBoolean then
     if Dataset.FieldByName('RecordName').AsInteger <> 4 then
     begin
+      dbl:= Dataset.FieldByName('AValue').AsFloat;
+      dbl:= quResultShiftsShiftKweek.AsFloat;
+      dbl:= Dataset.FieldByName('AValue').AsFloat * quResultShiftsShiftKweek.AsFloat;
       Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('AValue').AsFloat *
                                                quResultShiftsShiftKweek.AsFloat;
       Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat *

@@ -1233,7 +1233,7 @@ type
     FCurrTsecNaryad         : Integer;//Текущее время в наряде, sec {!!!}
     FCurrAutoCostsGxTgPerLtr: Single;//Стоимость 1 литра дизтоплива
     //Текущие качественные параметры
-    FCurrStrippingCoef      : Single;//Коэффициент вскрыши, т/т
+    FCurrStrippingCoef      : Single;//Коэффициент вскрыши, m3/m3 #т/т
     FCurrOreQtn             : Single;//Масса добытой руды, т
     FCurrOreVm3             : Single;//Объем добытой руды, m3
     FCurrOreQua             : Single;
@@ -2464,7 +2464,7 @@ begin
   if InRange(Index,0,FCount-1)
   then Result := FItems[Index]
   else Raise Exception.Create(Format(EInvalidIndex,[Index, FCount-1]));
-end;{GetItem}
+end;
 constructor TesaExcavators.Create(ADispatcher: TDispatcher);
 begin
   FItems := nil;
@@ -4741,7 +4741,7 @@ end;{GetCourse}
 function TesaAuto.GetCourseBlock: TesaCourseBlock;
 begin
   Result := nil;
-  if Course<>nil then                   
+  if Course<>nil then
     if InRange(FCurrCourseBlockIndex,0,Course.Count-1)
     then Result := Course.Items[FCurrCourseBlockIndex]
 end;{GetSubBlock}
@@ -5274,7 +5274,7 @@ begin
       SendInputDataErrorMsg(Format(ERoadCoatAdditionalEmpty,[Openpit.RoadCoats[I].Name]),False);
     end{if}
     else
-    begin                                                  
+    begin
       Openpit.RoadCoats.FItems[I].FBuildingC1000tn := Items[AIndex].BuildingC1000tn;
       Openpit.RoadCoats.FItems[I].FKeepingYearC1000tn := Items[AIndex].KeepingYearC1000tn;
       Openpit.RoadCoats.FItems[I].FAmortizationR := Items[AIndex].AmortizationR;
@@ -5356,7 +5356,7 @@ begin
       SendInputDataErrorMsg(Format(EAutoAdditionalEmpty,[Openpit.AutoModels[I].Name]),False);
     end{if}
     else
-    begin                                                  
+    begin
       Openpit.AutoModels.FItems[I].SparesCpercent := Items[AIndex].SparesCpercent;
       Openpit.AutoModels.FItems[I].MaterialsCpercent := Items[AIndex].MaterialsCpercent;
       Openpit.AutoModels.FItems[I].MaintenanceMonthC1000tg := Items[AIndex].MaintenanceMonthC1000tg;
@@ -6197,10 +6197,10 @@ begin
   SortList(FList0);//Уровень I б) Сортировка
 
   //Уровень II. Признак учета коэффициента вскрыши --------------------------------------------
-  if (FList0.Count>0)and                                         //Маршруты есть?
+  if (FList0.Count > 0)and                                         //Маршруты есть?
      (Openpit.Common.StrippingCoefUsing)and                //Учитывать коэффициент вскрыши?
-     (FCurrStrippingCoef<LoadingPunkts.FPlannedStrippingCoef)and //Кфакт<Кплан
-     (FCurrOreQtn>0.0)then                                       //Руда добыта
+     (FCurrStrippingCoef < LoadingPunkts.FPlannedStrippingCoef)and //Кфакт<Кплан
+     (FCurrOreQtn > 0.0)then                                       //Руда добыта
   begin
     //Создаю список1 со вскрышей
     AIsOreDone := true;
@@ -6328,11 +6328,11 @@ begin
   SortList(FList0); //Уровень I б)Сортирую Список0 по возрастанию к-ва авто, уехавших в груз направлении---------
 
   //Уровень II. Признак учета коэффициента вскрыши --------------------------------------------
-  if (FList0.Count>0)and                                     //Маршруты есть?
+  if (FList0.Count > 0)and                                     //Маршруты есть?
      (Openpit.Common.StrippingCoefUsing)and            //Учитывать коэффициент вскрыши?
      (not AAuto.Rock.IsMineralWealth)and                     //Вскрыша?
-     (Openpit.Common.AutoWorkRegime<>wrEqualDistrubation)and      //Не равномер.распределение?
-     (FCurrStrippingCoef<LoadingPunkts.FPlannedStrippingCoef)//Кфакт<Кплан
+     (Openpit.Common.AutoWorkRegime <> wrEqualDistrubation)and      //Не равномер.распределение?
+     (FCurrStrippingCoef < LoadingPunkts.FPlannedStrippingCoef)//Кфакт<Кплан
   then Result := PListItem(FList0[0])^.Course.FCourseIndex;
 
   //Уровень III. Критерий распределения: усреднение качества-----------------------------------
@@ -6645,7 +6645,7 @@ begin
       //проверка завершенности событий самосвалов
       if FShiftTsec - FCurrTsecNaryad = dTsec then
         CheckEndOfShiftForAutos(dTsec, FCurrTsecNaryad);
-      
+
       if (not FIsErrorCalc)and(FCurrWorkingAutosCount+FCurrWaitingAutosCount=0)then
       begin
 //        SendWarningMsg('Не осталось автосамосвалов в рабочем состоянии');
@@ -6731,21 +6731,24 @@ begin
       if not UnLoadingPunkts[I].Rocks[J].Rock.IsMineralWealth then
       begin//Вскрыша
         //StrippingQtn := StrippingQtn+FUnLoadingPunkts[I].Rocks[J].FInitialQtn;{?}
-        FCurrStrippingVm3 := FCurrStrippingVm3+UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Vm3;
-        FCurrStrippingQtn := FCurrStrippingQtn+UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Qtn;
+        FCurrStrippingVm3:= FCurrStrippingVm3 + UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Vm3;
+        FCurrStrippingQtn:= FCurrStrippingQtn + UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Qtn;
       end{if}
       else
       begin//Руда
         //OreQtn := OreQtn+FUnLoadingPunkts[I].Rocks[J].FInitialQtn;{?}
-        FCurrOreVm3 := FCurrOreVm3+UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Vm3;
-        FCurrOreQtn := FCurrOreQtn+UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Qtn;
-        FCurrOreQua := (FCurrOreQua* FCurrOreQtn +
-         UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Qtn +FCurrOreQtn); //проверить
+        FCurrOreVm3:= FCurrOreVm3 + UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Vm3;
+        FCurrOreQtn:= FCurrOreQtn + UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Qtn;
+        FCurrOreQua:= (FCurrOreQua * FCurrOreQtn +
+         UnLoadingPunkts[I].Rocks[J].FCurrRockVolume.Qtn + FCurrOreQtn); //проверить
       end;{else}
     end;{for}
   end;{for}
-  if FCurrOreQtn>0.0
-  then FCurrStrippingCoef := FCurrStrippingQtn/FCurrOreQtn;
+  if FCurrOreQtn > 0.0 then
+  begin
+//    FCurrStrippingCoef := FCurrStrippingQtn/FCurrOreQtn;
+//    FCurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3;
+  end;
 end;{DefineCurrStrippingCoef_}
 //Инициализация начального состояния блок-участков
 procedure TDispatcher.DefineInitBlocks_;
@@ -8631,6 +8634,9 @@ begin
 end;{DefineWaitingAutosGoBy}
 //Сохранение в БД результатов моделирования общие
 procedure TDispatcher.SaveTotalResults;
+var
+  i:integer;
+  ExcvOreVm3, ExcvStrippingVm3: double;
 begin
   FGauge.Visible := True;
   SetGaugeValue(0);
@@ -8651,12 +8657,20 @@ begin
     Openpit.FCommon.CurrOreVm3:=FCurrOreVm3;
     Openpit.FCommon.CurrStrippingQtn:=FCurrStrippingQtn;
     Openpit.FCommon.CurrStrippingVm3:=FCurrStrippingVm3;
-    if FCurrOreQtn>0.0   then Openpit.FCommon.CurrStrippingCoef := FCurrStrippingQtn/FCurrOreQtn;;
+    //todo: не усредненная
+    if FCurrOreQtn > 0.0 then
+    begin
+      //for i:= 0 to Openpit.LoadingPunkts.Count - 1 do
+      begin
+        //Openpit.LoadingPunkts.Items[i].
+      end;
+      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3;
+    end;
     Post;
     Close;
   finally
     Free;
-  end;{try}
+  end;
   //ResultShifts ---------------------------------------------------------------
   with TADOQuery.Create(nil) do
   try
@@ -8666,7 +8680,7 @@ begin
     SQL.Text := 'SELECT * FROM _ResultShifts';
     Open;
     Append;
-    Openpit.FShift.NaryadTmin                  := FCurrTsecNaryad/60; 
+    Openpit.FShift.NaryadTmin                  := FCurrTsecNaryad/60;
     FieldByName('Id_Openpit').AsInteger        := Openpit.Id_Openpit;
     FieldByName('ShiftNaryadTmin').AsFloat     := Openpit.Shift.NaryadTmin;
     FieldByName('ShiftTmin').AsInteger         := Openpit.Shift.Tmin;
@@ -8681,10 +8695,10 @@ begin
     Close;
   finally
     Free;
-  end;{try}
+  end;
   Variant.Append(Openpit.Name,Openpit.Shift,Openpit.Period,Openpit.Common);
   FOpenpit.SendMessage('Ok');
-end;{SaveTotalResults}
+end;
 
 //Сохранение в БД результатов моделирования по автосамосвалам
 procedure TDispatcher.SaveAutosResultsNew;
@@ -9777,7 +9791,7 @@ begin
   for I:= 0 to Openpit.Rocks.Count-1 do
   begin
     SetGaugeValue(I);
-    AShiftPlanRockQtn := 0.0;
+    AShiftPlanRockQtn:= 0.0;
     ARockVolume       := esaRockVolume();
     for J := 0 to LoadingPunkts.Count-1 do
     begin
@@ -9814,13 +9828,14 @@ begin
     _Add(Openpit.Rocks[I], '2', 102, True, _str, AVm3);
     _str:= format('Погруженный вес (%s) Q, т', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '3', 103, True, _str, AQt);
-    if AShiftPlanRockQtn>0.0 then
+    if AShiftPlanRockQtn > 0.0 then
       _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', 100 * AQt / AShiftPlanRockQtn)
     else
       _Add(Openpit.Rocks[I],'4',104,False,'Относительно плана, %',0.0);
   end;
+  //todo: производительность
   // summ
-  _RESARock.Id_Rock:= 1000;
+  _RESARock.Id_Rock:= 100;
   _RESARock.Name:= 'Горная масса';
   _RESARock.IsMineralWealth:= false;
   _str:= format('Плановый объем (%s) Q, т', ['Горная масса']);
@@ -9830,7 +9845,7 @@ begin
   _str:= format('Погруженный вес (%s) Q, т', ['Горная масса']);
   _Add(_RESARock, '3', 103, True, _str, AQt_sum);
   _str:= 'Относительно плана, %';
-  _Add(_RESARock, '4', 104, False, _str, 100 * (AVm3_sum + AQt_sum) / AShiftPlanRockQtn_sum);
+  _Add(_RESARock, '4', 104, False, _str, 100 * (AQt_sum) / AShiftPlanRockQtn_sum);
   //
   q0.Free;
   q1.Free;
@@ -10904,5 +10919,6 @@ begin
                       Events.FDirection);
     end;
 end;
+
 end.
 

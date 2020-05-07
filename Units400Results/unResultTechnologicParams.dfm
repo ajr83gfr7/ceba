@@ -1,6 +1,6 @@
 object fmResultTechnologicParams: TfmResultTechnologicParams
-  Left = 907
-  Top = 57
+  Left = 796
+  Top = 59
   Width = 800
   Height = 600
   BorderIcons = [biSystemMenu, biMaximize]
@@ -192,7 +192,7 @@ object fmResultTechnologicParams: TfmResultTechnologicParams
       end
     end
     object tsRocks: TTabSheet
-      Caption = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1079#1072' '#1087#1077#1088#1080#1086#1076
+      Caption = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100
       ImageIndex = 1
       object Splitter1: TSplitter
         Left = 0

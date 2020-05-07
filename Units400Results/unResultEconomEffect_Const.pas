@@ -2,7 +2,7 @@ unit unResultEconomEffect_Const;
 
 interface
 resourcestring
-  WORKFLOW_OF_SHIHT = 'Производительность ГТСК по ГМ за смену, тыс.м3.';
+  WORKFLOW_OF_SHIHT = 'Производительность ГТСК по ГМ за смену, м3.';
   WORKFLOW_OF_YEAR = 'Производительность ГТСК по ГМ за год, тыс.м3.';
   WEIGHT_OF_ORE = 'Объем добытой руды, м3';
   TIMEFLOW_OF_SHIHT = 'Продолжительность смены, мин';
