@@ -1,6 +1,6 @@
 object fmProductivity: TfmProductivity
-  Left = 382
-  Top = 34
+  Left = 265
+  Top = 22
   Width = 600
   Height = 480
   HelpType = htKeyword
@@ -289,7 +289,7 @@ object fmProductivity: TfmProductivity
       Left = 416
       Top = 24
       Width = 96
-      Height = 24
+      Height = 21
       Color = clBtnFace
       ReadOnly = True
       TabOrder = 4
