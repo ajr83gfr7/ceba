@@ -416,7 +416,7 @@ type
     FShiftFactRock : ResaRockVolume;  //Объем погруженной горной массы, м3
     function GetRock: RESARock;
     function GetShiftFactRemainingQtn: Single;
-    function GetShiftPlanQtn : Single;  
+    function GetShiftPlanQtn : Single;
   public
     property Content              : Single read FContent;
     property PeriodPlanQtn        : Single read FPeriodPlanQtn;
@@ -479,6 +479,7 @@ type
     FCount: Integer;                  //Количество пунктов погрузки
     FItems: array of TesaLoadingPunkt; //Список пунктов погрузки
     FPlannedStrippingCoef: Single;//Планируемый коэффициент вскрыши, т/т
+    FPlannedStrippingCoefVm3: Single;//Планируемый коэффициент вскрыши, м3/м3
     FRocksContentMin: Single; //Минимальное содержание полезного ископаемого на пунктах погрузки, %
     FRocksContentMax: Single; //Максимальное содержание полезного ископаемого на пунктах погрузки, %
     function GetItem(const Index: Integer): TesaLoadingPunkt;
@@ -558,7 +559,7 @@ type
     constructor Create(ADispatcher: TDispatcher);
     destructor Destroy; override;
     function IndexOf(const AId_Rock: Integer): Integer;
-  end;{TesaUnLoadingPunkt}
+  end;
 
   //TesaUnLoadingPunkts - класс "Пункты погрузки" ---------------------------------------------
   TesaUnLoadingPunkts = class(TesaDBCustomObject)
@@ -3159,6 +3160,7 @@ constructor TesaLoadingPunkts.Create(ADispatcher: TDispatcher);
 begin
   inherited;
   FPlannedStrippingCoef := 0.0;
+  FPlannedStrippingCoefVm3:= 0.0;
   FCount := 0;
   FItems := nil;
   FRocksContentMin := 0.0;
@@ -3174,6 +3176,7 @@ var
   quLoadingPunkts,quLoadingPunktRocks: TADOQuery;
   dsLoadingPunkts: TDataSource;
   Qvskrysha,Qruda: Single;
+  QvskryshaVm3,QrudaVm3: Single;
   I,J: Integer;
   APunkt: TesaLoadingPunkt;
   ARock: TesaLoadingPunktRock;
@@ -3247,24 +3250,36 @@ begin
         quLoadingPunktRocks.Close;
       finally
         quLoadingPunktRocks.Free;
-      end;{try}
+      end;
     finally
       dsLoadingPunkts.Free;
-    end;{try}
+    end;
     quLoadingPunkts.Close;
   finally
     quLoadingPunkts.Free;
-  end;{try}
+  end;
   for I := 0 to Count-1 do
-  for J := 0 to Items[I].RockCount-1 do
-  begin
-    if Items[I].Rocks[J].Rock.IsMineralWealth
-    then Qruda := Qruda+Items[I].Rocks[J].PeriodPlanQtn
-    else Qvskrysha := Qvskrysha+Items[I].Rocks[J].PeriodPlanQtn;
-  end;{for}
-  if Qruda>0.0 then FPlannedStrippingCoef := Qvskrysha/Qruda;
+    for J := 0 to Items[I].RockCount-1 do
+    begin
+      if Items[I].Rocks[J].Rock.IsMineralWealth then
+        Qruda := Qruda+Items[I].Rocks[J].PeriodPlanQtn
+      else
+        Qvskrysha := Qvskrysha+Items[I].Rocks[J].PeriodPlanQtn;
+    end;
+  for i:= 0 to Count-1 do
+    for j:= 0 to Items[I].RockCount-1 do
+    begin
+      if Items[I].Rocks[J].Rock.IsMineralWealth then
+        QrudaVm3:= QrudaVm3 + Items[I].FPeriodPlanVm3
+      else
+        QvskryshaVm3:= QvskryshaVm3 + Items[I].FPeriodPlanVm3;
+    end;
+  if Qruda > 0.0 then
+    FPlannedStrippingCoef:= Qvskrysha / Qruda;
+  if QrudaVm3 > 0.0 then
+    FPlannedStrippingCoefVm3:= QvskryshaVm3 / QrudaVm3;
   inherited;
-end;{RefreshData}
+end;
 function TesaLoadingPunkts.CheckAllTerms: Boolean;
   procedure SendMyMsg(AMsg,APrompt: String);
   begin
@@ -8659,13 +8674,8 @@ begin
     Openpit.FCommon.CurrStrippingVm3:=FCurrStrippingVm3;
     //todo: не усредненная
     if FCurrOreQtn > 0.0 then
-    begin
-      //for i:= 0 to Openpit.LoadingPunkts.Count - 1 do
-      begin
-        //Openpit.LoadingPunkts.Items[i].
-      end;
-      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3;
-    end;
+      Openpit.FCommon.CurrStrippingCoef:= Openpit.LoadingPunkts.FPlannedStrippingCoefVm3;
+//      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3
     Post;
     Close;
   finally
