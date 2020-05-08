@@ -250,7 +250,8 @@ begin
     //-----------------------------------------------------
     edRocksVm3.Text:= _currentParams.ValueOf['RocksVm3'];
     edProizPeriod.Text:= _currentParams.ValueOf['ProizPeriod'];
-    edSelic.Text:= _currentParams.ValueOf['Selic_avg'];
+    edSelic.Text:= _currentParams.ValueOf['Selic'];
+//    edSelic.Text:= _currentParams.ValueOf['Selic_avg'];
     edParamsShiftDuration.Text:= _currentParams.ValueOf['ParamsShiftDuration'];
     edTotalCostsSummary.Text:= _currentParams.ValueOf['TotalCostsSummary'];
     edUdelQtn.Text:= _currentParams.ValueOf['UdelQtn'];
@@ -649,7 +650,8 @@ begin
         Cells[i, j]:= format('%s'+#13#10+'%s', [_nameVariant, _currentDate]);inc(j);
         Cells[i, j]:= _currentParams.ValueOf['RocksVm3'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['ProizPeriod'];inc(j);
-        Cells[i, j]:= _currentParams.ValueOf['Selic_avg'];inc(j);
+        Cells[i, j]:= _currentParams.ValueOf['Selic'];inc(j);
+//        Cells[i, j]:= _currentParams.ValueOf['Selic_avg'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['ParamsShiftDuration'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['TotalCostsSummary'];inc(j);
         Cells[i, j]:= _currentParams.ValueOf['UdelQtn'];inc(j);

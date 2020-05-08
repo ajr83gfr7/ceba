@@ -1,6 +1,6 @@
 object fmResultEconomEffect: TfmResultEconomEffect
-  Left = 6
-  Top = 0
+  Left = 759
+  Top = 37
   Width = 1161
   Height = 690
   Caption = 'actLoadVariant'

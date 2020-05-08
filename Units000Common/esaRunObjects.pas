@@ -8674,7 +8674,8 @@ begin
     Openpit.FCommon.CurrStrippingVm3:=FCurrStrippingVm3;
     //todo: не усредненная
     if FCurrOreQtn > 0.0 then
-      Openpit.FCommon.CurrStrippingCoef:= Openpit.LoadingPunkts.FPlannedStrippingCoefVm3;
+      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingQtn/FCurrOreQtn;    
+//      Openpit.FCommon.CurrStrippingCoef:= Openpit.LoadingPunkts.FPlannedStrippingCoefVm3;
 //      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3
     Post;
     Close;
