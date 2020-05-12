@@ -243,7 +243,7 @@ type
     quVariantsTruckCostCtg: TFloatField;
     quVariantsServiceExpensesCtg: TFloatField;
     quVariantsBaseVariantExpenesCtg: TFloatField;
-    quVariantsPlannedRockVolumeCm: TFloatField;
+    //quVariantsPlannedRockVolumeCm: TFloatField;
     gbResult: TGroupBox;
     lbUsEcom: TLabel;
     lbOtnoEconom: TLabel;
@@ -282,6 +282,7 @@ type
     quVariantsCurrOreVm3: TFloatField;
     quVariantsCurrStrippingQtn: TFloatField;
     quVariantsCurrStrippingVm3: TFloatField;
+    quVariantsPlannedRockVolumeCm: TFloatField;
     Label2: TLabel;
     dbeKs: TDBEdit;
     Label8: TLabel;
@@ -412,6 +413,7 @@ begin
   pcExcavators.ActivePageIndex := 0;
   pcBlocks.ActivePageIndex     := 0;
   quVariants.OnCalcFields      := DoVariantsCalcFields;
+  quVariants.Close;
   quVariants.Open;
   NEESaveToLocal();
   quVariants.Last;
@@ -1464,6 +1466,9 @@ var
   _Vt: double;
   _Cost: double;
   _per: double;
+  //
+  _tmpQtn: double;
+  _tmpPlan: double;
 begin
   if quVariants.Active then
     dbgVariants.Columns[0].Footers[0].Value := Format('%d/%d',[quVariants.RecNo,quVariants.RecordCount])
@@ -1477,7 +1482,12 @@ begin
   dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
   dbgVariants.Columns[4].Footers[1].Value:= format('%n', [_Vm3]);
 
-  _per:= (_Vm3 * 100) / (quVariantsPlannedRockVolumeCm.AsVariant * 1000 / 2 / 365 / 0.85);
+  //todo: .Желтая строка в Вариантах
+  _tmpQtn:= _Vm3 * 100;
+  _tmpPlan:= quVariantsPlannedRockVolumeCm.AsVariant;
+//  _tmpPlan:= 1;//quVariantsPlannedRockVolumeCm.AsVariant * 1000 / 2 / 365 / 0.85;
+
+  _per:= _tmpQtn / _tmpPlan;
   dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
   dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_per]);
 

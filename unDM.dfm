@@ -1,7 +1,7 @@
 object fmDM: TfmDM
   OldCreateOrder = False
-  Left = 334
-  Height = 616
+  Left = 953
+  Height = 834
   Width = 993
   object ADOConnection: TADOConnection
     ConnectionString = 
@@ -15,6 +15,7 @@ object fmDM: TfmDM
       ';Jet OLEDB:Don'#39't Copy Locale on Compact=False;Jet OLEDB:Compact ' +
       'Without Replica Repair=False;Jet OLEDB:SFP=False;'
     LoginPrompt = False
+    Mode = cmShareDenyNone
     Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 664
     Top = 648

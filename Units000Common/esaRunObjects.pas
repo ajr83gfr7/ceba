@@ -471,7 +471,7 @@ type
     destructor Destroy; override;
     function IndexOf(const AId_Rock: Integer): Integer;
     procedure AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single);
-  end;{TesaLoadingPunkt}
+  end;
 
   //TesaLoadingPunkts - класс "Пункты погрузки" -----------------------------------------------
   TesaLoadingPunkts = class(TesaDBCustomObject)
@@ -3146,8 +3146,9 @@ begin
 end;{IndexOf}
 procedure TesaLoadingPunkt.AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single);
 begin
-  FPeriodPlanVm3 := PeriodPlanVm3+APeriodPlanVm3;
-  FPeriodPlanQtn := PeriodPlanQtn+APeriodPlanQtn;
+//todo: ....
+ FPeriodPlanVm3:= PeriodPlanVm3 + APeriodPlanVm3;
+ FPeriodPlanQtn:= PeriodPlanQtn + APeriodPlanQtn;
 end;{AddPeriodPlanRock}
 //TesaLoadingPunkts - класс "Пункты погрузки" -------------------------------------------------
 function TesaLoadingPunkts.GetItem(const Index: Integer): TesaLoadingPunkt;
@@ -3242,7 +3243,7 @@ begin
             ARock.FPeriodPlanQtn  := Round(FieldByName('PlannedV1000m3').AsFloat*1000)*FieldByName('DensityInBlock').AsFloat;
             ARock.FDensityInBlock := FieldByName('DensityInBlock').AsFloat;
             ARock.FShatteringCoef := FieldByName('ShatteringCoef').AsFloat;
-            APunkt.AddPeriodPlanRock(FieldByName('PlannedV1000m3').AsFloat*1000,ARock.PeriodPlanQtn);
+            APunkt.AddPeriodPlanRock(FieldByName('PlannedV1000m3').AsFloat*1000, ARock.PeriodPlanQtn);
             Next;
           end;{while}
           quLoadingPunkts.Next;
@@ -7476,7 +7477,7 @@ begin
         Events.FAvgHmNum  := Events.FAvgHmNum+eAvgHmNum;
         Events.FAvgHmDen  := Events.FAvgHmDen+eAvgHmDen;
         Events.FAvgVkmh   := esaSum(Events.AvgVkmh,FCurrVavg,1);
-      end;{else}
+      end;
       //3. Доехал до конца маршрута? ----------------------------------------------------------
       if APos=apManeuverToPunkt1 then
       begin//3.1.Доехал до конца маршрута (т.е. закончили маневр и подъехали к пункту)
@@ -7487,7 +7488,6 @@ begin
           AUnloadingPunkt.Events.Manevr(0.0,FCurrDtReqSec,AAuto);
         //======================================================================
 
-        // todo: .fix autos-standing
         //пункт, к которому подъехал авто, свободен?
         if ((ADir=adLoading)and(UnLoadingPunkts[CurrCourse.FPunktIndex1].IsEmpty))OR
            ((ADir=adLoading)and(CurrCourse.Last.RightAutoIndex=FAutoIndex))or
@@ -7495,20 +7495,12 @@ begin
         begin//если ПР свободен (ПП и ППС всегда свободны)
           DefineAutosEmptyCurrBlock_(AAuto);                 //Освобождаю тек. БУ
           DefineAutosPlacePunkt_(AAuto,ACurrTsecNaryad);     //Занимаю Пункт
-        end{if}
+        end
         else
         begin
-(*
-          if (_tmp_bool)and(AAuto.FParkNo=2) then
-         		TXTWriter.TWriter.WriteToTXT(format('badAuto L%d R%d',
-                                                [CurrCourse.Last.LeftAutoIndex,
-                                                 CurrCourse.Last.RightAutoIndex]));
-
-  *)
-
           DefineAutosUhozhuVProstoyOnUP__(AAuto);         //Ухожу в простой на пункте
         end;
-      end{if}
+      end
       else
       begin//3.2. Еще не доехали до конца маршрута(т.е. впереди еще БУ)
         //Выехал из ПП =========================================================
@@ -8439,10 +8431,6 @@ begin
           end{if}
           else//След.БУ занят
           begin//Ушел в простой
-
-//            if (_tmp_bool)and(FCurrAutos[I].FParkNo=2) then
-//          		TXTWriter.TWriter.WriteToTXT(format('badAuto %d', [ABlock.LeftAutoIndex]));,
-            // todo: .fix autos-standing
             if (FCurrPosition = apOnPunkt1) and (FCurrDirection = adLoading) then
             begin
               FCurrCourseIndex:= cIndex;
@@ -8549,12 +8537,7 @@ begin
             adLoading: eDir := edLoading;
             adUnLoading: eDir := edUnLoading;
             adFromSP,adToSP: eDir := edNulled;
-          end;{case}
-          //todo:
-//          tmp_auto_name:= format('%s:%d', [AAuto.Name, AAuto.FParkNo]);
-//          if (tmp_auto_name = _tmp_test_auto) then
-//            uFLog(format('Waiting=loading:%d', [FCurrDt0Sec]));
-          //
+          end;
           Events.Waiting(FCurrGxReq, FCurrDt0Sec + _cut_sec, eDir, FCurrRock, FCurrRockVolume,
             CurrCourse.Punkt1, CurrCourse.Punkt0);
           DefineAutosEmptyCurrBlock_(AAuto);//Освобождаю тек.БУ
@@ -9569,17 +9552,21 @@ procedure TDispatcher.SaveEconomResultsNew;
   //Сохраить в самый последний вариант
   const
     SELECT_ID_RESULT_VARIANT = 'SELECT Id_ResultVariant ' +
-                              'FROM _ResultVariants ' +
-                              'WHERE VariantDate = (SELECT MAX(VariantDate) FROM _ResultVariants)';
+                               'FROM _ResultVariants ' +
+                               'WHERE VariantDate = (SELECT MAX(VariantDate) FROM _ResultVariants)';
+    SELECT_PLAN_SUM = 'SELECT SUM(PlannedV1000m3) AS PlanV1000m3 ' +
+                      'FROM OpenpitLoadingPunktRocks';
     UPDATE_RESULT_VARIANT = 'UPDATE _ResultVariants ' +
                             'SET ' +
                             'ProductPriceCtg=:ProductPriceCtg, ' +
                             'MTWorkByScheduleCtg=:MTWorkByScheduleCtg, ' +
-                            'ServiceExpensesCtg=:ServiceExpensesCtg ' +
+                            'ServiceExpensesCtg=:ServiceExpensesCtg, ' +
+                            'PlannedRockVolumeCm=:PlannedRockVolumeCm ' +
                             'WHERE Id_ResultVariant=:Id_ResultVariant';
   var
     _qry: TADOQuery;
     Id_ResultVariant: integer;
+    plan: double;
   begin
     _qry:= TADOQuery.Create(nil);
     _qry.Connection:= fmDM.ADOConnection;
@@ -9592,10 +9579,16 @@ procedure TDispatcher.SaveEconomResultsNew;
       Id_ResultVariant:= FieldValues['Id_ResultVariant'];
       Close;
       SQL.Clear;
+      SQL.Text:= SELECT_PLAN_SUM;
+      Open;
+      plan:= FieldValues['PlanV1000m3'];
+      Close;
+      SQL.Clear;
       SQL.Text:= UPDATE_RESULT_VARIANT;
       Parameters.ParamByName('ProductPriceCtg').Value:= ProductPriceCtg;
       Parameters.ParamByName('MTWorkByScheduleCtg').Value:= MTWorkByScheduleCtg;
       Parameters.ParamByName('ServiceExpensesCtg').Value:= ServiceExpensesCtg;
+      Parameters.ParamByName('PlannedRockVolumeCm').Value:= plan;
 
       Parameters.ParamByName('Id_ResultVariant').Value:= Id_ResultVariant;
       ExecSQL;
@@ -9692,8 +9685,8 @@ begin
     SetGaugeValue(FGauge.MaxValue);
     FOpenpit.SendMessage('Ok');
   finally
-  end;{try}
-end;{SaveEconomResultsNew}
+  end;
+end;
 //Сохранение в БД результатов моделирования за период
 procedure TDispatcher.SavePeriodResultsNew;
 var q0,q1, q_resultVariants: TADOQuery;
@@ -9740,14 +9733,19 @@ var q0,q1, q_resultVariants: TADOQuery;
 var
   I,J,K: Integer;
   AShiftPlanRockQtn: Single;
-  ARockVolume: ResaRockVolume;
   AShiftPlanRockQtn_sum: Single;
+  AShiftPlanRockVm3: single;
+  AShiftPlanRockVm3_sum: single;
+  ARockVolume: ResaRockVolume;
   ARockVolume_sum: ResaRockVolume;
   _str: string;
   _RESARock: RESARock;
   //
   AVm3, AQt: double;
   AVm3_sum, AQt_sum: double;
+  //
+  _tmpQtn: double;
+  _tmpPlan: double;
 begin
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования за период моделирования..');
@@ -9797,20 +9795,24 @@ begin
   q1.Open;
   FGauge.MaxValue := Openpit.Rocks.Count;
   AShiftPlanRockQtn_sum:= 0.0;
+  AShiftPlanRockVm3_sum:= 0.0;
   ARockVolume_sum:= esaRockVolume();
   AVm3_sum:= 0; AQt_sum:= 0;
   for I:= 0 to Openpit.Rocks.Count-1 do
   begin
     SetGaugeValue(I);
     AShiftPlanRockQtn:= 0.0;
+    AShiftPlanRockVm3:= 0.0;
     ARockVolume       := esaRockVolume();
     for J := 0 to LoadingPunkts.Count-1 do
     begin
       for K := 0 to LoadingPunkts[J].RockCount-1 do
         if LoadingPunkts[J].Rocks[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock then
         begin
-          AShiftPlanRockQtn:= AShiftPlanRockQtn + LoadingPunkts[J].Rocks[K].ShiftPlanQtn;
-          AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + LoadingPunkts[J].Rocks[K].ShiftPlanQtn;
+          AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlanQtn / 1000);
+          AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlanQtn / 1000);
+          AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlanVm3 / 1000);
+          AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlanVm3 / 1000);
         end;
       for K := 0 to LoadingPunkts[J].Excavator.Events.Count-1 do
         if (LoadingPunkts[J].Excavator.Events[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock) and
@@ -9832,6 +9834,7 @@ begin
     end;
     AVm3_sum:= AVm3_sum + AVm3;
     AQt_sum:= AQt_sum + AQt;
+    //todo: .ГМ в Показателях
 
     _str:= format('Плановый объем (%s) Q, т', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn);
@@ -9839,24 +9842,31 @@ begin
     _Add(Openpit.Rocks[I], '2', 102, True, _str, AVm3);
     _str:= format('Погруженный вес (%s) Q, т', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '3', 103, True, _str, AQt);
+
+    _tmpQtn:= 100 * AQt;
+    _tmpPlan:= AShiftPlanRockQtn;
     if AShiftPlanRockQtn > 0.0 then
-      _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', 100 * AQt / AShiftPlanRockQtn)
+      _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', _tmpQtn / _tmpPlan)
     else
       _Add(Openpit.Rocks[I],'4',104,False,'Относительно плана, %',0.0);
   end;
-  //todo: производительность
+  //todo: .производительность
   // summ
   _RESARock.Id_Rock:= 100;
   _RESARock.Name:= 'Горная масса';
   _RESARock.IsMineralWealth:= false;
-  _str:= format('Плановый объем (%s) Q, т', ['Горная масса']);
-  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockQtn_sum);
+  _str:= format('Плановый объем (%s) V, м3', ['Горная масса']);
+  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockVm3_sum);
   _str:= format('Погруженный объем (%s) V, м3', ['Горная масса']);
   _Add(_RESARock, '2', 102, True, _str, AVm3_sum);
   _str:= format('Погруженный вес (%s) Q, т', ['Горная масса']);
   _Add(_RESARock, '3', 103, True, _str, AQt_sum);
   _str:= 'Относительно плана, %';
-  _Add(_RESARock, '4', 104, False, _str, 100 * (AQt_sum) / AShiftPlanRockQtn_sum);
+  //
+  _tmpQtn:= 100 * AVm3_sum;
+  _tmpPlan:= AShiftPlanRockVm3_sum;
+
+  _Add(_RESARock, '4', 104, False, _str, _tmpQtn / _tmpPlan);
   //
   q0.Free;
   q1.Free;

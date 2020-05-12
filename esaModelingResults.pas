@@ -2667,9 +2667,7 @@ begin
     for I := 0 to Openpit.UnLoadingPunkts.Count-1 do
       Openpit.UnLoadingPunkts[I].SetParams(FSelectedResultItemIndex);
   end;{if}
-end;{SetCurTsec}
-//todo: .2
-//u+
+end;
 procedure TResultOpenpitCourse3D.GetSortedSubBlocks(const startPoint: integer;
                                                     var blocks: TList);
   function Crossed(p0, p1: PSubBlock):boolean;
@@ -2750,6 +2748,5 @@ begin
     Inc(targetItem);
   end;
 end;
-//u-
 
 end.

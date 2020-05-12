@@ -1,6 +1,6 @@
 object fmResultTechnologicParams: TfmResultTechnologicParams
-  Left = 796
-  Top = 59
+  Left = 1
+  Top = 1
   Width = 800
   Height = 600
   BorderIcons = [biSystemMenu, biMaximize]
