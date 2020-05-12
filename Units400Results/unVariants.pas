@@ -1484,7 +1484,7 @@ begin
 
   //todo: .Желтая строка в Вариантах
   _tmpQtn:= _Vm3 * 100;
-  _tmpPlan:= quVariantsPlannedRockVolumeCm.AsVariant;
+  _tmpPlan:= quVariantsPlannedRockVolumeCm.AsVariant / 620.5 * 1000;
 //  _tmpPlan:= 1;//quVariantsPlannedRockVolumeCm.AsVariant * 1000 / 2 / 365 / 0.85;
 
   _per:= _tmpQtn / _tmpPlan;

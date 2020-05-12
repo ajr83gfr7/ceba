@@ -7138,8 +7138,8 @@ begin
 *)
     if FCurrAutos[I].FCurrPosition=apOnPunkt1 then
     begin
-      if (tmp_auto_name='14')then
-        tmp_auto_name:= format('%s!', [tmp_auto_name]);
+//      if (tmp_auto_name='14')then
+//        tmp_auto_name:= format('%s!', [tmp_auto_name]);
       if FCurrAutos[I].FCurrDirection in [adFromSP,adUnLoading]
       then
       begin
@@ -9837,14 +9837,14 @@ begin
     //todo: .ГМ в Показателях
 
     _str:= format('Плановый объем (%s) Q, т', [Openpit.Rocks[I].Name]);
-    _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn);
+    _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn / 620.5 * 1000);
     _str:= format('Погруженный объем (%s) V, м3', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '2', 102, True, _str, AVm3);
     _str:= format('Погруженный вес (%s) Q, т', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '3', 103, True, _str, AQt);
 
     _tmpQtn:= 100 * AQt;
-    _tmpPlan:= AShiftPlanRockQtn;
+    _tmpPlan:= AShiftPlanRockQtn / 620.5 * 1000;
     if AShiftPlanRockQtn > 0.0 then
       _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', _tmpQtn / _tmpPlan)
     else
@@ -9856,7 +9856,7 @@ begin
   _RESARock.Name:= 'Горная масса';
   _RESARock.IsMineralWealth:= false;
   _str:= format('Плановый объем (%s) V, м3', ['Горная масса']);
-  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockVm3_sum);
+  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockVm3_sum / 620.5 * 1000);
   _str:= format('Погруженный объем (%s) V, м3', ['Горная масса']);
   _Add(_RESARock, '2', 102, True, _str, AVm3_sum);
   _str:= format('Погруженный вес (%s) Q, т', ['Горная масса']);
@@ -9864,7 +9864,7 @@ begin
   _str:= 'Относительно плана, %';
   //
   _tmpQtn:= 100 * AVm3_sum;
-  _tmpPlan:= AShiftPlanRockVm3_sum;
+  _tmpPlan:= AShiftPlanRockVm3_sum / 620.5 * 1000;
 
   _Add(_RESARock, '4', 104, False, _str, _tmpQtn / _tmpPlan);
   //
