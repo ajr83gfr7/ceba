@@ -1,7 +1,4 @@
 unit unResultEconomParams;
-{ DONE -oСулеймен -c2007/09/14 : 1. Добавить вкладки за смену/среднедельную смену }
-{ DONE -oСулеймен -c2007/09/14 : 2. Добавить эксплутационные затраты ЭАК }
-{ DONE -oСулеймен -c2007/09/14 : 3. Проверить постоянные и неучтенные расходы }
 interface
 
 uses
@@ -59,7 +56,7 @@ type
       State: TGridDrawState);
     procedure btShiftClick(Sender: TObject);
   private
-  end;{TfmResultsEconomParams}
+  end;
 
 var
   fmResultEconomParams: TfmResultEconomParams;
@@ -81,26 +78,26 @@ begin
     fmResultEconomParams.ShowModal;
   finally
     fmResultEconomParams.Free;
-  end;{try}
-end;{esaShowResultEconomParamsDlg}
+  end;
+end;
 
 procedure TfmResultEconomParams.FormCreate(Sender: TObject);
 begin
   quResultShifts.Open;
   quResultEconomReports.Open;
   cbMeasureChange(nil);
-end;{FormCreate}
+end;
 procedure TfmResultEconomParams.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   quResultEconomReports.Close;
   quResultShifts.Close;
-end;{FormClose}
+end;
 
 procedure TfmResultEconomParams.quResultShiftsCalcFields(DataSet: TDataSet);
 begin
   quResultShiftsShiftPlanNaryadTmin.AsFloat :=
     quResultShiftsShiftTmin.AsFloat - quResultShiftsShiftPeresmenkaTmin.AsFloat;
-end;{quResultShiftsCalcFields}
+end;
 procedure TfmResultEconomParams.quResultEconomReportsCalcFields(DataSet: TDataSet);
 var AValue,AKoef: Single;
 begin
@@ -119,19 +116,19 @@ begin
     begin
       Dataset.FieldByName('Value2').AsFloat := AValue*quResultShiftsShiftKweek.AsFloat;
       Dataset.FieldByName('Value3').AsFloat := AValue*quResultShiftsPeriodKshift.AsFloat;
-    end;{if}
-  end;{if}
-end;{quResultShiftAutoReport1CalcFields}
+    end;
+  end;
+end;
 
 procedure TfmResultEconomParams.btDistributionClick(Sender: TObject);
 begin
   esaShowResultEconomParamsDistributation(quResultShiftsId_ResultShift.AsInteger);
-end;{btDistributionClick}
+end;
 
 procedure TfmResultEconomParams.cbMeasureChange(Sender: TObject);
 begin
   quResultEconomReports.Refresh;
-end;{cbMeasureChange}
+end;
 
 procedure TfmResultEconomParams.btExcelClick(Sender: TObject);
 var
@@ -172,15 +169,16 @@ begin
           ASheet.Range['C'+IntToStr(ARow),'C'+IntToStr(ARow)].Value := quResultEconomReportsValue.AsFloat;
           ASheet.Range['D'+IntToStr(ARow),'D'+IntToStr(ARow)].Value := quResultEconomReportsValue1.AsFloat;
           ASheet.Range['E'+IntToStr(ARow),'E'+IntToStr(ARow)].Value := quResultEconomReportsValue2.AsFloat;
-          end{if}
+          end
           else ASheet.Range['A'+IntToStr(ARow),'B'+IntToStr(ARow)].Font.Bold := True;
         quResultEconomReports.Next;
         Inc(ARow);
-      end;{while}
+      end;
       quResultEconomReports.First;
-    end{if}
+    end
     else Inc(ARow);
-    if ARow=3 then Inc(ARow);
+    if ARow=3 then
+      Inc(ARow);
     ARange := ASheet.Range['A1','E'+IntToStr(ARow-1)];
     ASheet.Range['A1','E2'].HorizontalAlignment := xlCenter;
     ASheet.Range['A1','E2'].VerticalAlignment := xlCenter;
@@ -204,21 +202,21 @@ begin
     quResultEconomReports.EnableControls;
     XL := Unassigned;
     Screen.Cursor := crDefault;
-  end;{try}
-end;{btExcelClick}
+  end;
+end;
 
 procedure TfmResultEconomParams.dbgResultEconomReportsDrawColumnCell(
   Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
-  if TDBGridEh(Sender).DataSource.Dataset.FieldByName('RecordNo').AsInteger mod 100 = 0
-  then TDBGridEh(Sender).Canvas.Font.Style := [fsBold];
+  if TDBGridEh(Sender).DataSource.Dataset.FieldByName('RecordNo').AsInteger mod 100 = 0 then
+    TDBGridEh(Sender).Canvas.Font.Style := [fsBold];
   TDBGridEh(Sender).DefaultDrawColumnCell(Rect,DataCol,Column,State);
-end;{dbgResultEconomReportsDrawColumnCell}
+end;
 
 procedure TfmResultEconomParams.btShiftClick(Sender: TObject);
 begin
   esaShowResultShiftDlg();
-end;{btShiftClick}
+end;
 
 end.

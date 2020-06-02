@@ -1,5 +1,4 @@
 unit unResultShiftExcavators;
-{ TODO -oСулеймен -c18/09/2007 : 12. Пересмотреть fmResultShiftExcavators }
 
 interface
 

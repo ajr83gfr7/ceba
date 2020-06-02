@@ -1,5 +1,5 @@
 unit Globals;
-{ TODO :Разобраться с шаблонами для Format }
+
 interface
 uses Graphics, Types, StdCtrls, ADODb, DBGrids, ExtCtrls, Db, Grids, Forms, Classes,
      Controls, ComCtrls;

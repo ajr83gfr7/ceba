@@ -10,7 +10,7 @@ resourcestring
   COST_OF_M3 = 'Удельные текущие затраты на 1 м3 по ГМ, тг/м3';
   CASH_EMPLOEE = 'ЗП машинистов и водителей, тыс.тг/мес.';
   KOEF_OF_ROCK = 'Коэффициент вскрыши Кв, т/т';
-  KOEF_SHIHTCHANGE = 'Коэф. перехода сменных показателей на период';
+  KOEF_SHIHTCHANGE = 'Коэффициент сменных параметров';
   KOEF_PUNKT_BUZY = 'Коэффициент занятости пункта';
   KOEF_AUTOUSE = 'Коэффициент использования автосамосвалов';
   COUNT_EXCV_ON_LOAD = 'Число экскаваторов на погрузке, шт.';
@@ -21,12 +21,12 @@ resourcestring
   COUNT_OF_UNLOAD_PUNKT = 'Число пунктов выгрузки, шт ';
   SUMCOST_OF_ROAD = 'Суммарные затраты по автотрассе, тг';
   LENGTH_OF_ROAD = 'Общая протяженность автотрассы, км';
-  COST_OF_ROAD_SUPPORT = 'Затраты на поддержание 1 км. дорог за период, тыс.тг';
+  COST_OF_ROAD_SUPPORT = 'Затраты на поддержание 1 км.дорог/год, тыс.тг';
   COUNT_OF_AUTOS = 'Рабочий парк автосамосвалов, шт';
   KPD_AUTO_TRANSMISSION = 'КПД автосамосвалов трансмиссии, %';
   RASHOD_TYRES = 'Удельный расход шин, шт/м3';
   COST_OF_1TYRE = 'Стоимость одной шины, тыс.тг';
-  COST_ON_TYRES = 'Затраты на шины, тыс.тн/период';
+  COST_ON_TYRES = 'Затраты на шины, тн./смена';
   COST_ON_1GSM = 'Стоимость 1 литра топлива, тг';
   RASHOD_GSM = 'Удельный расход топлива, г/ткм';
   RASHOD_GSM_FOR_LITER = 'Расход топлива, л';
@@ -153,6 +153,7 @@ resourcestring
   SELECT_COST_GTR_OF_BASE = 'SELECT ServiceExpensesCtg ' +
                             'FROM _ResultVariants ' +
                             'WHERE Id_ResultVariant=:Id_ResultVariant';
+  SELECT_ALL_RESULTS = 'SELECT * FROM _ResultVariants';
   UPDATE_COST_GTR_OF_BASE = 'UPDATE _ResultVariants ' +
                             'SET BaseVariantExpenesCtg=:BaseVariantExpenesCtg ' +
                             'WHERE (Id_ResultVariant=:Id_ResultVariant)';

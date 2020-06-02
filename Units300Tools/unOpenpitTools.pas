@@ -1,5 +1,4 @@
 unit unOpenpitTools;
-{ TODO : Все амперсанды правильно расставить }
 interface
 
 uses

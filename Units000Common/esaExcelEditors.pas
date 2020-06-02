@@ -21,7 +21,6 @@ unit esaExcelEditors;
 - изменять размеры столбцов
 - закреплять статической области столбцов/строк шапки при прокрутке рабочего столбца
 }
-{ TODO : Функциональные возможности ExcelEditor }
 interface
 uses Graphics, Types;
 const

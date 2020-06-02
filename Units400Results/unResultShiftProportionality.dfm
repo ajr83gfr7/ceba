@@ -4,38 +4,38 @@ object fmResultShiftProportionality: TfmResultShiftProportionality
   BorderIcons = [biSystemMenu, biMaximize]
   BorderStyle = bsDialog
   Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1088#1086#1087#1086#1088#1094#1080#1086#1085#1072#1083#1100#1085#1086#1089#1090#1080
-  ClientHeight = 340
-  ClientWidth = 719
+  ClientHeight = 276
+  ClientWidth = 584
   Color = clBtnFace
   Constraints.MinHeight = 312
   Constraints.MinWidth = 600
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object pnBtns: TPanel
     Left = 0
-    Top = 289
-    Width = 719
-    Height = 51
+    Top = 235
+    Width = 584
+    Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     DesignSize = (
-      719
-      51)
+      584
+      41)
     object btCancel: TButton
-      Left = 601
-      Top = 10
-      Width = 88
-      Height = 31
+      Left = 488
+      Top = 8
+      Width = 72
+      Height = 25
       Anchors = [akTop, akRight]
       Cancel = True
       Caption = #1047#1072#1082#1088#1099#1090#1100
@@ -43,10 +43,10 @@ object fmResultShiftProportionality: TfmResultShiftProportionality
       TabOrder = 1
     end
     object btShift: TButton
-      Left = 20
-      Top = 10
-      Width = 147
-      Height = 31
+      Left = 16
+      Top = 8
+      Width = 120
+      Height = 25
       Caption = #1057#1084#1077#1085#1085#1099#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099'...'
       TabOrder = 0
       OnClick = btShiftClick
@@ -55,8 +55,8 @@ object fmResultShiftProportionality: TfmResultShiftProportionality
   object TabControl: TTabControl
     Left = 0
     Top = 0
-    Width = 719
-    Height = 289
+    Width = 584
+    Height = 235
     Align = alClient
     TabOrder = 1
     Tabs.Strings = (
@@ -66,60 +66,60 @@ object fmResultShiftProportionality: TfmResultShiftProportionality
     TabIndex = 0
     OnChange = TabControlChange
     object ledUsingRatio0: TLabeledEdit
-      Left = 532
-      Top = 49
-      Width = 157
+      Left = 432
+      Top = 40
+      Width = 128
       Height = 24
-      EditLabel.Width = 318
-      EditLabel.Height = 16
+      EditLabel.Width = 233
+      EditLabel.Height = 13
       EditLabel.Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1085#1080#1103' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1072
       LabelPosition = lpLeft
       ReadOnly = True
       TabOrder = 0
     end
     object ledUsingRatio1: TLabeledEdit
-      Left = 532
-      Top = 79
-      Width = 157
+      Left = 432
+      Top = 64
+      Width = 128
       Height = 24
-      EditLabel.Width = 298
-      EditLabel.Height = 16
+      EditLabel.Width = 219
+      EditLabel.Height = 13
       EditLabel.Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1080#1089#1087#1086#1083#1100#1079#1086#1074#1072#1085#1080#1103' '#1101#1082#1089#1082#1072#1074#1072#1090#1086#1088#1072
       LabelPosition = lpLeft
       ReadOnly = True
       TabOrder = 1
     end
     object ledWaitingTmin0: TLabeledEdit
-      Left = 532
-      Top = 128
-      Width = 157
+      Left = 432
+      Top = 104
+      Width = 128
       Height = 24
-      EditLabel.Width = 246
-      EditLabel.Height = 16
+      EditLabel.Width = 185
+      EditLabel.Height = 13
       EditLabel.Caption = #1042#1088#1077#1084#1103' '#1087#1088#1086#1089#1090#1086#1103' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1072', '#1084#1080#1085
       LabelPosition = lpLeft
       ReadOnly = True
       TabOrder = 2
     end
     object ledWaitingTmin1: TLabeledEdit
-      Left = 532
-      Top = 158
-      Width = 157
+      Left = 432
+      Top = 128
+      Width = 128
       Height = 24
-      EditLabel.Width = 226
-      EditLabel.Height = 16
+      EditLabel.Width = 171
+      EditLabel.Height = 13
       EditLabel.Caption = #1042#1088#1077#1084#1103' '#1087#1088#1086#1089#1090#1086#1103' '#1101#1082#1089#1082#1072#1074#1072#1090#1086#1088#1072', '#1084#1080#1085
       LabelPosition = lpLeft
       ReadOnly = True
       TabOrder = 3
     end
     object ledProportionality0: TLabeledEdit
-      Left = 532
-      Top = 207
-      Width = 157
+      Left = 432
+      Top = 168
+      Width = 128
       Height = 24
-      EditLabel.Width = 578
-      EditLabel.Height = 16
+      EditLabel.Width = 418
+      EditLabel.Height = 13
       EditLabel.Caption = 
         #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1088#1086#1087#1086#1088#1094#1080#1086#1085#1072#1083#1100#1085#1086#1089#1090#1080' '#1086#1090#1085#1086#1089#1080#1090#1077#1083#1100#1085#1086' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074' '#1080#1089#1087#1086#1083#1100 +
         #1079#1086#1074#1072#1085#1080#1103
@@ -128,12 +128,12 @@ object fmResultShiftProportionality: TfmResultShiftProportionality
       TabOrder = 4
     end
     object ledProportionality1: TLabeledEdit
-      Left = 532
-      Top = 236
-      Width = 157
+      Left = 432
+      Top = 192
+      Width = 128
       Height = 24
-      EditLabel.Width = 481
-      EditLabel.Height = 16
+      EditLabel.Width = 350
+      EditLabel.Height = 13
       EditLabel.Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1088#1086#1087#1086#1088#1094#1080#1086#1085#1072#1083#1100#1085#1086#1089#1090#1080' '#1086#1090#1085#1086#1089#1080#1090#1077#1083#1100#1085#1086' '#1074#1088#1077#1084#1077#1085#1080' '#1087#1088#1086#1089#1090#1086#1077#1074
       LabelPosition = lpLeft
       ReadOnly = True

@@ -1,5 +1,4 @@
 unit unOpenpitEditor;
-{ TODO : 3D, Печать, Excel надо доделать }
 interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,

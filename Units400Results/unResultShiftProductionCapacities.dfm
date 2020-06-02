@@ -10,40 +10,40 @@ object fmResultShiftProductionCapacities: TfmResultShiftProductionCapacities
   Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object pnBtns: TPanel
     Left = 0
-    Top = 505
-    Width = 782
-    Height = 50
+    Top = 521
+    Width = 784
+    Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     DesignSize = (
-      782
-      50)
+      784
+      41)
     object btExcel: TButton
-      Left = 177
-      Top = 10
-      Width = 93
-      Height = 31
+      Left = 144
+      Top = 8
+      Width = 75
+      Height = 25
       Caption = #1055#1077#1095#1072#1090#1100'...'
       TabOrder = 1
       OnClick = btExcelClick
     end
     object btCancel: TButton
-      Left = 866
-      Top = 10
-      Width = 93
-      Height = 31
+      Left = 704
+      Top = 8
+      Width = 75
+      Height = 25
       Anchors = [akTop, akRight]
       Cancel = True
       Caption = #1047#1072#1082#1088#1099#1090#1100
@@ -51,10 +51,10 @@ object fmResultShiftProductionCapacities: TfmResultShiftProductionCapacities
       TabOrder = 2
     end
     object btShift: TButton
-      Left = 20
-      Top = 10
-      Width = 147
-      Height = 31
+      Left = 16
+      Top = 8
+      Width = 120
+      Height = 25
       Caption = #1057#1084#1077#1085#1085#1099#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099'...'
       TabOrder = 0
       OnClick = btShiftClick
@@ -63,8 +63,8 @@ object fmResultShiftProductionCapacities: TfmResultShiftProductionCapacities
   object TabControl: TTabControl
     Left = 0
     Top = 0
-    Width = 782
-    Height = 505
+    Width = 784
+    Height = 521
     Align = alClient
     TabOrder = 1
     Tabs.Strings = (
@@ -75,9 +75,9 @@ object fmResultShiftProductionCapacities: TfmResultShiftProductionCapacities
     OnChange = TabControlChange
     object Chart: TChart
       Left = 4
-      Top = 27
-      Width = 774
-      Height = 474
+      Top = 24
+      Width = 776
+      Height = 493
       BackWall.Brush.Color = clWhite
       BackWall.Brush.Style = bsClear
       Title.Font.Charset = DEFAULT_CHARSET

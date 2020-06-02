@@ -1,7 +1,6 @@
 unit unResultShiftProportionality;
 
 interface
-{ TODO -oСулеймен -c18/09/2007 : 5.Переделать fmResultShiftProportionality в соотстветствие с  ResultEconomParams }
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,

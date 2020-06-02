@@ -1,8 +1,8 @@
 object fmVariants: TfmVariants
-  Left = 3
-  Top = 0
-  Width = 1364
-  Height = 728
+  Left = -4
+  Top = 1
+  Width = 1378
+  Height = 710
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = #1042#1072#1088#1080#1072#1085#1090#1099' '#1084#1086#1076#1077#1083#1080#1088#1086#1074#1072#1085#1080#1103
   Color = clBtnFace
@@ -22,18 +22,18 @@ object fmVariants: TfmVariants
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 223
-    Width = 1348
+    Top = 231
+    Width = 1362
     Height = 2
     Cursor = crVSplit
     Align = alBottom
   end
   object PageControl: TPageControl
     Left = 0
-    Top = 225
-    Width = 1348
-    Height = 446
-    ActivePage = tsAutos
+    Top = 233
+    Width = 1362
+    Height = 420
+    ActivePage = tsEconoms
     Align = alBottom
     TabOrder = 0
     object tsAutos: TTabSheet
@@ -41,8 +41,8 @@ object fmVariants: TfmVariants
       object pcAutos: TPageControl
         Left = 0
         Top = 0
-        Width = 1340
-        Height = 418
+        Width = 1354
+        Height = 392
         ActivePage = tsAutos0
         Align = alClient
         ParentShowHint = False
@@ -54,8 +54,8 @@ object fmVariants: TfmVariants
           object dbgAutos0: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -279,8 +279,8 @@ object fmVariants: TfmVariants
           object dbgAutos1: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -445,8 +445,8 @@ object fmVariants: TfmVariants
           object dbgAutos2: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -620,8 +620,8 @@ object fmVariants: TfmVariants
           object dbgAutos3: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -828,8 +828,8 @@ object fmVariants: TfmVariants
       object pcExcavators: TPageControl
         Left = 0
         Top = 0
-        Width = 1340
-        Height = 418
+        Width = 1354
+        Height = 392
         ActivePage = tsExcavators0
         Align = alClient
         TabOrder = 0
@@ -839,8 +839,8 @@ object fmVariants: TfmVariants
           object dbgExcavators0: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -944,8 +944,8 @@ object fmVariants: TfmVariants
           object dbgExcavators1: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1022,8 +1022,8 @@ object fmVariants: TfmVariants
           object dbgExcavators2: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1127,8 +1127,8 @@ object fmVariants: TfmVariants
           object dbgExcavators3: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1290,8 +1290,8 @@ object fmVariants: TfmVariants
       object pcBlocks: TPageControl
         Left = 0
         Top = 0
-        Width = 1340
-        Height = 418
+        Width = 1354
+        Height = 392
         ActivePage = tsBlocks1
         Align = alClient
         ParentShowHint = False
@@ -1303,8 +1303,8 @@ object fmVariants: TfmVariants
           object dbgBlocks0: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1515,8 +1515,8 @@ object fmVariants: TfmVariants
           object dbgBlocks1: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1332
-            Height = 392
+            Width = 1346
+            Height = 366
             Align = alClient
             DataSource = dsVaraints
             Flat = False
@@ -1792,8 +1792,8 @@ object fmVariants: TfmVariants
       object dbgEconoms: TDBGridEh
         Left = 0
         Top = 0
-        Width = 1340
-        Height = 418
+        Width = 1354
+        Height = 392
         Align = alClient
         DataSource = dsVaraints
         Flat = False
@@ -2125,50 +2125,55 @@ object fmVariants: TfmVariants
           Left = 329
           Top = 59
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'ProfitCtg'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 0
         end
         object dbeExpensesCtg: TDBEditEh
           Left = 329
           Top = 85
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'ExpensesCtg'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 1
         end
         object dbeNominalEconomicEffectCtg: TDBEditEh
           Left = 797
           Top = 32
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'NominalEconomicEffectCtg'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 2
         end
         object dbeRelativeEconomicEffectCtg: TDBEditEh
           Left = 797
           Top = 85
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'RelativeEconomicEffectCtg'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 3
         end
         object dbeVOEconomicEffectCtg: TDBEditEh
           Left = 797
           Top = 111
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'VOEconomicEffectCtg'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 4
         end
         object redNomBaseVariantCtg: TRichEdit
@@ -2179,16 +2184,18 @@ object fmVariants: TfmVariants
           Alignment = taRightJustify
           Lines.Strings = (
             '1')
+          ReadOnly = True
           TabOrder = 5
         end
         object DBEditEh1: TDBEditEh
           Left = 329
           Top = 33
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'Vgm'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 6
         end
       end
@@ -2228,40 +2235,44 @@ object fmVariants: TfmVariants
           Caption = #1042#1099#1093#1086#1076' '#1087#1088#1086#1076#1091#1082#1090#1072' '#1080#1079' '#1086#1076#1085#1086#1081' '#1090#1086#1085#1085#1099' '#1088#1091#1076#1099', %'
         end
         object dbeProductOutPutPercent: TDBEditEh
-          Left = 321
+          Left = 329
           Top = 26
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'ProductOutPutPercent'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 0
         end
         object dbeProductPriceCtg: TDBEdit
-          Left = 321
+          Left = 329
           Top = 59
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'ProductPriceCtg'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 1
         end
         object dbeTruckCostCtg: TDBEdit
-          Left = 321
+          Left = 329
           Top = 85
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'TruckCostCtg'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 2
         end
         object dbeServiceExpensesCtg: TDBEdit
-          Left = 321
+          Left = 329
           Top = 111
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'ServiceExpensesCtg'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 3
         end
         object btnCopyfromBase: TButton
@@ -2340,64 +2351,71 @@ object fmVariants: TfmVariants
           Left = 321
           Top = 26
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'CAutosTyresCtg'
           DataSource = dsVaraints
           EditButtons = <>
+          ReadOnly = True
           TabOrder = 0
         end
         object dbeEconomUdCtg_tn: TDBEdit
           Left = 321
           Top = 52
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'EconomUdCtg_m3'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 1
         end
         object dbeKs: TDBEdit
           Left = 321
           Top = 182
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'Ks'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 2
         end
         object dbeSelicTM3: TDBEdit
           Left = 321
           Top = 78
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'SelicTM3'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 3
         end
         object dbeShiftTmin: TDBEdit
           Left = 321
           Top = 104
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'ShiftTmin'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 4
         end
         object dbePeriodKshift: TDBEdit
           Left = 321
           Top = 130
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'PeriodKshift'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 5
         end
         object dbePlannedRockVolumeCm: TDBEdit
           Left = 321
           Top = 154
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'PlannedRockVolumeCm'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 6
         end
       end
@@ -2441,36 +2459,40 @@ object fmVariants: TfmVariants
           Left = 332
           Top = 98
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'CurrStrippingQtn'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 0
         end
         object dbeCurrStrippingVm3: TDBEdit
           Left = 332
           Top = 72
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'CurrStrippingVm3'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 1
         end
         object dbeCurrOreQtn: TDBEdit
           Left = 332
           Top = 46
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'CurrOreQtn'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 2
         end
         object dbeCurrOreVm3: TDBEdit
           Left = 332
           Top = 20
           Width = 98
-          Height = 24
+          Height = 21
           DataField = 'CurrOreVm3'
           DataSource = dsVaraints
+          ReadOnly = True
           TabOrder = 3
         end
       end
@@ -2478,8 +2500,8 @@ object fmVariants: TfmVariants
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 671
-    Width = 1348
+    Top = 653
+    Width = 1362
     Height = 19
     AutoHint = True
     Panels = <>
@@ -2487,8 +2509,8 @@ object fmVariants: TfmVariants
   object TabControl: TTabControl
     Left = 0
     Top = 0
-    Width = 1348
-    Height = 223
+    Width = 1362
+    Height = 231
     Align = alClient
     TabOrder = 2
     Tabs.Strings = (
@@ -2500,8 +2522,8 @@ object fmVariants: TfmVariants
     object dbgVariants: TDBGridEh
       Left = 4
       Top = 24
-      Width = 1340
-      Height = 195
+      Width = 1354
+      Height = 203
       Align = alClient
       DataSource = dsVaraints
       Flat = False

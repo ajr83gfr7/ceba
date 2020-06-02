@@ -132,7 +132,9 @@ uses
   unExcel in 'Units000Common\unExcel.pas',
   unResultEconomEffect_Excel in 'Units400Results\unResultEconomEffect_Excel.pas',
   unResultEconomEffect_Data in 'Units400Results\unResultEconomEffect_Data.pas',
-  unResultEconomEffect_Const in 'Units400Results\unResultEconomEffect_Const.pas';
+  unResultEconomEffect_Const in 'Units400Results\unResultEconomEffect_Const.pas',
+  EconomicModule in 'Units000Common\EconomicModule.pas',
+  EconomicResultVariant in 'Units400Results\EconomicResultVariant.pas';
 
 begin
   Application.Initialize;

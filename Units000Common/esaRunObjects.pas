@@ -1,16 +1,4 @@
 unit esaRunObjects;
-{ DONE -oСулеймен -c18/09/2007 : 7. Пересчитать затраты на Gx }
-{ DONE -oСулеймен -c18/09/2007 : 8. Пересчитать затраты на Tyres }
-{ TODO -oСулеймен -c18/09/2007 : 9. fmResultShiftBlocks }
-{ DONE -oСулеймен -c18/09/2007 : 10. fmResultShiftUnLoadingPunkts }
-{ TODO -oСулеймен -c18/09/2007 : 11. fmResultTechnologicParams }
-{ DONE 1 -oСулеймен -c06/10/2007 : Маршрутизация (ручное построение маршрута) }
-{ DONE 2 -oСулеймен -c06/10/2007 : На пользователя вывести MaxVkmh (груз. и порожн.) }
-{ DONE 3 -oСулеймен -c06/10/2007 : Экономика (80 и 90 авто) }
-{ DONE 4 -oСулеймен -c06/10/2007 : Выходное значение AvgVkmh (груз. и порожн.) }
-{ DONE 5 -oСулеймен -c08/10/2007 : Учитывать и неполностью загруженные ковши, а время погрузки брать по полной }
-{ TODO 6 -oСулеймен -c08/10/2007 : Равномерное распределение автосамосвалов (Учитывать выполненный план за смену) }
-{ TODO 7 -oСулеймен -c08/10/2007 : Затраты по автотрассе }
 
 interface
 uses ADODb, StdCtrls, Classes, Globals, Types, Forms, ExtCtrls, Windows, Gauges, esaResultVariants, esaGlobals;
@@ -3146,7 +3134,6 @@ begin
 end;{IndexOf}
 procedure TesaLoadingPunkt.AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single);
 begin
-//todo: ....
  FPeriodPlanVm3:= PeriodPlanVm3 + APeriodPlanVm3;
  FPeriodPlanQtn:= PeriodPlanQtn + APeriodPlanQtn;
 end;{AddPeriodPlanRock}
@@ -3294,7 +3281,6 @@ begin
   //1. Наличие как минимум одного пункта погрузки
   //2. Наличие планируемых объемов горной породы для каждого пункта погрузки
   //3. Наличие исправного экскаватора для каждого пункта погрузки
-  { TODO : На ПП не д.б.нескольких однотипных руд с одинаковым содержанием }
   Result := FCount>0;
   if not Result then SendInputDataErrorMsg(ELoadingPunktsEmpty,False);
   sErrorRocks := '';
@@ -5586,12 +5572,11 @@ begin
   FAdditionalRoadParams.RefreshData;
   FAdditionalAutoParams.RefreshData;
   FDispatcher.FForm.Update;
-end;{RefreshData}
+end;
 function TesaOpenpit.CheckAllTerms: Boolean;
 begin
   Result := true;
-  { TODO : Проверка значений всех параметров (Total,Autos,Excavs,Params) }
-end;{CheckAllTerms}
+end;
 
 //Объект "АвтоДиспетчер" ----------------------------------------------------------------------
 function TDispatcher.GetId_Openpit: Integer;
@@ -8108,7 +8093,6 @@ begin
       //Сопротивление движению
       wi_ := 1000*dHmtr/sqrt(sqr(APoint0.X-APoint1.X)+sqr(APoint0.Y-APoint1.Y)); //H/kH
 
-      { TODO -oСулеймен -c2007/10/30 : Поставил ограничение на улоны, превышающие 80 промилле }
 //      if wi_>80.0
 //      then wi_ := 80.0;
 
@@ -8655,7 +8639,7 @@ begin
     Openpit.FCommon.CurrOreVm3:=FCurrOreVm3;
     Openpit.FCommon.CurrStrippingQtn:=FCurrStrippingQtn;
     Openpit.FCommon.CurrStrippingVm3:=FCurrStrippingVm3;
-    //todo: не усредненная
+    
     if FCurrOreQtn > 0.0 then
       Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingQtn/FCurrOreQtn;    
 //      Openpit.FCommon.CurrStrippingCoef:= Openpit.LoadingPunkts.FPlannedStrippingCoefVm3;
@@ -9016,9 +9000,9 @@ begin
         if (_E.Kind<>ekWaiting)and(_E.Direction=edUnLoading)
         then _A.FAvgVkmhUnLoading := esaSum(_A.AvgVkmhUnLoading,_E.AvgVkmh);
       end;{for}
-      if Autos[I].TyresAmortizationR1000km>0.0
-      then _A.FUsedTyresCount:= Autos[I].Model.TyresCount*esaSummary(_A.Sm)*(1E-6)/Autos[I].TyresAmortizationR1000km;
-      _A.FSumTyresCtg        := _A.UsedTyresCount*Autos[I].TyreC1000tg*1000;
+      if Autos[I].TyresAmortizationR1000km>0.0 then
+        _A.FUsedTyresCount:= Autos[I].Model.TyresCount*esaSummary(_A.Sm)*(1E-6)/Autos[I].TyresAmortizationR1000km;
+      _A.FSumTyresCtg:= _A.UsedTyresCount * Autos[I].TyreC1000tg * 1000;
       _A.FSumGxCtg           := esaWorkValue(_A.Gx.Work*Openpit.Common.AutoFuel.Ctg,_A.Gx.Waiting*Openpit.Common.AutoFuel.Ctg);
       if _A.Auto.FAmortizationKind=ak1000km
       then _A.FSumAmortizationCtg := (esaSummary(_A.Sm)*(1E-6))*_A.Auto.FAmortizationRate*(1000.0*_A.Auto.FC1000tg)
@@ -9465,8 +9449,8 @@ procedure TDispatcher.SaveEconomResultsNew;
       Close;
     finally
       Free;
-    end;{try}
-  end;{_GetSummaryAutoParams}
+    end;
+  end;
   //
   procedure _GetSummaryExcavatorParams(var AWorkCtg,AWaitingCtg,AAmortizationCtg: Single; var ARockVolume: ResaRockVolume);
   const fName='Value';
@@ -9485,8 +9469,8 @@ procedure TDispatcher.SaveEconomResultsNew;
       Close;
     finally
       Free;
-    end;{try}
-  end;{_GetSummaryExcavatorParams}
+    end;
+  end;
   //
   procedure _GetSummaryBlockParams(var ARepairCtg,AAmortizationCtg: Single);
   const fName='Value';
@@ -9497,13 +9481,16 @@ procedure TDispatcher.SaveEconomResultsNew;
       Connection := fmDM.ADOConnection;
       SQL.Text := Format('SELECT * FROM _ResultShiftBlockReports WHERE (Id_ResultShift=%d)and(Kind=3)',[ResultId_Shift]);
       Open;
-      if Locate('RecordNo',CesaBlocksRepairCtg.No,[])then ARepairCtg := FieldByName(fName).AsFloat;
-      if Locate('RecordNo',CesaBlocksAmortizationCtg.No,[])then AAmortizationCtg := FieldByName(fName).AsFloat;
+      if Locate('RecordNo',CesaBlocksRepairCtg.No,[])then
+        ARepairCtg := FieldByName(fName).AsFloat;
+      if Locate('RecordNo',CesaBlocksAmortizationCtg.No,[])then
+        AAmortizationCtg := FieldByName(fName).AsFloat;
       Close;
     finally
       Free;
-    end;{try}
-  end;{_GetSummaryBlockParams}
+    end;
+  end;
+  //
   procedure _Add(const q: TADOQuery;
                  const ARecName: String;
                  const AKey: ResaKeyParams;
@@ -9526,9 +9513,10 @@ procedure TDispatcher.SaveEconomResultsNew;
     q.FieldByName('RecordName').AsString := ARecName;
     q.FieldByName('Name').AsString := AKey.Key;
     if ANum > -1.0 then
-      q.FieldByName('Value').AsFloat := ANum;
+      q.FieldByName('Value').AsFloat := ANum/1000;
     q.Post;
   end;
+  //
   procedure _Add(const q: TADOQuery;
                  const AKind,ARecNo: Integer;
                  const AName: String;
@@ -9544,7 +9532,8 @@ procedure TDispatcher.SaveEconomResultsNew;
     q.FieldByName('Name').AsString := AName;
     q.FieldByName('Value').AsFloat := AValue;
     q.Post;
-  end;{_Add}
+  end;
+  //
   procedure _SaveToResultOfVariant(ProductPriceCtg,
                                    MTWorkByScheduleCtg,
                                    ServiceExpensesCtg: double);
@@ -9675,7 +9664,6 @@ begin
     finally
       qu.Free;
     end;
-    //todo: .1?
     ProductPriceCtg:= (ACtg0+ACtg1+ACtg2+AExpensesCtg) / (ARockVolume.Qtn);//тыс
     MTWorkByScheduleCtg:= (ACtg0+ACtg1+ACtg2+AExpensesCtg) / 1000000;
     ServiceExpensesCtg:= (AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2 +
@@ -9834,7 +9822,6 @@ begin
     end;
     AVm3_sum:= AVm3_sum + AVm3;
     AQt_sum:= AQt_sum + AQt;
-    //todo: .ГМ в Показателях
 
     _str:= format('Плановый объем (%s) Q, т', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn / 620.5 * 1000);
@@ -9850,7 +9837,6 @@ begin
     else
       _Add(Openpit.Rocks[I],'4',104,False,'Относительно плана, %',0.0);
   end;
-  //todo: .производительность
   // summ
   _RESARock.Id_Rock:= 100;
   _RESARock.Name:= 'Горная масса';

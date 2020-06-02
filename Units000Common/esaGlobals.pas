@@ -411,10 +411,13 @@ begin
   Result.Num := ANum;
   Result.Den := ADen;
 end;{esaDrobValue}
-function esaDrob(const ANum,ADen: Single): Single; overload;
+function esaDrob(const ANum, ADen: Single): Single; overload;
 begin
- if ADen>0.0 then Result := ANum/ADen else Result := 0.0;
-end;{esaDrob}
+  if ADen > 0.0 then
+    Result := ANum / ADen
+  else
+    Result := 0.0;
+end;
 function esaDrob(const ADrob: ResaDrobValue): Single; overload;
 begin
  Result := esaDrob(ADrob.Num,ADrob.Den);

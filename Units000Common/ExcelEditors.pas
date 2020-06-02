@@ -11,7 +11,7 @@ unit ExcelEditors;
 - добавить, удалить, переименовать, сделать текущим рабочий лист
 - установить поля, книжный/альбомный формат страницы 
 }
-{ TODO : Функциональные возможности ExcelEditor }
+
 interface
 uses Graphics, Types, Printers;
 const

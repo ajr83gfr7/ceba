@@ -5,7 +5,6 @@ unit esaDBOpenpitObjects;
 Объекты ориентированные на таблицы БД
 для Редактора элементов карьерного пространства OpenpitEditor
 }
-{ TODO : Для БУ добавить WorkState }
 interface
 uses esaOpenGL2D, Windows, esaDBDefaultParams, ADODb, Types, Globals, Messages, Graphics, Forms,
      ValEdit, StdCtrls, Classes;
