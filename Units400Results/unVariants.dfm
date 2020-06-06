@@ -1,8 +1,8 @@
 object fmVariants: TfmVariants
-  Left = -4
-  Top = 1
-  Width = 1378
-  Height = 710
+  Left = 3
+  Top = 0
+  Width = 1184
+  Height = 600
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = #1042#1072#1088#1080#1072#1085#1090#1099' '#1084#1086#1076#1077#1083#1080#1088#1086#1074#1072#1085#1080#1103
   Color = clBtnFace
@@ -22,16 +22,16 @@ object fmVariants: TfmVariants
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 231
-    Width = 1362
+    Top = 121
+    Width = 1168
     Height = 2
     Cursor = crVSplit
     Align = alBottom
   end
   object PageControl: TPageControl
     Left = 0
-    Top = 233
-    Width = 1362
+    Top = 123
+    Width = 1168
     Height = 420
     ActivePage = tsEconoms
     Align = alBottom
@@ -41,7 +41,7 @@ object fmVariants: TfmVariants
       object pcAutos: TPageControl
         Left = 0
         Top = 0
-        Width = 1354
+        Width = 1160
         Height = 392
         ActivePage = tsAutos0
         Align = alClient
@@ -54,7 +54,7 @@ object fmVariants: TfmVariants
           object dbgAutos0: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -279,7 +279,7 @@ object fmVariants: TfmVariants
           object dbgAutos1: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -445,7 +445,7 @@ object fmVariants: TfmVariants
           object dbgAutos2: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -620,7 +620,7 @@ object fmVariants: TfmVariants
           object dbgAutos3: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -828,7 +828,7 @@ object fmVariants: TfmVariants
       object pcExcavators: TPageControl
         Left = 0
         Top = 0
-        Width = 1354
+        Width = 1160
         Height = 392
         ActivePage = tsExcavators0
         Align = alClient
@@ -839,7 +839,7 @@ object fmVariants: TfmVariants
           object dbgExcavators0: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -944,7 +944,7 @@ object fmVariants: TfmVariants
           object dbgExcavators1: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -1022,7 +1022,7 @@ object fmVariants: TfmVariants
           object dbgExcavators2: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -1127,7 +1127,7 @@ object fmVariants: TfmVariants
           object dbgExcavators3: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -1290,7 +1290,7 @@ object fmVariants: TfmVariants
       object pcBlocks: TPageControl
         Left = 0
         Top = 0
-        Width = 1354
+        Width = 1160
         Height = 392
         ActivePage = tsBlocks1
         Align = alClient
@@ -1303,7 +1303,7 @@ object fmVariants: TfmVariants
           object dbgBlocks0: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -1515,7 +1515,7 @@ object fmVariants: TfmVariants
           object dbgBlocks1: TDBGridEh
             Left = 0
             Top = 0
-            Width = 1346
+            Width = 1152
             Height = 366
             Align = alClient
             DataSource = dsVaraints
@@ -1792,7 +1792,7 @@ object fmVariants: TfmVariants
       object dbgEconoms: TDBGridEh
         Left = 0
         Top = 0
-        Width = 1354
+        Width = 1160
         Height = 392
         Align = alClient
         DataSource = dsVaraints
@@ -1971,8 +1971,8 @@ object fmVariants: TfmVariants
             FieldName = 'ExcavatorsRockVm3'
             Footers = <>
             MinWidth = 80
-            Title.Caption = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077'|'#1090
-            Title.Hint = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077', '#1090
+            Title.Caption = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077'|'#1084'3'
+            Title.Hint = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077', '#1084'3'
             Width = 80
           end
           item
@@ -1980,8 +1980,8 @@ object fmVariants: TfmVariants
             FieldName = 'ExcavatorsRockQtn'
             Footers = <>
             MinWidth = 80
-            Title.Caption = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077'|'#1084'3'
-            Title.Hint = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077', '#1084'3'
+            Title.Caption = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077'|'#1090
+            Title.Hint = #1055#1088#1086#1080#1079#1074#1086#1076#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1082#1086#1084#1087#1083#1077#1082#1089#1072' '#1087#1086' '#1075#1086#1088#1085#1086#1081' '#1084#1072#1089#1089#1077', '#1090
             Width = 81
           end
           item
@@ -2500,8 +2500,8 @@ object fmVariants: TfmVariants
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 653
-    Width = 1362
+    Top = 543
+    Width = 1168
     Height = 19
     AutoHint = True
     Panels = <>
@@ -2509,8 +2509,8 @@ object fmVariants: TfmVariants
   object TabControl: TTabControl
     Left = 0
     Top = 0
-    Width = 1362
-    Height = 231
+    Width = 1168
+    Height = 121
     Align = alClient
     TabOrder = 2
     Tabs.Strings = (
@@ -2522,8 +2522,8 @@ object fmVariants: TfmVariants
     object dbgVariants: TDBGridEh
       Left = 4
       Top = 24
-      Width = 1354
-      Height = 203
+      Width = 1160
+      Height = 93
       Align = alClient
       DataSource = dsVaraints
       Flat = False

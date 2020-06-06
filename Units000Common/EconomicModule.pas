@@ -212,7 +212,7 @@ type
     property VolumeOfGM_m3_byYear: double read CalcVolumeOfGM_m3_byYear;
     // Объем горной массы запланированный к извлечению в рассматриваемом периоде, Vn в м3}
     property PlanVolume_m3: double read CalcPlanVolume_m3;
-    // todo: добавть объем добытой руды
+    // done: добавть объем добытой руды
     // Объем добытой руды, м3
     property VolumeOfOre: double read CalcVolumeOfOre;
     //----------------------------
