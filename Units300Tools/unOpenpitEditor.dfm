@@ -1,6 +1,6 @@
 object fmOpenpitEditor: TfmOpenpitEditor
-  Left = 119
-  Top = 115
+  Left = 386
+  Top = 70
   Width = 820
   Height = 571
   HelpType = htKeyword
@@ -188,8 +188,6 @@ object fmOpenpitEditor: TfmOpenpitEditor
         Left = 124
         Top = 0
         Action = actActionsUklons
-        ImageIndex = 21
-        OnClick = tbUklonsClick
       end
     end
     object tlbGraphic: TToolBar
@@ -296,7 +294,7 @@ object fmOpenpitEditor: TfmOpenpitEditor
       OnClick = btProCADClick
     end
     object btnAdis: TButton
-      Left = 683
+      Left = 713
       Top = 2
       Width = 0
       Height = 22
@@ -556,6 +554,8 @@ object fmOpenpitEditor: TfmOpenpitEditor
       Category = 'Actions'
       Caption = #1059#1082#1083#1086#1085#1099
       Hint = #1059#1082#1083#1086#1085#1099'|'#1059#1082#1083#1086#1085#1099' '#1072#1074#1090#1086#1090#1088#1072#1089#1089#1099
+      ImageIndex = 21
+      OnExecute = actActionsUklonsExecute
     end
   end
   object ImageList: TImageList

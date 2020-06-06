@@ -131,6 +131,7 @@ type
     procedure pmiMainSelectCourseClick(Sender: TObject);
     procedure tbUklonsClick(Sender: TObject);
     procedure btnAdisClick(Sender: TObject);
+    procedure actActionsUklonsExecute(Sender: TObject);
 
   private
     FActiveAction: TToolsActionsStyle;
@@ -1392,5 +1393,10 @@ end;
 end;
 
 
+
+procedure TfmOpenpitEditor.actActionsUklonsExecute(Sender: TObject);
+begin
+  FOpenpit.AnalizeUklons();
+end;
 
 end.
