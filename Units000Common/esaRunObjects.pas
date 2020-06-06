@@ -7126,7 +7126,7 @@ begin
         tmp_auto_name:= format('auto %d [%s | %s | %s | %d]',
                                 [FCurrAutos[I].FParkNo, _tmp_dir, _tmp_state, _tmp_pos, FCurrAutos[I].FCurrCourseBlockIndex]);
 
-        TXTWriter.TWriter.WriteToTXT(format('%s', [tmp_auto_name]));
+//        TXTWriter.TWriter.WriteToTXT(format('%s', [tmp_auto_name]));
 //        TXTWriter.TWriter.WriteToTXT(format('left side: %d | right side: %d', [_tmp_left, _tmp_right]));
 
       end;
@@ -7180,7 +7180,7 @@ begin
         end;
         tmp_auto_name:= format('auto %d [%s | %s | %s | %d]',
                                 [FCurrAutos[I].FParkNo, _tmp_dir, _tmp_state, _tmp_pos, FCurrAutos[I].FCurrCourseBlockIndex]);
-        TXTWriter.TWriter.WriteToTXT(format('%s', [tmp_auto_name]));
+//        TXTWriter.TWriter.WriteToTXT(format('%s', [tmp_auto_name]));
       end;
 
     DefineWaitingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad);        //простой
