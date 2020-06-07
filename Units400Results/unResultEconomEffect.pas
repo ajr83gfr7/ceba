@@ -216,7 +216,7 @@ begin
   begin
     edRocksVm3.Text:= str(VolumeOfGM_m3_avg);
     edProizPeriod.Text:= str(VolumeOfGM_m3_byYear);
-    edSelic.Text:= str(Selic);
+    edSelic.Text:= str(VolumeOfOre);
 
     edParamsShiftDuration.Text:= str(ShiftTimelap);
     edTotalCostsSummary.Text:= str(TotalCost / 1e6);

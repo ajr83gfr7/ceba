@@ -340,6 +340,7 @@ type
     procedure btnCopyfromBaseClick(Sender: TObject);
 
     procedure sbShowHiddenClick(Sender: TObject);
+    procedure dbgVariantsCellClick(Column: TColumnEh);
   private
     _economics: TResultVariants;
     // Результаты вариантов
@@ -943,41 +944,43 @@ begin
   else
     dbgVariants.Columns[0].Footers[0].Value := '';
 
-
-  _Vm3:= (quVariantsExcavatorsRockVm3.AsVariant +
-          quVariantsCurrOreVm3.AsVariant +
-          quVariantsCurrStrippingVm3.AsVariant
-          ) / 2;
-  dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
-  dbgVariants.Columns[4].Footers[1].Value:= format('%n', [_Vm3]);
-
-  _tmpQtn:= _Vm3 * 100;
-  _tmpPlan:= quVariantsPlannedRockVolumeCm.AsFloat / 620.5 * 1000;
+  with _economics.CurrentVariant do
+  begin
+//  _Vm3:= (quVariantsExcavatorsRockVm3.AsVariant +
+//          quVariantsCurrOreVm3.AsVariant +
+//          quVariantsCurrStrippingVm3.AsVariant
+//          ) / 2;
+//  dbgVariants.Columns[4].Footers[1].Value:= format('%n', [_Vm3]);
+//    _tmpQtn:= _Vm3 * 100;
+//    _tmpPlan:= quVariantsPlannedRockVolumeCm.AsFloat / 620.5 * 1000;
 //  _tmpPlan:= 1;//quVariantsPlannedRockVolumeCm.AsVariant * 1000 / 2 / 365 / 0.85;
-
-  _per:= _tmpQtn / _tmpPlan;
-  dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
-  dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_per]);
-
-  _Vt:= (quVariantsExcavatorsRockQtn.AsFloat +
-         quVariantsCurrOreQtn.AsFloat +
-         quVariantsCurrStrippingQtn.AsFloat
-         ) / 2;
-  dbgVariants.Columns[5].Footers[1].ValueType:= fvtStaticText;
-  dbgVariants.Columns[5].Footers[1].Value:= format('%n', [_Vt]);
-
-  _Cost:= (quVariantsEconomExpensesCtg.AsFloat +
-          (quVariantsServiceExpensesCtg.AsFloat * 1000));
-
-  dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
-  dbgVariants.Columns[6].Footers[1].Value:= format('%n', [_Cost / _Vm3]);
-
-  dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
-  dbgVariants.Columns[7].Footers[1].Value:= format('%n', [_Cost / _Vt]);
-
+//    _per:= _tmpQtn / _tmpPlan;
+//    dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_per]);
+//    _Vt:= (quVariantsExcavatorsRockQtn.AsFloat +
+//           quVariantsCurrOreQtn.AsFloat +
+//           quVariantsCurrStrippingQtn.AsFloat
+//           ) / 2;
+//    _Cost:= (quVariantsEconomExpensesCtg.AsFloat +
+//            (quVariantsServiceExpensesCtg.AsFloat * 1000));
 //  dbgVariants.Columns[0].Footer.ValueType := fvtStaticText;
 //  dbgVariants.Columns[0].Footer.Value     := 'ИТОГО (актов/сумма)';
 //  dbgVariants.Columns[4].Footer.ValueType := fvtSum; // где 4- номер столбца, который суммируем
+
+    dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[3].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg * 100 / PlanVolume_m3 * 1000]);
+
+    dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);
+
+    dbgVariants.Columns[5].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn_avg]);
+
+    dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_m3_avg ]);
+
+    dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_tn_avg]);
+  end;
 end;
 
 procedure TfmVariants.dbgVariantsDrawFooterCell(Sender: TObject; DataCol,
@@ -1047,6 +1050,11 @@ procedure TfmVariants.SetView;
 begin
   // todo: vars | views
   lbProductOutPutPercent.Caption:= PRODUCT_FROM_1TONNA;
+end;
+
+procedure TfmVariants.dbgVariantsCellClick(Column: TColumnEh);
+begin
+  _economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 end;
 
 end.

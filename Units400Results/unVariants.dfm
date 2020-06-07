@@ -2540,13 +2540,13 @@ object fmVariants: TfmVariants
       PopupMenu = PopupMenu
       ReadOnly = True
       ShowHint = True
-      SumList.Active = True
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
+      OnCellClick = dbgVariantsCellClick
       OnDrawColumnCell = dbgVariantsDrawColumnCell
       OnDrawFooterCell = dbgVariantsDrawFooterCell
       Columns = <

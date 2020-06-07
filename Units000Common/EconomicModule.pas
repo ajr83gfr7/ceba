@@ -72,6 +72,8 @@ type
     function CalcTyresCost: double;
     function CalcCurrentCost: double;
     function CalcUdelnCurrentCost: double;
+    function CalcVolumeOfGM_tn: double;
+    function CalcVolumeOfGM_tn_avg: double;
     function CalcVolumeOfGM_m3: double;
     function CalcVolumeOfGM_m3_avg: double;
     function CalcVolumeOfGM_m3_byYear: double;
@@ -204,6 +206,10 @@ type
     //----------------------------
     // Объем ГМ
     //----------------------------
+    // Объем извлекаемой горной массы, получаемый по результатам моделирования, tn
+    property VolumeOfGM_tn: double read CalcVolumeOfGM_tn;
+    // Усредненный объем извлекаемой горной массы, получаемый по результатам моделирования, tn
+    property VolumeOfGM_tn_avg: double read CalcVolumeOfGM_tn_avg;
     // Объем извлекаемой горной массы, получаемый по результатам моделирования, м3
     property VolumeOfGM_m3: double read CalcVolumeOfGM_m3;
     // Усредненный объем извлекаемой горной массы, получаемый по результатам моделирования, м3
@@ -819,6 +825,22 @@ function TEconomicResult.CalcVolumeOfOre: double;
 // Объем добытой руды, м3
 begin
   Result:= CurrOreVm3;
+end;
+
+function TEconomicResult.CalcVolumeOfGM_tn: double;
+// Объем извлекаемой горной массы, получаемый по результатам моделирования, тонн
+// ExcavatorsRockQtn - Погруженная Горная масса, тонн
+begin
+  Result:= ExcavatorsRockQtn;
+end;
+
+function TEconomicResult.CalcVolumeOfGM_tn_avg: double;
+// Усредненный объем извлекаемой горной массы, получаемый по результатам моделирования, тонн
+// CurrOreQtn - Объем добытой руды, тонн
+// CurrStrippingQtn - Объем добытой вскрыши, тонн
+// ExcavatorsRockQtn - Погруженная Горная масса, тонн
+begin
+  Result:= (CurrOreQtn + CurrStrippingQtn + ExcavatorsRockQtn) / 2;
 end;
 
 { TResultVariants }
