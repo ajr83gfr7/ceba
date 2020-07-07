@@ -470,7 +470,9 @@ type
     FPlannedStrippingCoefVm3: Single;//Планируемый коэффициент вскрыши, м3/м3
     FRocksContentMin: Single; //Минимальное содержание полезного ископаемого на пунктах погрузки, %
     FRocksContentMax: Single; //Максимальное содержание полезного ископаемого на пунктах погрузки, %
+    //FPlanRockVolume: RRockVolume; //Плановый объем для пунктов погрузки
     function GetItem(const Index: Integer): TesaLoadingPunkt;
+    function GetPlanRockVolume: RRockVolume;
   public
     property Items[const Index: Integer]: TesaLoadingPunkt read GetItem;default;
     property Count: Integer read FCount;
@@ -482,6 +484,7 @@ type
 
     property RocksContentMin: Single read FRocksContentMin;
     property RocksContentMax: Single read FRocksContentMax;
+    property PlanRockVolume: RRockVolume read GetPlanRockVolume;
     constructor Create(ADispatcher: TDispatcher);
     destructor Destroy; override;
   end;{TesaLoadingPunkts}
@@ -1574,7 +1577,7 @@ type
     constructor Create(ADispatcher: TDispatcher); override;
     destructor Destroy; override;
   end;{TesaResultExcavatorModel}
-  
+
   //Выходные данные по модели экскаваторов -----------------------------------
   TesaResultExcavatorModels = class(TesaResultExcavator)
   private
@@ -9107,7 +9110,7 @@ const
     var I: Integer;
     begin
       //Корректировка Value
-      if not(ADen<0.0) then if ADen>0.0 then ANum := ANum/ADen else ANum := 0.0; 
+      if not(ADen<0.0) then if ADen>0.0 then ANum := ANum/ADen else ANum := 0.0;
       //Записываю в БД
       q.Append;
       for I := 1 to q.Fields.Count-1 do
@@ -9191,14 +9194,14 @@ begin
   quEvents.SQL.Text := 'SELECT * FROM _ResultShiftExcavatorEvents';
 
   //----------------------------------------------------------------------------
-  // I. Вычислил все данные, сохраняю автосамосвалы, события 
+  // I. Вычислил все данные, сохраняю автосамосвалы, события
   //----------------------------------------------------------------------------
-  _Models := TesaResultExcavatorModels.Create(Self);
+  _Models:= TesaResultExcavatorModels.Create(Self);
   try
     quExcavators.Open;
     quEvents.Open;
-    FGauge.MaxValue := LoadingPunkts.Count;
-    for I := 0 to LoadingPunkts.Count-1 do
+    FGauge.MaxValue:= LoadingPunkts.Count;
+    for I:= 0 to LoadingPunkts.Count-1 do
     begin
       SetGaugeValue(I);
       //Добавляю автосамосвал --------------------------------------------------
@@ -9342,9 +9345,11 @@ begin
     end;{for}
     _AddReport(quReps,3,_Models);
     quReps.Free;
-    Variant.SaveExcavators(AExcavators,AExcavatorsCount0,AExcavatorsCount1,_Models.LoadingAutosCount,_Models.RockVolume,_Models.RockShiftPlan,
-      _Models.SumGx,_Models.SumTmin,_Models.SumExploatationCtg,_Models.SumGxCtg,_Models.SumMaterialsGxCtg,
-      _Models.SumUnAccountedCtg,_Models.SumSalaryCtg,_Models.SumAmortizationCtg);
+    Variant.SaveExcavators(AExcavators,AExcavatorsCount0,AExcavatorsCount1,
+      _Models.LoadingAutosCount,_Models.RockVolume,_Models.RockShiftPlan,
+      _Models.SumGx,_Models.SumTmin,_Models.SumExploatationCtg,
+      _Models.SumGxCtg,_Models.SumMaterialsGxCtg, _Models.SumUnAccountedCtg,
+      _Models.SumSalaryCtg,_Models.SumAmortizationCtg);
     SetGaugeValue(FGauge.MaxValue);
     FOpenpit.SendMessage('Ok');
   finally
@@ -9725,17 +9730,20 @@ var q0,q1, q_resultVariants: TADOQuery;
     q1.FieldByName('DumpModel').AsString          := q0.FieldByName('DumpModel').AsString;
     q1.FieldByName('RecordName').AsString         := ARecordName;
     q1.FieldByName('RecordNo').AsInteger          := ARecordNo;
-    if ARecordNo mod 100 <> 0
-    then q1.FieldByName('IsChangeable').AsBoolean := q0.FieldByName('IsChangeable'+IntToStr(ARecordNo)).AsBoolean
-    else q1.FieldByName('IsChangeable').AsBoolean := False;
-    if ARecordNo mod 100 <> 0
-    then q1.FieldByName('Name').AsString          := q0.FieldByName('Name'+IntToStr(ARecordNo)).AsString
-    else q1.FieldByName('Name').AsString          := AName;
-    if ARecordNo mod 100 <> 0
-    then q1.FieldByName('Value').AsFloat          := q0.FieldByName('Value'+IntToStr(ARecordNo)).AsFloat
-    else q1.FieldByName('Value'). Clear;
+    if ARecordNo mod 100 <> 0 then
+      q1.FieldByName('IsChangeable').AsBoolean := q0.FieldByName('IsChangeable'+IntToStr(ARecordNo)).AsBoolean
+    else
+      q1.FieldByName('IsChangeable').AsBoolean := False;
+    if ARecordNo mod 100 <> 0 then
+      q1.FieldByName('Name').AsString          := q0.FieldByName('Name'+IntToStr(ARecordNo)).AsString
+    else
+      q1.FieldByName('Name').AsString          := AName;
+    if ARecordNo mod 100 <> 0 then
+      q1.FieldByName('Value').AsFloat          := q0.FieldByName('Value'+IntToStr(ARecordNo)).AsFloat
+    else
+      q1.FieldByName('Value'). Clear;
     q1.Post;
-  end;{_Add}
+  end;
   procedure _Add(const ARock: RESARock; const ARecordName: String; const ARecordNo: Integer; const AIsChangeable: Boolean; const AName: String; const AValue: Single); overload;
   begin
     q1.Append;
@@ -9746,17 +9754,20 @@ var q0,q1, q_resultVariants: TADOQuery;
 
     q1.FieldByName('RecordName').AsString           := ARecordName;
     q1.FieldByName('RecordNo').AsInteger            := ARecordNo;
-    if ARecordNo mod 100 <> 0
-    then q1.FieldByName('IsChangeable').AsBoolean   := AIsChangeable
-    else q1.FieldByName('IsChangeable').AsBoolean   := False;
-    if AName<>''
-    then q1.FieldByName('Name').AsString            := AName
-    else q1.FieldByName('Name').Clear;
-    if (ARecordNo mod 100 <> 0)and(not (AValue<0.0))
-    then q1.FieldByName('Value').AsFloat            := AValue
-    else q1.FieldByName('Value'). Clear;
+    if ARecordNo mod 100 <> 0 then
+      q1.FieldByName('IsChangeable').AsBoolean   := AIsChangeable
+    else
+      q1.FieldByName('IsChangeable').AsBoolean   := False;
+    if AName<>'' then
+      q1.FieldByName('Name').AsString            := AName
+    else
+      q1.FieldByName('Name').Clear;
+    if (ARecordNo mod 100 <> 0)and(not (AValue<0.0)) then
+      q1.FieldByName('Value').AsFloat            := AValue
+    else
+      q1.FieldByName('Value'). Clear;
     q1.Post;
-  end;{_Add}
+  end;
 var
   I,J,K: Integer;
   AShiftPlanRockQtn: Single;
@@ -9814,10 +9825,11 @@ begin
     _Add('1', 201);
     _Add('2', 202);
     q0.Next;
-  end;{while}
+  end;
   q0.Close;
   q1.Close;
   //Данные по видам горной массы ------------------------------------------------------------------------
+  // todo:    Показатели за период
   q1.SQL.Text := 'SELECT * FROM _ResultTechnologicRockParams';
   q1.Open;
   FGauge.MaxValue := Openpit.Rocks.Count;
@@ -9830,6 +9842,8 @@ begin
     SetGaugeValue(I);
     AShiftPlanRockQtn:= 0.0;
     AShiftPlanRockVm3:= 0.0;
+    //AShiftPlanRockQtn_sum:= 0.0;
+    //AShiftPlanRockVm3_sum:= 0.0;
     ARockVolume       := esaRockVolume();
     for J := 0 to LoadingPunkts.Count-1 do
     begin
@@ -9853,24 +9867,31 @@ begin
     begin
       AVm3:= (ARockVolume.Vm3 + FCurrOreVm3) / 2;
       AQt:= (ARockVolume.Qtn + FCurrOreQtn) / 2;
+
+      _str:= format('Плановый объем (%s) Q, т', [Openpit.Rocks[I].Name]);
+      //_Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn_sum / 620.5 * 1000);
+      _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn);
     end
     else
     begin
       AVm3:= (ARockVolume.Vm3 + FCurrStrippingVm3) / 2;
       AQt:= (ARockVolume.Qtn + FCurrStrippingQtn) / 2;
+
+      _str:= format('Плановый вем (%s) V, м3', [Openpit.Rocks[I].Name]);
+      //_Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn_sum / 620.5 * 1000);
+      _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockVm3);
     end;
     AVm3_sum:= AVm3_sum + AVm3;
     AQt_sum:= AQt_sum + AQt;
 
-    _str:= format('Плановый объем (%s) Q, т', [Openpit.Rocks[I].Name]);
-    _Add(Openpit.Rocks[I], '1', 101, True, _str, AShiftPlanRockQtn / 620.5 * 1000);
     _str:= format('Погруженный объем (%s) V, м3', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '2', 102, True, _str, AVm3);
     _str:= format('Погруженный вес (%s) Q, т', [Openpit.Rocks[I].Name]);
     _Add(Openpit.Rocks[I], '3', 103, True, _str, AQt);
 
     _tmpQtn:= 100 * AQt;
-    _tmpPlan:= AShiftPlanRockQtn / 620.5 * 1000;
+    //_tmpPlan:= AShiftPlanRockQtn_sum / 620.5 * 1000;
+    _tmpPlan:= AShiftPlanRockQtn;
     if AShiftPlanRockQtn > 0.0 then
       _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', _tmpQtn / _tmpPlan)
     else
@@ -9881,7 +9902,8 @@ begin
   _RESARock.Name:= 'Горная масса';
   _RESARock.IsMineralWealth:= false;
   _str:= format('Плановый объем (%s) V, м3', ['Горная масса']);
-  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockVm3_sum / 620.5 * 1000);
+  //_Add(_RESARock, '1', 101, True, _str, AShiftPlanRockVm3_sum / 620.5 * 1000);
+  _Add(_RESARock, '1', 101, True, _str, AShiftPlanRockVm3_sum);
   _str:= format('Погруженный объем (%s) V, м3', ['Горная масса']);
   _Add(_RESARock, '2', 102, True, _str, AVm3_sum);
   _str:= format('Погруженный вес (%s) Q, т', ['Горная масса']);
@@ -9889,7 +9911,8 @@ begin
   _str:= 'Относительно плана, %';
   //
   _tmpQtn:= 100 * AVm3_sum;
-  _tmpPlan:= AShiftPlanRockVm3_sum / 620.5 * 1000;
+  //_tmpPlan:= AShiftPlanRockVm3_sum / 620.5 * 1000;
+  _tmpPlan:= AShiftPlanRockVm3_sum;
 
   _Add(_RESARock, '4', 104, False, _str, _tmpQtn / _tmpPlan);
   //
@@ -9995,7 +10018,7 @@ begin
   quBlocks.Connection := DBConnection;
   quBlocks.SQL.Text := 'SELECT * FROM _ResultShiftBlocks';
   //----------------------------------------------------------------------------
-  // I. Вычислил все данные, сохраняю автосамосвалы, события 
+  // I. Вычислил все данные, сохраняю автосамосвалы, события
   //----------------------------------------------------------------------------
   _Models := TesaResultBlockModels.Create(Self);
   try
@@ -10065,7 +10088,7 @@ begin
     quReps.Connection := DBConnection;
     quReps.SQL.Text := 'SELECT * FROM _ResultShiftBlockReports';
     quReps.Open;
-    ABlocksCount := 0;
+    ABlocksCount:= 0;
     for I := 0 to _Models.Count-1 do
     begin
       FGauge.MaxValue := _Models[I].Count;
@@ -10901,7 +10924,6 @@ begin
       Items[I].FBuildingCtg               := Items[I].BuildingCtg + Items[I][J].BuildingCtg;
     end;{for}
     //Суммарные
-    FBlocksCount               := BlocksCount + Items[I].BlocksCount;
     FLsm                       := Lsm + Items[I].Lsm;
     FRockVolume                := esaSum(RockVolume,Items[I].RockVolume);
     FAutosCount                := esaSum(AutosCount,Items[I].AutosCount);
@@ -10920,6 +10942,7 @@ begin
     FAmortizationCtg           := AmortizationCtg + Items[I].AmortizationCtg;
     FBuildingCtg               := BuildingCtg + Items[I].BuildingCtg;
   end;{for}
+  FBlocksCount                 := BlocksCount - 1;//+ Items[I].BlocksCount;
 end;{Update}
 function TesaResultBlockModels.IndexOf(const AId_RoadCoat: Integer): Integer;
 var I: Integer;
@@ -10964,6 +10987,22 @@ begin
                       Events.FKind,
                       Events.FDirection);
     end;
+end;
+
+function TesaLoadingPunkts.GetPlanRockVolume: RRockVolume;
+var
+  i: integer;
+  rock_plan_m3, rock_plan_t: single;
+begin
+  rock_plan_m3:= 0;
+  rock_plan_t:= 0;
+  for i:= 0 to Count do
+  begin
+    rock_plan_m3:= rock_plan_m3 + Items[i].FPeriodPlanVm3;
+    rock_plan_t:= rock_plan_t + Items[i].FPeriodPlanQtn;
+  end;
+  Result.Vm3:= rock_plan_m3;
+  Result.Qtn:= rock_plan_t;
 end;
 
 end.

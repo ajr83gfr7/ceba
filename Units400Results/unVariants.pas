@@ -344,9 +344,9 @@ type
   private
     _economics: TResultVariants;
     // Результаты вариантов
-//    _ResultVariants:
+    // _ResultVariants:
     // Открыть результаты вариантов
-//    procedure OpenVariants();
+    // procedure OpenVariants();
     procedure DoVariantsCalcFields(DataSet: TDataSet);
     //Формирование названия ini-файла
     function IniFileName: String;
@@ -398,7 +398,7 @@ end;
 
 procedure TfmVariants.NEESaveToLocal();
 begin
-  if   quVariants.Locate('IsBaseVariant',TRUE, []) then
+  if quVariants.Locate('IsBaseVariant', TRUE, []) then
   begin
     Base_Var_Id_ResultVariant:= quVariantsId_ResultVariant.AsInteger;
     BaseUsEco:= quVariantsNomEconomicEffectCtg.AsFloat;
@@ -430,7 +430,7 @@ begin
   //_economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 
   NEESaveToLocal();
-  quVariants.Last;
+  //quVariants.Last;
   with TIniFile.Create(IniFileName) do
   try
     pmiExcelParamsDollar.Checked            := ReadBool('Отчеты','InDollar',pmiExcelParamsDollar.Checked);
@@ -454,6 +454,9 @@ begin
 
   //_idResultVariant:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 
+  // todo: проверить необходимость |
+  //                               V
+  (*
   with DataSet do
   begin
     //Shift
@@ -600,7 +603,7 @@ begin
                                                                FieldByName('ExcavatorsExcavatorsCount1').AsInteger
                                                                ]);
   end;
-
+  *)
   //SEE 8/02/2018: Relative economical effect calculation added
   NominalEffectCalculation(DataSet);
 end;
@@ -879,6 +882,7 @@ begin
     quVariants.EnableControls;
   end;
 end;
+
 procedure TfmVariants.pmiExcelParamsDollarClick(Sender: TObject);
 begin
   pmiExcelParamsDollar.Checked := not pmiExcelParamsDollar.Checked;
@@ -938,11 +942,16 @@ var
   //
   _tmpQtn: double;
   _tmpPlan: double;
+  _result: double;
+  //
+  _tmpfile: TWriter;
 begin
   if quVariants.Active then
     dbgVariants.Columns[0].Footers[0].Value := Format('%d/%d',[quVariants.RecNo,quVariants.RecordCount])
   else
     dbgVariants.Columns[0].Footers[0].Value := '';
+
+  // _tmpfile.WriteToTXT(Format('current variant: %s', [Sender.ClassType]));
 
   with _economics.CurrentVariant do
   begin
@@ -967,7 +976,11 @@ begin
 //  dbgVariants.Columns[4].Footer.ValueType := fvtSum; // где 4- номер столбца, который суммируем
 
     dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
-    dbgVariants.Columns[3].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg * 100 / PlanVolume_m3 * 1000]);
+    _tmpPlan:= ExcavatorsPlanRockVm3 * 620.5 / 1e3;
+    _tmpQtn:= VolumeOfGM_m3_avg;
+    _result:= _tmpQtn * 100 / _tmpPlan;
+    //dbgVariants.Columns[3].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg * 100 / PlanVolume_m3 * 1000]);
+    dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_result]);
 
     dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
     dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);

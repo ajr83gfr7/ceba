@@ -1,6 +1,6 @@
 object fmProductivity: TfmProductivity
-  Left = 265
-  Top = 22
+  Left = 267
+  Top = 24
   Width = 600
   Height = 480
   HelpType = htKeyword

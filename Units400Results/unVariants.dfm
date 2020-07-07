@@ -3574,7 +3574,7 @@ object fmVariants: TfmVariants
     DataSet = quVariants
     OnDataChange = dsVaraintsDataChange
     Left = 596
-    Top = 99
+    Top = 107
   end
   object PopupMenu: TPopupMenu
     OnPopup = PopupMenuPopup

@@ -110,6 +110,11 @@ type
     Qua:  Single; //качество горной массы
     Excv: Single; {dwd}
   end;{ResaRockVolume}
+  RRockVolume=record
+    Vm3: Single; //Объем горной массы, м3
+    Qtn: Single; //Объем горной массы, т
+    Qua:  Single; //качество горной массы
+  end;
 
   //Данные по автосамосвалам
   ResaAutos = record

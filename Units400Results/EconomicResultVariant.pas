@@ -136,7 +136,11 @@ type
     _ks: double;
     procedure FetchData(Fields: TFields);
     procedure SetBaseVariant(value: boolean);
-  protected
+  public
+    Id_ResultVariant: integer;
+    constructor Create(Fields: TFields);
+    procedure UpdateData(Fields: TFields);
+
     property Variant: string read _variant;
     property VariantDate: TDateTime read _variantDate;
     property PeriodTday: double read _periodTday;
@@ -264,10 +268,6 @@ type
     property CurrStrippingQtn: double read _currStrippingQtn;
     property CurrStrippingVm3: double read _currStrippingVm3;
     property Ks: double read _ks;
-  public
-    Id_ResultVariant: integer;
-    constructor Create(Fields: TFields);  
-    procedure UpdateData(Fields: TFields);
   end;
 
 implementation

@@ -349,7 +349,8 @@ begin
       end;{while}
       quLoadingPunkts.First;
     end;{with}
-    if Row=4 then Inc(Row);
+    if Row=4 then
+      Inc(Row);
     //Рамка и формат диапазона данных
     XL.Cells[2,1,7,Row].Frame := [feTotal];
     XL.Cells[5,3,5,Row+5].NumberFormat := nfFloat00;
@@ -384,8 +385,8 @@ begin
     XL.Zoom := 100;
   finally
     XL.Free;
-  end;{try}
-end;{pmiRockExcelClick}
+  end;
+end;
 procedure TfmProductivity.pmLoadingPunktsRocksPopup(Sender: TObject);
 begin
   with fmDM do
