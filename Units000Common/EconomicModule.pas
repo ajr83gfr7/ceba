@@ -69,6 +69,7 @@ type
     function CalcTotalAutosCost: double;
 
     function CalcTotalCosts:double;
+    function CalcTotalShiftCosts:double;
     function CalcTyresCost: double;
     function CalcCurrentCost: double;
     function CalcUdelnCurrentCost: double;
@@ -197,6 +198,8 @@ type
     //----------------------------
     // Общие затраты ГТК, тг
     property TotalCost: double read CalcTotalCosts;
+    // Общие затраты ГТК за смену, тг
+    property TotalShiftCost: double read CalcTotalShiftCosts;
     // Затраты на шины, тг
     property TyresCost: double read CalcTyresCost;
     // Текущие затраты по горной массе, тенге
@@ -625,6 +628,18 @@ function TEconomicResult.CalcTotalCosts: double;
 // ServiceTruckCost - Сумма затрат связанная с текущими ремонтами автосамосвалов
 begin
   Result:= (VolumeOfGM_m3_byYear * UdelCost + TyresCost + TruckCost + ServiceTruckCost);
+end;
+
+function TEconomicResult.CalcTotalShiftCosts: double;
+// Общие затраты ГТК за смену, тг
+// VolumeOfGM_m3_byYear - объем за год
+// UdelCost - Удельные текущие затраты по горной массе, тенге  - на m3
+// TyresCost - Затраты на шины, тг
+// TruckCost - Стоимость приобретаемого автосамосвала, тыс.тг
+// ServiceTruckCost - Сумма затрат связанная с текущими ремонтами автосамосвалов
+begin
+//  Result:= ((VolumeOfGM_m3_byYear / 620.5) * UdelCost + TyresCost + ServiceTruckCost);
+  Result:= ((VolumeOfGM_m3 * UdelCost) + TyresCost + ServiceTruckCost);
 end;
 
 function TEconomicResult.CalcTotalExcavatorsCost: double;

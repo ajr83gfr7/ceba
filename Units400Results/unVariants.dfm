@@ -1,5 +1,5 @@
 object fmVariants: TfmVariants
-  Left = 3
+  Left = 4
   Top = 0
   Width = 1184
   Height = 600

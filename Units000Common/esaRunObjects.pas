@@ -9850,10 +9850,11 @@ begin
       for K := 0 to LoadingPunkts[J].RockCount-1 do
         if LoadingPunkts[J].Rocks[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock then
         begin
-          AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlanQtn / 1000);
-          AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlanQtn / 1000);
-          AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlanVm3 / 1000);
-          AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlanVm3 / 1000);
+          //AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlanQtn / 1000);
+          AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlanQtn / 620.5);
+          AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlanQtn / 620.5);
+          AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlanVm3 / 620.5);
+          AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlanVm3 / 620.5);
         end;
       for K := 0 to LoadingPunkts[J].Excavator.Events.Count-1 do
         if (LoadingPunkts[J].Excavator.Events[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock) and

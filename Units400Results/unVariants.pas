@@ -430,7 +430,7 @@ begin
   //_economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 
   NEESaveToLocal();
-  //quVariants.Last;
+//  quVariants.Last;
   with TIniFile.Create(IniFileName) do
   try
     pmiExcelParamsDollar.Checked            := ReadBool('Отчеты','InDollar',pmiExcelParamsDollar.Checked);
@@ -976,7 +976,8 @@ begin
 //  dbgVariants.Columns[4].Footer.ValueType := fvtSum; // где 4- номер столбца, который суммируем
 
     dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
-    _tmpPlan:= ExcavatorsPlanRockVm3 * 620.5 / 1e3;
+    //_tmpPlan:= ExcavatorsPlanRockVm3 * 620.5 / 1e3;
+    _tmpPlan:= ExcavatorsPlanRockVm3;
     _tmpQtn:= VolumeOfGM_m3_avg;
     _result:= _tmpQtn * 100 / _tmpPlan;
     //dbgVariants.Columns[3].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg * 100 / PlanVolume_m3 * 1000]);
@@ -993,6 +994,9 @@ begin
 
     dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
     dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_tn_avg]);
+
+    dbgVariants.Columns[8].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[8].Footers[1].Value:= format('%n', [TotalShiftCost]);
   end;
 end;
 
@@ -1066,8 +1070,42 @@ begin
 end;
 
 procedure TfmVariants.dbgVariantsCellClick(Column: TColumnEh);
+var
+  _tmpQtn: double;
+  _tmpPlan: double;
+  _result: double;
 begin
   _economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
+
+  if quVariants.Active then
+    dbgVariants.Columns[0].Footers[0].Value := Format('%d/%d',[quVariants.RecNo,quVariants.RecordCount])
+  else
+    dbgVariants.Columns[0].Footers[0].Value := '';
+
+  with _economics.CurrentVariant do
+  begin
+    dbgVariants.Columns[3].Footers[1].ValueType:= fvtStaticText;
+    _tmpPlan:= ExcavatorsPlanRockVm3;
+    _tmpQtn:= VolumeOfGM_m3_avg;
+    _result:= _tmpQtn * 100 / _tmpPlan;
+
+    dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_result]);
+
+    dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);
+
+    dbgVariants.Columns[5].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn_avg]);
+
+    dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_m3_avg ]);
+
+    dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_tn_avg]);
+
+    dbgVariants.Columns[8].Footers[1].ValueType:= fvtStaticText;
+    dbgVariants.Columns[8].Footers[1].Value:= format('%n', [TotalShiftCost]);
+  end;
 end;
 
 end.
