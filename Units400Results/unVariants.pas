@@ -456,7 +456,7 @@ begin
 
   // todo: проверить необходимость |
   //                               V
-  (*
+
   with DataSet do
   begin
     //Shift
@@ -603,7 +603,7 @@ begin
                                                                FieldByName('ExcavatorsExcavatorsCount1').AsInteger
                                                                ]);
   end;
-  *)
+
   //SEE 8/02/2018: Relative economical effect calculation added
   NominalEffectCalculation(DataSet);
 end;
