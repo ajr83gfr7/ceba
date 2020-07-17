@@ -82,7 +82,7 @@ object fmResultShiftBlocks: TfmResultShiftBlocks
     Top = 0
     Width = 784
     Height = 701
-    ActivePage = tsResultShiftBlocksReport3
+    ActivePage = tsResultShiftBlocksReport2
     Align = alClient
     TabOrder = 1
     object tsResultShiftBlocksReport1: TTabSheet

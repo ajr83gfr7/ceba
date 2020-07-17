@@ -10090,6 +10090,7 @@ begin
     quReps.SQL.Text := 'SELECT * FROM _ResultShiftBlockReports';
     quReps.Open;
     ABlocksCount:= 0;
+    //TODO: репорты 1-2-3
     for I := 0 to _Models.Count-1 do
     begin
       FGauge.MaxValue := _Models[I].Count;
@@ -10098,9 +10099,9 @@ begin
         SetGaugeValue(J);
         _AddReport(quReps,1,_Models[I][J]);
         Inc(ABlocksCount);
-      end;{for}
+      end;
       _AddReport(quReps,2,_Models[I]);
-    end;{for}
+    end;
     _AddReport(quReps,3,_Models);
     quReps.Free;
     Variant.SaveBlocks(ABlocksCount,_Models.Lsm,_Models.RockVolume,_Models.AutosCount,_Models.WaitingsCount,
