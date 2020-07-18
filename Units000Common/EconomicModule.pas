@@ -206,6 +206,8 @@ type
     property CurrentCost: double read CalcCurrentCost;
     // Удельные текущие затраты по горной массе, тенге  - на m3??
     property UdelCost: double read CalcUdelnCurrentCost;
+    // Удельные эксплутационные затраты на единицу горной массы (на 1 м3)
+    //property UdelExpuatacCost: double read CalcUdelnCurrentCost;
     //----------------------------
     // Объем ГМ
     //----------------------------

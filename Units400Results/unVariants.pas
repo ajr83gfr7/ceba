@@ -460,8 +460,9 @@ begin
   with DataSet do
   begin
     //Shift
-    FieldByName('ShiftNaryadTmin').AsFloat:= FieldByName('ShiftTmin').AsFloat -
-                                             FieldByName('ShiftTurnoverTmin').AsFloat;
+    //FieldByName('ShiftNaryadTmin').AsFloat:= FieldByName('ShiftTmin').AsFloat -
+    //                                         FieldByName('ShiftTurnoverTmin').AsFloat;
+    FieldByName('ShiftNaryadTmin').AsFloat:= _economics.CurrentVariant.ShiftNaryadFactTmin;
     //Auto S,km
     FieldByName('AutosSkm').AsFloat:= FieldByName('AutosSkmNulled').AsFloat +
                                       FieldByName('AutosSkmLoading').AsFloat +
@@ -583,13 +584,15 @@ begin
     FieldByName('EconomUdAmortizationCtg_tn').AsFloat:= esaDrob(FieldByName('EconomAmortizationCtg').AsFloat,
                                                                 FieldByName('ExcavatorsRockQtn').AsFloat);
     //
-    FieldByName('EconomUdCtg_m3').AsFloat:= esaDrob(FieldByName('EconomCtg').AsFloat,
-                                                    CalcVolumeOfGM_avg_m3(FieldByName('CurrOreVm3').AsFloat,
-                                                                          FieldByName('CurrStrippingVm3').AsFloat,
-                                                                          FieldByName('ExcavatorsRockVm3').AsFloat));
+    //FieldByName('EconomUdCtg_m3').AsFloat:= esaDrob(FieldByName('EconomCtg').AsFloat,
+    //                                                CalcVolumeOfGM_avg_m3(FieldByName('CurrOreVm3').AsFloat,
+    //                                                                      FieldByName('CurrStrippingVm3').AsFloat,
+    //                                                                      FieldByName('ExcavatorsRockVm3').AsFloat));
+    FieldByName('EconomUdCtg_m3').AsFloat:= _economics.CurrentVariant.TotalCost / _economics.CurrentVariant.VolumeOfGM_m3_avg;
     //
-    FieldByName('EconomUdCtg_tn').AsFloat:= esaDrob(FieldByName('EconomCtg').AsFloat,
-                                                    FieldByName('ExcavatorsRockQtn').AsFloat);
+    //FieldByName('EconomUdCtg_tn').AsFloat:= esaDrob(FieldByName('EconomCtg').AsFloat,
+    //                                                FieldByName('ExcavatorsRockQtn').AsFloat);
+    FieldByName('EconomUdCtg_tn').AsFloat:= _economics.CurrentVariant.TotalCost / _economics.CurrentVariant.VolumeOfGM_tn_avg;
     //
     FieldByName('AutosAutosCount').AsString:= Format('%d из %d',
                                                      [FieldByName('AutosAutosCount0').AsInteger,
@@ -637,7 +640,8 @@ begin
     FieldByName('ProfitCtg').AsFloat:= _economic.Profit / 1E6;
 
     {Затраты, млн.тг}
-    FieldByName('ExpensesCtg').AsFloat:= _economic.TotalCost / 1E6;
+    //FieldByName('ExpensesCtg').AsFloat:= _economic.TotalCost / 1E6;
+    FieldByName('ExpensesCtg').AsFloat:= _economic.TotalShiftCost / 1E6;
 
     {Условный экономический эффект, млн.тг}
     FieldByName('NominalEconomicEffectCtg').AsFloat:= _economic.UEconomicEffect / 1E6;

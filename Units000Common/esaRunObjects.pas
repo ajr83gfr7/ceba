@@ -9630,7 +9630,7 @@ procedure TDispatcher.SaveEconomResultsNew;
     end;
   end;
 var
-  AWorkCtg0,AWorkCtg1,ARepairCtg2                      : Single;//Затраты в работе, тг
+  AWorkCtg0,AWorkCtg1,ARepairCtg2                      : Single;//Затраты в работе, тг (0-Auto;1-Excv;2-Block)
   AWaitingCtg0,AWaitingCtg1                            : Single;//Затраты в простое, тг
   AAmortizationCtg0,AAmortizationCtg1,AAmortizationCtg2: Single;//Амортиз.отчисления, тг
   ACtg0,ACtg1,ACtg2                                    : Single;//Затраты суммарные, тг
@@ -9680,6 +9680,7 @@ begin
       _Add(qu, '4',  CesaEconomExpensesCtg,AExpensesCtg);
       _Add(qu, '5',  CesaEconomRockVm3,ARockVolume.Vm3);
       _Add(qu, '6',  CesaEconomRockQtn,ARockVolume.Qtn);
+      // todo: запись удельных затрат
       _Add(qu, '7',  CesaEconomUdExpluationCtgm3,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2,ARockVolume.Vm3);
       _Add(qu, '8',  CesaEconomUdExpluationCtgtn ,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2,ARockVolume.Qtn);
       _Add(qu, '9',  CesaEconomUdAmortizationCtgm3,AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2,ARockVolume.Vm3);
@@ -9959,7 +9960,8 @@ const
     begin
       //Количественные параметры
       _Add(AQuery,  'I',CesaBlocksQuantity,-1.0);
-      _Add(AQuery,  '1',CesaBlocksBlocksCount,BlocksCount);
+      if AKind <> 2 then
+        _Add(AQuery,  '1',CesaBlocksBlocksCount,BlocksCount);
       _Add(AQuery,  '2',CesaBlocksLm,Lsm,100);
       _Add(AQuery,  '3',CesaBlocksRock,-1.0);
       _Add(AQuery,  '4',CesaBlocksRockVm3,RockVolume.Vm3);
@@ -10002,6 +10004,36 @@ const
       _Add(AQuery,  '4',CesaBlocksCtg,Ctg);
     end;{with}
   end;{_AddReport}
+  procedure _AddReport_addition(const AQuery: TADOQuery; const AKind: Integer; const AItem: TesaResultBlockModel);
+    procedure _Add(const q: TADOQuery; const ARecName: String; const AKey: ResaKeyParams; ANum: Single; const ADen: Single=-1.0);
+    var I: Integer;
+    begin
+      //Корректировка Value
+      if not(ADen<0.0) then if ADen>0.0 then ANum := ANum/ADen else ANum := 0.0;
+      //Записываю в БД
+      q.Append;
+      for I := 1 to q.Fields.Count-1 do
+        q.Fields[I].Clear;
+      q.FieldByName('Id_ResultShift').AsInteger               := ResultId_Shift;
+      if AKind = 1
+      then q.FieldByName('Id_ResultShiftBlock').AsInteger     := AItem.Id_ResultShiftBlock;
+      if AKind = 2
+      then q.FieldByName('Id_RoadCoat').AsInteger             := AItem.Id_RoadCoat;
+      if AKind = 2
+      then q.FieldByName('RoadCoat').AsString                 := AItem.RoadCoat;
+      q.FieldByName('Lsm').AsInteger                          := AItem.Lsm;
+      q.FieldByName('Kind').AsInteger                         := AKind;
+      q.FieldByName('IsChangeable').AsBoolean                 := AKey.IsChangeable;
+      q.FieldByName('RecordNo').AsInteger                     := AKey.No;
+      q.FieldByName('RecordName').AsString                    := ARecName;
+      q.FieldByName('Name').AsString                          := AKey.Key;
+      if ANum>-1.0
+      then q.FieldByName('Value').AsFloat                     := ANum;
+      q.Post;
+    end;{_Add}
+  begin
+    _Add(AQuery,  '1',CesaBlocksBlocksCount,AItem.Count);
+  end;
 var
   quBlocks       : TADOQuery;
   quReps         : TADOQuery;
@@ -10101,6 +10133,7 @@ begin
         Inc(ABlocksCount);
       end;
       _AddReport(quReps,2,_Models[I]);
+      _AddReport_addition(quReps,2,_Models[I]);
     end;
     _AddReport(quReps,3,_Models);
     quReps.Free;

@@ -33,7 +33,7 @@ object fmVariants: TfmVariants
     Top = 123
     Width = 1168
     Height = 420
-    ActivePage = tsEconoms
+    ActivePage = TabSheet1
     Align = alBottom
     TabOrder = 0
     object tsAutos: TTabSheet
