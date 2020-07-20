@@ -71,6 +71,7 @@ type
     function CalcTotalCosts:double;
     function CalcTotalShiftCosts:double;
     function CalcTyresCost: double;
+    function CalcTyresShiftCost: double;
     function CalcCurrentCost: double;
     function CalcUdelnCurrentCost: double;
     function CalcVolumeOfGM_tn: double;
@@ -200,8 +201,10 @@ type
     property TotalCost: double read CalcTotalCosts;
     // Общие затраты ГТК за смену, тг
     property TotalShiftCost: double read CalcTotalShiftCosts;
-    // Затраты на шины, тг
+    // Затраты на шины (год), тг
     property TyresCost: double read CalcTyresCost;
+    // Затраты на шины (смена), тг
+    property TyresShiftCost: double read CalcTyresShiftCost;
     // Текущие затраты по горной массе, тенге
     property CurrentCost: double read CalcCurrentCost;
     // Удельные текущие затраты по горной массе, тенге  - на m3??
@@ -636,12 +639,19 @@ function TEconomicResult.CalcTotalShiftCosts: double;
 // Общие затраты ГТК за смену, тг
 // VolumeOfGM_m3_byYear - объем за год
 // UdelCost - Удельные текущие затраты по горной массе, тенге  - на m3
-// TyresCost - Затраты на шины, тг
+// TyresShiftCost - Затраты на шины, тг (смена)
 // TruckCost - Стоимость приобретаемого автосамосвала, тыс.тг
 // ServiceTruckCost - Сумма затрат связанная с текущими ремонтами автосамосвалов
+var
+  VolumeOfGM: double;
 begin
+  if GMisAvg then
+    VolumeOfGM:= VolumeOfGM_m3_avg
+  else
+    VolumeOfGM:= VolumeOfGM_m3;
+
 //  Result:= ((VolumeOfGM_m3_byYear / 620.5) * UdelCost + TyresCost + ServiceTruckCost);
-  Result:= ((VolumeOfGM_m3 * UdelCost) + TyresCost + ServiceTruckCost);
+  Result:= ((VolumeOfGM * UdelCost) + TyresShiftCost + ServiceTruckCost);
 end;
 
 function TEconomicResult.CalcTotalExcavatorsCost: double;
@@ -676,7 +686,7 @@ begin
 end;
 
 function TEconomicResult.CalcTyresCost: double;
-// Затраты на шины, тг
+// Затраты на шины, тг (год)
 // CoefOfPeriodShift - Коэффициент перевода сменных параметров на период
 // AutosTyresCtg - Затраты на шины, тг
 begin
@@ -858,6 +868,13 @@ function TEconomicResult.CalcVolumeOfGM_tn_avg: double;
 // ExcavatorsRockQtn - Погруженная Горная масса, тонн
 begin
   Result:= (CurrOreQtn + CurrStrippingQtn + ExcavatorsRockQtn) / 2;
+end;
+
+function TEconomicResult.CalcTyresShiftCost: double;
+// Затраты на шины, тг (смена)
+// AutosTyresCtg - Затраты на шины, тг
+begin
+  Result:= AutosTyresCtg;
 end;
 
 { TResultVariants }

@@ -1686,7 +1686,7 @@ type
     property Last: TesaResultBlock read GetLast;
     constructor Create(ADispatcher: TDispatcher); override;
     destructor Destroy; override;
-  end;{TesaResultBlockModel}
+  end;
 
   //Выходные данные по всем БУ --------------------------------------------------------------------------
   TesaResultBlockModels = class(TesaResultBlock)

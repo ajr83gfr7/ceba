@@ -255,7 +255,7 @@ begin
     edQtnGM.Text:= str(PlanVolume_m3 / 1e3);
   //--------------------------------------------------------------------------
     edPribil.Text:= str(Profit / 1e6);
-    edRashot.Text:= str(TotalCost / 1e6);
+    edRashot.Text:= str(TotalShiftCost / 1e6);
     edUsEcom.Text:= str(UEconomicEffect / 1e6);
     edBaseVari.Text:= str(0.0);
     edOtnoEcom.Text:= str(OEconomicEffect / 1e6);
