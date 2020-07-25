@@ -430,7 +430,7 @@ begin
   //_economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 
   NEESaveToLocal();
-//  quVariants.Last;
+  quVariants.Last;
   with TIniFile.Create(IniFileName) do
   try
     pmiExcelParamsDollar.Checked            := ReadBool('־עקועû','InDollar',pmiExcelParamsDollar.Checked);

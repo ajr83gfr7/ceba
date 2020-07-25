@@ -651,7 +651,8 @@ begin
     VolumeOfGM:= VolumeOfGM_m3;
 
 //  Result:= ((VolumeOfGM_m3_byYear / 620.5) * UdelCost + TyresCost + ServiceTruckCost);
-  Result:= ((VolumeOfGM * UdelCost) + TyresShiftCost + ServiceTruckCost);
+//  Result:= ((VolumeOfGM * UdelCost) + TyresShiftCost + ServiceTruckCost);
+  Result:= (VolumeOfGM * UdelCost)
 end;
 
 function TEconomicResult.CalcTotalExcavatorsCost: double;
