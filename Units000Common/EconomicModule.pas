@@ -770,7 +770,8 @@ constructor TEconomicResult.Create(Fields: TFields; isAvg: boolean = true);
 begin
   inherited Create(Fields);
 
-  GMisAvg:= isAvg;
+//  GMisAvg:= isAvg;
+  GMisAvg:= false;
 end;
 
 function TEconomicResult.CalcKs: double;

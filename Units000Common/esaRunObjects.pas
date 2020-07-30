@@ -9557,7 +9557,7 @@ procedure TDispatcher.SaveEconomResultsNew;
     q.FieldByName('RecordName').AsString := ARecName;
     q.FieldByName('Name').AsString := AKey.Key;
     if ANum > -1.0 then
-      q.FieldByName('Value').AsFloat := ANum/1000;
+      q.FieldByName('Value').AsFloat := ANum;
     q.Post;
   end;
   //
