@@ -988,20 +988,20 @@ begin
     dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_result]);
 
     dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);
-    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3]);
+    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);
+//    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3]);
 
     dbgVariants.Columns[5].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn_avg]);
-    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn]);
+    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn_avg]);
+//    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn]);
 
     dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3_avg ]);
-    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3 ]);
+    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3_avg ]);
+//    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3 ]);
 
     dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn_avg]);
-    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn]);
+    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn_avg]);
+//    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn]);
 
     dbgVariants.Columns[8].Footers[1].ValueType:= fvtStaticText;
     dbgVariants.Columns[8].Footers[1].Value:= format('%n', [TotalShiftCost]);
@@ -1100,20 +1100,20 @@ begin
     dbgVariants.Columns[3].Footers[1].Value:= format('%n', [_result]);
 
     dbgVariants.Columns[4].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);
-    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3]);
+    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3_avg]);
+//    dbgVariants.Columns[4].Footers[1].Value:= format('%n', [VolumeOfGM_m3]);
 
     dbgVariants.Columns[5].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn_avg]);
-    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn]);
+    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn_avg]);
+//    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn]);
 
     dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_m3_avg ]);
-    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3 ]);
+    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_m3_avg ]);
+//    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3 ]);
 
     dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
-//    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_tn_avg]);
-    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn]);
+    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_tn_avg]);
+//    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn]);
 
     dbgVariants.Columns[8].Footers[1].ValueType:= fvtStaticText;
     dbgVariants.Columns[8].Footers[1].Value:= format('%n', [TotalShiftCost]);

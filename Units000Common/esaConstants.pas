@@ -186,10 +186,10 @@ const
   CesaEconomAmortizationCtg2    : ResaKeyParams = (No:302; IsChangeable:True;  Key:'Амортизационные отчисления');
   CesaEconomCtg2                : ResaKeyParams = (No:303; IsChangeable:True;  Key:'Суммарные затраты');
   CesaEconomSummary             : ResaKeyParams = (No:400; IsChangeable:False; Key:'Суммарные показатели');
-  CesaEconomCtg                 : ResaKeyParams = (No:401; IsChangeable:True;  Key:'Затраты по горно-транспортному комплексу');
-  CesaEconomExpluationCtg       : ResaKeyParams = (No:402; IsChangeable:True;  Key:'  Эксплутационные затраты');
-  CesaEconomAmortizationCtg     : ResaKeyParams = (No:403; IsChangeable:True;  Key:'  Амортизационные отчисления');
-  CesaEconomExpensesCtg         : ResaKeyParams = (No:404; IsChangeable:True;  Key:'  Постоянные и неучтенные расходы');
+  CesaEconomCtg                 : ResaKeyParams = (No:401; IsChangeable:True;  Key:'Затраты по горно-транспортному комплексу, тыс.');
+  CesaEconomExpluationCtg       : ResaKeyParams = (No:402; IsChangeable:True;  Key:'  Эксплутационные затраты, тыс.');
+  CesaEconomAmortizationCtg     : ResaKeyParams = (No:403; IsChangeable:True;  Key:'  Амортизационные отчисления, тыс.');
+  CesaEconomExpensesCtg         : ResaKeyParams = (No:404; IsChangeable:True;  Key:'  Постоянные и неучтенные расходы, тыс.');
   CesaEconomRockVm3             : ResaKeyParams = (No:405; IsChangeable:True;  Key:'Производительность комплекса по горной массе, м3');
   CesaEconomRockQtn             : ResaKeyParams = (No:406; IsChangeable:True;  Key:'Производительность комплекса по горной массе, т');
   CesaEconomUdExpluationCtgm3   : ResaKeyParams = (No:407; IsChangeable:False; Key:'Удельные эксплутационные затраты на единицу горной массы (на 1 м3)');

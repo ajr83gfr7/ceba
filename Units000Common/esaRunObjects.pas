@@ -9600,6 +9600,7 @@ procedure TDispatcher.SaveEconomResultsNew;
     _qry: TADOQuery;
     Id_ResultVariant: integer;
     plan: double;
+    id_openpit: integer;
   begin
     _qry:= TADOQuery.Create(nil);
     _qry.Connection:= fmDM.ADOConnection;
@@ -9611,9 +9612,11 @@ procedure TDispatcher.SaveEconomResultsNew;
       Open;
       Id_ResultVariant:= FieldValues['Id_ResultVariant'];
       Close;
+
       SQL.Clear;
       SQL.Text:= SELECT_PLAN_SUM;
       Open;
+
       plan:= FieldValues['PlanV1000m3'];
       Close;
       SQL.Clear;
@@ -9621,6 +9624,7 @@ procedure TDispatcher.SaveEconomResultsNew;
       Parameters.ParamByName('ProductPriceCtg').Value:= ProductPriceCtg;
       Parameters.ParamByName('MTWorkByScheduleCtg').Value:= MTWorkByScheduleCtg;
       Parameters.ParamByName('ServiceExpensesCtg').Value:= ServiceExpensesCtg;
+      //todo: Сохранение плана
       Parameters.ParamByName('PlannedRockVolumeCm').Value:= plan;
 
       Parameters.ParamByName('Id_ResultVariant').Value:= Id_ResultVariant;
@@ -9674,10 +9678,10 @@ begin
       _Add(qu, '2',  CesaEconomAmortizationCtg2,AAmortizationCtg2);
       _Add(qu, '3',  CesaEconomCtg2,ACtg2);
       _Add(qu, 'IV', CesaEconomSummary,-1.0);
-      _Add(qu, '1',  CesaEconomCtg,ACtg0+ACtg1+ACtg2+AExpensesCtg);
-      _Add(qu, '2',  CesaEconomExpluationCtg,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2);
-      _Add(qu, '3',  CesaEconomAmortizationCtg,AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2);
-      _Add(qu, '4',  CesaEconomExpensesCtg,AExpensesCtg);
+      _Add(qu, '1',  CesaEconomCtg,(ACtg0 + ACtg1 + ACtg2 + AExpensesCtg) / 1E3);
+      _Add(qu, '2',  CesaEconomExpluationCtg,(AWorkCtg0 + AWaitingCtg0 + AWorkCtg1 + AWaitingCtg1 + ARepairCtg2) / 1E3);
+      _Add(qu, '3',  CesaEconomAmortizationCtg,(AAmortizationCtg0 + AAmortizationCtg1 + AAmortizationCtg2) / 1E3);
+      _Add(qu, '4',  CesaEconomExpensesCtg,(AExpensesCtg) / 1E3);
       _Add(qu, '5',  CesaEconomRockVm3,ARockVolume.Vm3);
       _Add(qu, '6',  CesaEconomRockQtn,ARockVolume.Qtn);
       // todo: запись удельных затрат

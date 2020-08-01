@@ -252,7 +252,7 @@ begin
     edStoiPrib.Text:= str(TruckCost);
     edZatSer.Text:= str(ServiceTruckCost / 1e3);
     edBaseVar.Text:= str(0.0);
-    edQtnGM.Text:= str(PlanVolume_m3 / 1e3);
+    edQtnGM.Text:= str(PlanVolume_m3);// / 1e3);
   //--------------------------------------------------------------------------
     edPribil.Text:= str(Profit / 1e6);
     edRashot.Text:= str(TotalShiftCost / 1e6);

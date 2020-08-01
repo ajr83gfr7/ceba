@@ -102,7 +102,7 @@ type
     //----------------------------
     // Коэффциенты
     //----------------------------
-    // Коэффциент перхода сменных показателей, тг
+    // Коэффциент перхода сменных показателей, тг / 620.50
     property CoefOfPeriodShift: double read CalcPeriodKshift;
     // Коэффициент вскрыши, т/т
     property CoefOfVsry: double read CalcKs;
@@ -544,7 +544,9 @@ begin
   else
     VolumeOfGM:= VolumeOfGM_m3;
 
-  Result:= VolumeOfGM * CoefOfPeriodShift;
+//  Result:= VolumeOfGM * CoefOfPeriodShift;
+  Result:= PlannedRockVolumeCm;
+//  Result:= VolumeOfGM_m3 * CoefOfPeriodShift;
 end;
 
 function TEconomicResult.CalcPriceBy1Tonna: double;
@@ -738,6 +740,11 @@ function TEconomicResult.CalcVolumeOfGM_m3: double;
 // Объем извлекаемой горной массы, получаемый по результатам моделирования, м3
 // ExcavatorsRockVm3 - Погруженная Горная масса
 begin
+//  if GMisAvg then
+//    Result:= VolumeOfGM_m3_avg
+//  else
+//    Result:= ExcavatorsRockVm3;
+
   Result:= ExcavatorsRockVm3;
 end;
 
@@ -770,8 +777,7 @@ constructor TEconomicResult.Create(Fields: TFields; isAvg: boolean = true);
 begin
   inherited Create(Fields);
 
-//  GMisAvg:= isAvg;
-  GMisAvg:= false;
+  GMisAvg:= isAvg;
 end;
 
 function TEconomicResult.CalcKs: double;
