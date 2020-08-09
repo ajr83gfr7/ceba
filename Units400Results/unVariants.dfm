@@ -2403,7 +2403,7 @@ object fmVariants: TfmVariants
           Top = 130
           Width = 98
           Height = 21
-          DataField = 'PeriodKshift'
+          DataField = 'ShiftKweek'
           DataSource = dsVaraints
           ReadOnly = True
           TabOrder = 5

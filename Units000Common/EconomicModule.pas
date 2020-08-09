@@ -102,7 +102,7 @@ type
     //----------------------------
     // Коэффциенты
     //----------------------------
-    // Коэффциент перхода сменных показателей, тг / 620.50
+    // Коэффциент первода сменных показателей, тг / 620.50
     property CoefOfPeriodShift: double read CalcPeriodKshift;
     // Коэффициент вскрыши, т/т
     property CoefOfVsry: double read CalcKs;
@@ -791,7 +791,8 @@ function TEconomicResult.CalcPeriodKshift: double;
 // Коэффциент перхода сменных показателей, тг
 // PeriodKshift - Коэффициент перевода сменных параметров на период(620.20)
 begin
-  Result:= PeriodKshift;
+//  Result:= PeriodKshift;
+  Result:= ShiftKweek;
 end;
 
 function TEconomicResult.PtintVar: string;

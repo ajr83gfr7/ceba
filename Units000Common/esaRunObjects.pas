@@ -9589,6 +9589,15 @@ procedure TDispatcher.SaveEconomResultsNew;
                                'WHERE VariantDate = (SELECT MAX(VariantDate) FROM _ResultVariants)';
     SELECT_PLAN_SUM = 'SELECT SUM(PlannedV1000m3) AS PlanV1000m3 ' +
                       'FROM OpenpitLoadingPunktRocks';
+    SELECT_PLAN_BY_VARIANT = 'SELECT resvar.id_resultvariant AS var, rock.plan AS PlanV1000m3 ' +
+                             'FROM ' +
+                             '(SELECT opp.id_openpit AS oid, SUM(opr.plannedv1000m3) AS plan ' +
+                             'FROM OpenpitLoadingPunktRocks AS opr, OpenpitLoadingPunkts AS opp ' +
+                             'WHERE opp.id_loadingpunkt = opr.id_loadingpunkt ' +
+                             'GROUP BY opp.id_openpit) AS rock, Openpits, _ResultVariants AS resvar ' +
+                             'WHERE rock.oid = Openpits.id_openpit ' +
+                             'AND Openpits.name = resvar.variant ' +
+                             'AND resvar.id_resultvariant = :Id_ResultVariant';
     UPDATE_RESULT_VARIANT = 'UPDATE _ResultVariants ' +
                             'SET ' +
                             'ProductPriceCtg=:ProductPriceCtg, ' +
@@ -9614,7 +9623,8 @@ procedure TDispatcher.SaveEconomResultsNew;
       Close;
 
       SQL.Clear;
-      SQL.Text:= SELECT_PLAN_SUM;
+      SQL.Text:= SELECT_PLAN_BY_VARIANT;
+      Parameters.ParamByName('Id_ResultVariant').Value:= Id_ResultVariant;
       Open;
 
       plan:= FieldValues['PlanV1000m3'];
