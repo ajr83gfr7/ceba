@@ -949,6 +949,9 @@ var
   _result: double;
   //
   _tmpfile: TWriter;
+  //
+  _totalShiftCost: double;
+  _volumeOfGM_m3_avg: double;
 begin
   if quVariants.Active then
     dbgVariants.Columns[0].Footers[0].Value := Format('%d/%d',[quVariants.RecNo,quVariants.RecordCount])
@@ -996,6 +999,8 @@ begin
 //    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn]);
 
     dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
+    _totalShiftCost:= TotalShiftCost;
+    _volumeOfGM_m3_avg:= VolumeOfGM_m3_avg;
     dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3_avg ]);
 //    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3 ]);
 
@@ -1081,7 +1086,10 @@ procedure TfmVariants.dbgVariantsCellClick(Column: TColumnEh);
 var
   _tmpQtn: double;
   _tmpPlan: double;
-  _result: double;
+  _result: double;                         
+  //
+  _totalShiftCost: double;
+  _volumeOfGM_m3_avg: double;
 begin
   _economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 
@@ -1108,11 +1116,16 @@ begin
 //    dbgVariants.Columns[5].Footers[1].Value:= format('%n', [VolumeOfGM_tn]);
 
     dbgVariants.Columns[6].Footers[1].ValueType:= fvtStaticText;
-    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_m3_avg ]);
+//    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_m3_avg ]);
+
+    _totalShiftCost:= TotalShiftCost;
+    _volumeOfGM_m3_avg:= VolumeOfGM_m3_avg;
 //    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3 ]);
+    dbgVariants.Columns[6].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_m3_avg ]);
+
 
     dbgVariants.Columns[7].Footers[1].ValueType:= fvtStaticText;
-    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalCost / VolumeOfGM_tn_avg]);
+    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn_avg]);
 //    dbgVariants.Columns[7].Footers[1].Value:= format('%n', [TotalShiftCost / VolumeOfGM_tn]);
 
     dbgVariants.Columns[8].Footers[1].ValueType:= fvtStaticText;
