@@ -112,9 +112,14 @@ begin
     Dataset.FieldByName('Value1').AsFloat := AValue;
     Dataset.FieldByName('Value2').AsFloat := AValue;
     Dataset.FieldByName('Value3').AsFloat := AValue;
+
     if Dataset.FieldByName('IsChangeable').AsBoolean then
     begin
-      Dataset.FieldByName('Value2').AsFloat := AValue*quResultShiftsShiftKweek.AsFloat;
+      if (Dataset.FieldByName('RecordNo').AsInteger <> 103) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
+        Dataset.FieldByName('Value2').AsFloat := AValue*quResultShiftsShiftKweek.AsFloat;
       Dataset.FieldByName('Value3').AsFloat := AValue*quResultShiftsPeriodKshift.AsFloat;
     end;
   end;
