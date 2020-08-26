@@ -9538,6 +9538,7 @@ procedure TDispatcher.SaveEconomResultsNew;
   procedure _Add(const q: TADOQuery;
                  const ARecName: String;
                  const AKey: ResaKeyParams;
+  // todo: Double -> Single
                  ANum: Single;
                  ADen: Single=-1.0);overload;
   var
@@ -9647,6 +9648,7 @@ var
   AWorkCtg0,AWorkCtg1,ARepairCtg2                      : Single;//Затраты в работе, тг (0-Auto;1-Excv;2-Block)
   AWaitingCtg0,AWaitingCtg1                            : Single;//Затраты в простое, тг
   AAmortizationCtg0,AAmortizationCtg1,AAmortizationCtg2: Single;//Амортиз.отчисления, тг
+  // todo: Double -> Single
   ACtg0,ACtg1,ACtg2                                    : Single;//Затраты суммарные, тг
   ARockVolume                                          : ResaRockVolume;//Производительность, м3. и т.
   AExpensesCtg                                         : Single;//Постоянные и неучтенные расходы, тг
@@ -9655,17 +9657,21 @@ var
   ProductPriceCtg: double;
   MTWorkByScheduleCtg: double;
   ServiceExpensesCtg: double;
+
 begin
+  // todo: eco
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования по экономическим показателям..');
   try
-    _GetSummaryAutoParams(AWorkCtg0,AWaitingCtg0,AAmortizationCtg0);
-    _GetSummaryExcavatorParams(AWorkCtg1,AWaitingCtg1,AAmortizationCtg1,ARockVolume);
-    _GetSummaryBlockParams(ARepairCtg2,AAmortizationCtg2);
-    AExpensesCtg := Openpit.Common.YearExpensesCtg/(365*24*60) * Openpit.Shift.Tmin;
-    ACtg0 := AWorkCtg0+AWaitingCtg0+AAmortizationCtg0;
-    ACtg1 := AWorkCtg1+AWaitingCtg1+AAmortizationCtg1;
-    ACtg2 := ARepairCtg2+AAmortizationCtg2;
+    _GetSummaryAutoParams(AWorkCtg0, AWaitingCtg0, AAmortizationCtg0);
+    _GetSummaryExcavatorParams(AWorkCtg1, AWaitingCtg1, AAmortizationCtg1, ARockVolume);
+    _GetSummaryBlockParams(ARepairCtg2, AAmortizationCtg2);
+    AExpensesCtg := Openpit.Common.YearExpensesCtg / (365 * 24 * 60) * Openpit.Shift.Tmin;
+
+    ACtg0 := AWorkCtg0 + AWaitingCtg0 + AAmortizationCtg0;
+//    ACtg0:= ACtg0 - AWorkCtg0 - AWaitingCtg0 - AAmortizationCtg0;
+    ACtg1 := AWorkCtg1 + AWaitingCtg1 + AAmortizationCtg1;
+    ACtg2 := ARepairCtg2 + AAmortizationCtg2;
     qu := TADOQuery.Create(nil);
     try
       qu.Connection := fmDM.ADOConnection;

@@ -99,7 +99,7 @@ begin
     quResultShiftsShiftTmin.AsFloat - quResultShiftsShiftPeresmenkaTmin.AsFloat;
 end;
 procedure TfmResultEconomParams.quResultEconomReportsCalcFields(DataSet: TDataSet);
-var AValue,AKoef: Single;
+var AValue,AKoef: double;  shiftValue: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
   begin
@@ -119,8 +119,8 @@ begin
          (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
-        Dataset.FieldByName('Value2').AsFloat := AValue*quResultShiftsShiftKweek.AsFloat;
-      Dataset.FieldByName('Value3').AsFloat := AValue*quResultShiftsPeriodKshift.AsFloat;
+        Dataset.FieldByName('Value2').AsFloat := AValue * quResultShiftsShiftKweek.AsFloat;
+      Dataset.FieldByName('Value3').AsFloat := AValue * 2 * 365; //quResultShiftsPeriodKshift.AsFloat;
     end;
   end;
 end;
