@@ -100,6 +100,7 @@ begin
 end;
 procedure TfmResultEconomParams.quResultEconomReportsCalcFields(DataSet: TDataSet);
 var AValue,AKoef: double;  shiftValue: double;
+  val2, val3: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
   begin
@@ -119,14 +120,23 @@ begin
          (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
-        Dataset.FieldByName('Value2').AsFloat := AValue * quResultShiftsShiftKweek.AsFloat;
+        val2:= AValue * quResultShiftsShiftKweek.AsFloat;
+
       if (Dataset.FieldByName('RecordNo').AsInteger <> 103) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
-        Dataset.FieldByName('Value3').AsFloat := AValue * quResultShiftsShiftKweek.AsFloat * 2 * 365 / 1000
+        val3:= AValue * quResultShiftsShiftKweek.AsFloat * 2 * 365
       else
-        Dataset.FieldByName('Value3').AsFloat := AValue * 2 * 365 / 1000;
+        val3:= AValue * 2 * 365;
+      if (Dataset.FieldByName('RecordNo').AsInteger <> 401) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 402) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 404) then
+        val3:= val3 / 1000;
+
+      Dataset.FieldByName('Value2').AsFloat:= val2;
+      Dataset.FieldByName('Value3').AsFloat:= val3;
     end;
   end;
 end;
