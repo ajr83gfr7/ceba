@@ -120,7 +120,7 @@ begin
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
         Dataset.FieldByName('Value2').AsFloat := AValue * quResultShiftsShiftKweek.AsFloat;
-      Dataset.FieldByName('Value3').AsFloat := AValue * 2 * 365; //quResultShiftsPeriodKshift.AsFloat;
+      Dataset.FieldByName('Value3').AsFloat := AValue * quResultShiftsShiftKweek.AsFloat * 2 * 365; //quResultShiftsPeriodKshift.AsFloat;
     end;
   end;
 end;
