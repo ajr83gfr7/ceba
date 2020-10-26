@@ -211,16 +211,16 @@ end;{quResultShiftAutoEventsDirectionGetText}
 procedure TfmResultShiftAutos.quResultShiftAutoReport1CalcFields(DataSet: TDataSet);
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
-  if Dataset.FieldByName('IsChangeable').AsBoolean then
-  begin
-    Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*quResultShiftsShiftKweek.AsFloat;
-    Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*quResultShiftsPeriodKshift.AsFloat;
-  end{if}
-  else
-  begin
-    Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
-    Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
-  end;{else}
+    if Dataset.FieldByName('IsChangeable').AsBoolean then
+    begin
+      Dataset.FieldByName('Value1').AsFloat:= Dataset.FieldByName('Value').AsFloat * quResultShiftsShiftKweek.AsFloat;
+      Dataset.FieldByName('Value2').AsFloat:= Dataset.FieldByName('Value').AsFloat * quResultShiftsPeriodKshift.AsFloat;
+    end
+    else
+    begin
+      Dataset.FieldByName('Value1').AsFloat:= Dataset.FieldByName('Value').AsFloat * 1.0;
+      Dataset.FieldByName('Value2').AsFloat:= Dataset.FieldByName('Value').AsFloat * 1.0;
+    end;
 end;{quResultShiftAutoReport1CalcFields}
 procedure TfmResultShiftAutos.quResultShiftAutoReport1ValueGetText(Sender: TField; var Text: String; DisplayText: Boolean);
 begin

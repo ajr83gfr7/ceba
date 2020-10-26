@@ -2,12 +2,15 @@ unit TXTWriter;
 
 interface
 uses
-  SysUtils;
+  SysUtils, Globals;
 type
   TWriter = class
   public
     constructor Create();
-    class procedure WriteToTXT(input: string);
+    class procedure WriteToTXT(input: string; _tempFile: string = 'test.txt');
+    class function GetAutoState(state: TAutoState): string;
+    class function GetAutoDirection(dir: TAutoDirection): string;
+//    class function GetAutoEventKind(dir: TesaResultAutoEventKind): string;
   end;
 
 implementation
@@ -17,10 +20,37 @@ begin
   inherited;
 end;
 
-class procedure TWriter.WriteToTXT(input: string);
+class function TWriter.GetAutoDirection(dir: TAutoDirection): string;
+begin
+  //TAutoDirection=(adLoading,adUnLoading,adFromSP,adToSP,adUnknown);
+  case dir of
+    adLoading: Result:= 'adLoading';
+    adUnLoading: Result:= 'adUnLoading';
+    adFromSP: Result:= 'adFromSP';
+    adToSP: Result:= 'adToSP';
+    adUnknown: Result:= 'adUnknown';
+  else Result:= 'adUnknown';
+  end;
+end;
+
+class function TWriter.GetAutoState(state: TAutoState):string;
+begin
+  //  TAutoState=(asMovingFk,asMovingHh,asMovingBt,asWaiting,asAbort,asUnWorked,asDone);
+  case state of
+    asMovingFk: Result:= 'asMovingFk';
+    asMovingHh: Result:= 'asMovingHh';
+    asMovingBt: Result:= 'asMovingBt';
+    asWaiting: Result:= 'asWaiting';
+    asAbort: Result:= 'asAbort';
+    asUnWorked: Result:= 'asUnWorked';
+    asDone: Result:= 'asDone';
+  else Result:= 'asUnknown';
+  end;
+end;
+
+class procedure TWriter.WriteToTXT(input: string; _tempFile: string = 'test.txt');
 const
   _tempDir= '\Temp\';
-  _tempFile= 'test.txt';
 var
   _file: TextFile;
   _fileName: string;

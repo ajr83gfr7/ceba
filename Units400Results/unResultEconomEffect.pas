@@ -197,7 +197,6 @@ end;
 
 procedure TfmResultEconomEffect.dbgVariantCellClick(Column: TColumn);
 begin
-  // done: изменение current variant
   _economics.CurrentVariantId:= dbgVariant.DataSource.DataSet.FieldValues['Id_ResultVariant'];
   GetData();
 end;
@@ -476,7 +475,6 @@ var
   _qry: TADOQuery;
   _question: integer;
 begin
-  // done: Удалить вариант из БД и из economics
   _question:= MessageDlg(DO_YOU_SURE_TO_DELL, mtConfirmation, mbOKCancel, 0);
   if _question = mrOK then
   begin
@@ -506,7 +504,6 @@ var
   _qry: TADOQuery;
   _question: integer;
 begin
-  // done: Установить новый базовый вариант (не в этом модуле)
   _question:= MessageDlg(DO_YOU_SURE_TO_SET_BASE_VARIANT, mtConfirmation, mbOKCancel, 0);
   if _question = mrOk then
   begin
@@ -567,7 +564,6 @@ var
     Result:= Format('%n', [dbl]);
   end;
 begin
-  //done: Реализовать вывод в excel
   _sg:= TStringGrid.Create(nil);
   _colcount:= _economics._items.Count;
   _rowcount:= 0;

@@ -4,7 +4,12 @@ interface
 uses ADODb, StdCtrls, Classes, Globals, Types, Forms, ExtCtrls, Windows, Gauges, esaResultVariants, esaGlobals;
 
 //ul
-const uAI=12;
+const
+  uAI=12;
+  _test_auto_parkno = 1111;
+  _all_autos = false;
+  _auto_1301 = 1301;
+
 
 type
   TDispatcher=class;
@@ -156,7 +161,7 @@ type
     FkH : Single;//Сила тяги, кН
   end;
   //TesaAutoModel - класс "Модель авто" -------------------------------------------------------
-  TAutoTransmissionKind=(atkGM,atkEM); 
+  TAutoTransmissionKind=(atkGM,atkEM);
   RESAAutoModel = record
     Id_Auto         : Integer;//Уникальный код модели экскаватора
     Name            : String; //Модель
@@ -923,7 +928,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Assign(ADect: TesaResultBlockEvent);
-  end;{TesaResultBlockEvent}
+  end;
   //События блок-участка -------------------------------------------------------
   TesaResultBlockEvents = class(TesaResultBlockEvent)
   private
@@ -948,7 +953,7 @@ type
   public
     procedure Clear; override;
     constructor Create; override;
-  end;{TesaResultBlockEvents}
+  end;
 
 
   //TesaAuto - класс "Автосамосвал списочного парка" ------------------------------------------
@@ -1369,6 +1374,13 @@ type
   protected
     //Возвращаю суммарное сопротивление движению, уд.ед
     function DefineAydarSumSoprotiv_(const ARoadCoat: TesaRoadCoat; const Ptn,Q,Vkmh,i_: Single): Single;
+    //u+++
+    procedure SaveToTempfile(auto: TesaAuto; first: boolean = False);
+    procedure SaveToTempfile_info(auto: TesaAuto);
+    procedure SaveToTempfile_GX(auto: TesaAuto; _e: TesaResultAutoEvent; j: integer);
+    procedure SaveToTempfile_GX0(auto: TesaAuto; currGxReq: single);
+    procedure SimpleSave(_message: string);
+    //u---
   public
     //u+
     _tmp_test_auto: string;
@@ -1473,7 +1485,7 @@ type
     property SumAmortizationCtg: Single read FSumAmortizationCtg;
     constructor Create(ADispatcher: TDispatcher); virtual;
     destructor Destroy; override;
-  end;{TesaResultAuto}
+  end;
   
   //Выходные данные по модели автосамосвалов -----------------------------------
   TesaResultAutoModel = class(TesaResultAuto)
@@ -2096,7 +2108,7 @@ begin
     quRoadCoats.Connection := DBConnection;
     quRoadCoats.SQL.Text := 'SELECT * FROM RoadCoats ORDER BY SortIndex';
     quRoadCoats.Open;
-    
+
     dsRoadCoats := TDataSource.Create(nil);
     try
       dsRoadCoats.DataSet := quRoadCoats;
@@ -4662,27 +4674,30 @@ procedure TesaResultBlockEvents.Accumulate(
       const AAuto  : TesaAuto;
       const AIsDone: Boolean = False);
 begin
-  if ADir=adLoading
-  then FRockVolume := esaSum(RockVolume,AAuto.FCurrRockVolume);
+  if ADir=adLoading then
+    FRockVolume := esaSum(RockVolume,AAuto.FCurrRockVolume);
 
   if AState in [asMovingFk,asMovingHh,asMovingBt] then
   case ADir of
-    adLoading  : begin
-      FMovingTminLoading := esaSum(MovingTminLoading,AAuto.FCurrDtReqSec/60,1.0);
-      FMovingGx.Loading := MovingGx.Loading+AAuto.FCurrGxReq;
+    adLoading:
+    begin
+      FMovingTminLoading:= esaSum(MovingTminLoading,AAuto.FCurrDtReqSec/60,1.0);
+      FMovingGx.Loading:= MovingGx.Loading+AAuto.FCurrGxReq;
       FVkmhLoading := esaSum(VkmhLoading,AAuto.FCurrVavg,1.0);
-    end;{adLoading}
-    adUnLoading  : begin
+    end;
+    adUnLoading:
+    begin
       FMovingTminUnLoading := esaSum(MovingTminUnLoading,AAuto.FCurrDtReqSec/60,1.0);
       FMovingGx.UnLoading := MovingGx.UnLoading+AAuto.FCurrGxReq;
       FVkmhUnLoading := esaSum(VkmhUnLoading,AAuto.FCurrVavg,1.0);
-    end;{adUnLoading}
-    else begin
+    end;
+    else
+    begin
       FMovingTminNulled := esaSum(MovingTminNulled,AAuto.FCurrDtReqSec/60,1.0);
       FMovingGx.Nulled  := MovingGx.Nulled+AAuto.FCurrGxReq;
       FVkmhNulled := esaSum(VkmhNulled,AAuto.FCurrVavg,1.0);
-    end;{adNull}
-  end;{case}
+    end;
+  end;
   if AState in [asWaiting] then
   case ADir of
     adLoading  : begin
@@ -6612,30 +6627,10 @@ begin
         Autos[I].Events.Shifting(Autos[I].ShiftPunkt);
     tmp:= '0';
     //2. Основной цикл ------------------------------------------------------------------------
+    // TODO: Основной цикл расчета
     FCurrTsecNaryad := 0;
-    while FCurrTsecNaryad<FShiftTsec do
+    while FCurrTsecNaryad < FShiftTsec do
     begin
-
-      if (FCurrTsecNaryad>10600) then
-        _tmp_bool:= false;
-
-//      if (FCurrTsecNaryad>10513) then// 14, 6
-//      if (FCurrTsecNaryad>2513) then// 5, 9
-      if (FCurrTsecNaryad>6800) then
-      begin
-        _tmp_bool:= true;
-//        TXTWriter.TWriter.WriteToTXT(format('( %d )',
-//                                            [FCurrTsecNaryad]));
-      end;
-      if (FCurrTsecNaryad>10544) then
-        tmp:= '2';
-
-      if (FCurrTsecNaryad>10576) then
-        tmp:= '2';
-
-      if (FCurrTsecNaryad>6982) then
-        tmp:= '2';
-
       Inc(FResultItemIndex);                    //Очередная итерация
       dTsec:= DefineAutosMinDtSec_;             //Определение очередного шага моделирования
       if FCurrTsecNaryad+dTsec>FShiftTsec then  //Поправка очередного шага моделирования
@@ -6853,7 +6848,8 @@ begin
       AAuto.FSumGXltr[ADir,APos,AState] := 0.0;
     end;{for}
   end;{for}
-end;{DefineInitAuto_}
+end;
+// todo: init autos
 //Инициализация начального состояния автосамосвалов
 procedure TDispatcher.DefineInitAutos_;
 var
@@ -6869,12 +6865,16 @@ begin
     //Расстановка
     if Autos[I].FCurrState<>asUnWorked then
     begin//Автосамосвал в рабочем состоянии
+      //u+++
+//      SaveToTempfile_info(Autos[I]);
+      //u---
       //Определяю текущий маршрут
       cIndex := DefineAutosCourse(Autos[I],AErrMsg);
       if cIndex=-1 then
       begin//Если не определен маршрут
-        Autos[I].FCurrState := asAbort;  SendWarningMsg(AErrMsg);
-      end{if}
+        Autos[I].FCurrState:= asAbort;
+        SendWarningMsg(AErrMsg);
+      end
       else
       begin//Если определен маршрут
         ACourse := Courses[cIndex];
@@ -6888,7 +6888,11 @@ begin
           Autos[I].FCurrState            := asMovingFk;
           Autos[I].FCurrPunktIndex       := -1;
           DefineMovingAutosRequredParams_(Autos[I],0.0,adFromSP);
-        end{if}
+          //u+++
+    //      if (Autos[I].FParkNo = _test_auto_parkno) or _all_autos then
+//            SaveToTempfile(Autos[I], true);
+          //u---
+        end
         else
         begin//если Блок-Участок не свободен, ухожу в простой
           Autos[I].FCurrDt0Sec        := 0;
@@ -6896,23 +6900,17 @@ begin
           Autos[I].FCurrDtReqSec      := Autos[ABlock.RightAutoIndex].FCurrDtReqSec;
           Autos[I].FCurrGx            := 0.0;
           Autos[I].FCurrGxReq         := DefineAydarGx_(Autos[I],0.0,0.0,0.0,Autos[I].FCurrDt1Sec);
-        end;{else}
-      end;{else}
-    end;{else}
+          //u+++
+  //        if (Autos[I].FParkNo = _test_auto_parkno) or _all_autos then
+//            SaveToTempfile(Autos[I]);
+          //u---
+        end;
+      end;
+    end;
     //Сохраняю ссылку для дальнейшей сортировки
     FCurrAutos[I] := Autos[I];
-  end;{for}
-
-  //ul
-  //uflog('new',true);
-(*  uflog('autoIndex='+IntToStr(uAI));
-  ACourse:= Autos[uAI].CurrCourse;
-  for i:=0 to ACourse.Count-1 do   begin
-    ABlock:=ACourse.Items[i];
-    uflog(IntToStr(ABlock.FBlockIndex));
-  end;  *)
-
-end;{DefineInitAutos_}
+  end;
+end;
 //Сортировка всех авто:  в движении, в простое, в аварии, в нераб.состоянии (82 lines)
 procedure TDispatcher.DefineAutosSorting_;
   //Меняю местами автосамосвалы с индексами AIndex0,AIndex1
@@ -7030,8 +7028,8 @@ begin
     AAzimut := AngleByOXInGrad(APoint1.X-APoint0.X,APoint1.Y-APoint0.Y);
     AZenit  := -arcsin((APoint1.Z-APoint0.Z)/ABlockLm)*GradPerRad;
     APoint := GetRightPoint(APoint,APoint0,APoint1,AStripWm);
-  end;{if}
-end;{DefineAutosIndent}
+  end;
+end;
 
 //определяю местоположение авто, проехавшего lambda-часть намеченного пути
 procedure TDispatcher.DefineAutosCurrPoint_(var AAuto: TesaAuto; const Lambda: Single);
@@ -7077,6 +7075,7 @@ begin
   AAuto.FCurrIndentPoint := AIndentPoint;
 end;{DefineAutosCurrPoint_}
 
+// TODO: Действия Авто
 //Выполнение автосамосвалами выбранного действия на данный промежуток времени
 procedure TDispatcher.DefineAutosGoBy_(const dTsec, ACurrTsecNaryad: Integer);
 var I,cWorking,cWaiting, cDoneing, cAll: Integer;
@@ -7098,96 +7097,22 @@ begin
   //Пробегаю по автосамосвалам, которые в работе ----------------------------------------------
   for I := 0 to cWorking-1 do
   begin
+    if FCurrAutos[I].FParkNo = _auto_1301 then
+      tmp_auto_name:= format('%d', [_auto_1301]);
 
-//    if (FCurrAutos[I].FParkNo in [2, 6, 10]) then
-//      if _tmp_bool then
-      begin
-        case FCurrAutos[I].FCurrDirection of
-          adLoading: _tmp_dir:= 'adLoading  ';
-          adUnLoading: _tmp_dir:= 'adUnLoading';
-        end;
-        case FCurrAutos[I].FCurrState of
-          asMovingFk: _tmp_state:= 'asMovingFk';
-          asMovingHh: _tmp_state:= 'asMovingHh';
-          asMovingBt: _tmp_state:= 'asMovingBt';
-          asWaiting:  _tmp_state:= 'asWaiting ';
-          asAbort:    _tmp_state:= 'asAbort   ';
-          asUnWorked: _tmp_state:= 'asUnWorked';
-          asDone:     _tmp_state:= 'asDone    ';
-        end;
-        case FCurrAutos[I].FCurrPosition of
-          apNone:               _tmp_pos:= 'apNone              ';
-          apManeuverFromPunkt0: _tmp_pos:= 'apManeuverFromPunkt0';
-          apToPunkt1:           _tmp_pos:= 'apToPunkt1          ';
-          apManeuverToPunkt1:   _tmp_pos:= 'apManeuverToPunkt1  ';
-          apOnPunkt1:           _tmp_pos:= 'apOnPunkt1          ';
-        end;
-        _tmp_left:= Courses[11].Last.LeftAutoIndex;
-        _tmp_right:= Courses[11].Last.RightAutoIndex;
-        _tmp_id:= Courses[11].Last.FBlockIndex;
-
-        tmp_auto_name:= format('auto %d [%s | %s | %s | %d]',
-                                [FCurrAutos[I].FParkNo, _tmp_dir, _tmp_state, _tmp_pos, FCurrAutos[I].FCurrCourseBlockIndex]);
-
-//        TXTWriter.TWriter.WriteToTXT(format('%s', [tmp_auto_name]));
-//        TXTWriter.TWriter.WriteToTXT(format('left side: %d | right side: %d', [_tmp_left, _tmp_right]));
-
-      end;
     if FCurrAutos[I].FCurrPosition=apOnPunkt1 then
     begin
-//      if (tmp_auto_name='14')then
-//        tmp_auto_name:= format('%s!', [tmp_auto_name]);
-      if FCurrAutos[I].FCurrDirection in [adFromSP,adUnLoading]
-      then
-      begin
-        DefineLoadingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad);   //погрузка
-      end
+      if FCurrAutos[I].FCurrDirection in [adFromSP,adUnLoading] then
+        DefineLoadingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad)   //погрузка
       else
-      begin
-        DefineUnLoadingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad);//разгрузка
-      end;
+        DefineUnLoadingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad)//разгрузка
     end
     else
-      begin
-        DefineMovingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad);     //движение
-      end;
+      DefineMovingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad)     //движение
   end;
   //Пробегаю по автосамосвалам, которые в простое ---------------------------------------------
   for I := cWorking to cAll-1 do
-  begin
-
-//    if
-//       (FCurrAutos[I].FParkNo in [14, 6])
-//       (FCurrAutos[I].FParkNo in [2, 6, 10]) then
-//      if _tmp_bool then
-      begin
-        case FCurrAutos[I].FCurrDirection of
-          adLoading: _tmp_dir:= 'adLoading  ';
-          adUnLoading: _tmp_dir:= 'adUnLoading';
-        end;
-        case FCurrAutos[I].FCurrState of
-          asMovingFk: _tmp_state:= 'asMovingFk';
-          asMovingHh: _tmp_state:= 'asMovingHh';
-          asMovingBt: _tmp_state:= 'asMovingBt';
-          asWaiting:  _tmp_state:= 'asWaiting ';
-          asAbort:    _tmp_state:= 'asAbort   ';
-          asUnWorked: _tmp_state:= 'asUnWorked';
-          asDone:     _tmp_state:= 'asDone    ';
-        end;
-        case FCurrAutos[I].FCurrPosition of
-          apNone:               _tmp_pos:= 'apNone              ';
-          apManeuverFromPunkt0: _tmp_pos:= 'apManeuverFromPunkt0';
-          apToPunkt1:           _tmp_pos:= 'apToPunkt1          ';
-          apManeuverToPunkt1:   _tmp_pos:= 'apManeuverToPunkt1  ';
-          apOnPunkt1:           _tmp_pos:= 'apOnPunkt1          ';
-        end;
-        tmp_auto_name:= format('auto %d [%s | %s | %s | %d]',
-                                [FCurrAutos[I].FParkNo, _tmp_dir, _tmp_state, _tmp_pos, FCurrAutos[I].FCurrCourseBlockIndex]);
-//        TXTWriter.TWriter.WriteToTXT(format('%s', [tmp_auto_name]));
-      end;
-
     DefineWaitingAutosGoBy_(FCurrAutos[I],dTsec,ACurrTsecNaryad);        //простой
-  end;
   for I := cAll to cAll + cDoneing - 1 do
   begin
     zero_ResaRockVolume.Vm3:= 0;
@@ -7294,35 +7219,35 @@ end;
 //ul-
 
 //ul вывод параметров авто для анализа
-procedure uLogAuto(a:TesaAuto; title : string);
-var s:string;
-begin
-   uflog('*'+title);
-   uflog('AutoIndex='+inttostr(a.AutoIndex));
-   uflog('FCurrCourseIndex='+inttostr(a.FCurrCourseIndex));
-   uflog('FCurrCourseBlockIndex='+inttostr(a.FCurrCourseBlockIndex));
-   case a.FCurrDirection of
-    adFromSP: s:='adFromSP';
-    adLoading: s:='adLoading';
-    adToSP:     s:='adToSP';
-    adUnLoading: s:='adUnLoading';
-    adUnknown:   s:='adUnknown';
-   end;
-   uflog('FCurrDirection='+s);
-   case a.FCurrState of
-      asAbort : s:='asAbort';
-      asDone : s:='asDone';
-      asMovingBt: s:='asMovingBt';
-      asMovingFk: s:='asMovingFk';
-      asMovingHh: s:='asMovingHh';
-      asUnWorked: s:='asUnWorked';
-      asWaiting: s:='asWaiting';
-   end;
-   uflog('FCurrState='+s);
-end;
+//procedure uLogAuto(a:TesaAuto; title : string);
+//var s:string;
+//begin
+//   uflog('*'+title);
+//   uflog('AutoIndex='+inttostr(a.AutoIndex));
+//   uflog('FCurrCourseIndex='+inttostr(a.FCurrCourseIndex));
+//   uflog('FCurrCourseBlockIndex='+inttostr(a.FCurrCourseBlockIndex));
+//   case a.FCurrDirection of
+//    adFromSP: s:='adFromSP';
+//    adLoading: s:='adLoading';
+//    adToSP:     s:='adToSP';
+//    adUnLoading: s:='adUnLoading';
+//    adUnknown:   s:='adUnknown';
+//   end;
+//   uflog('FCurrDirection='+s);
+//   case a.FCurrState of
+//      asAbort : s:='asAbort';
+//      asDone : s:='asDone';
+//      asMovingBt: s:='asMovingBt';
+//      asMovingFk: s:='asMovingFk';
+//      asMovingHh: s:='asMovingHh';
+//      asUnWorked: s:='asUnWorked';
+//      asWaiting: s:='asWaiting';
+//   end;
+//   uflog('FCurrState='+s);
+//end;
 //ul-
 
-
+// TODO: autos move
 //Выполнение автосамосвала(в движении) выбранного действия на данный промежуток времени (59 L)
 procedure TDispatcher.DefineMovingAutosGoBy_(AAuto: TesaAuto; dTsec,ACurrTsecNaryad: Integer);
 var
@@ -7361,30 +7286,26 @@ begin
       cut_sec:= dTsec - FCurrDt1Sec;
       dTsec:= FCurrDt1Sec;
     end;
-    FCurrDt0Sec := FCurrDt0Sec+dTsec;//прошло
-    FCurrDt1Sec := FCurrDt1Sec-dTsec;//осталось
-    Lambda := FCurrDt0Sec/FCurrDtReqSec;
-    DefineAutosCurrPoint_(AAuto,Lambda);//передвинулся в точку
-    FCurrV     := FCurrV0+(FCurrV1-FCurrV0)*Lambda;//текущ.скорость
-    FCurrW     := FCurrW0+(FCurrW1-FCurrW0)*Lambda;//текущ.скорость
-    FCurrGx    := FCurrGxReq*Lambda;//израсходовано топлива
+    FCurrDt0Sec:= FCurrDt0Sec + dTsec;//прошло
+    FCurrDt1Sec:= FCurrDt1Sec - dTsec;//осталось
+    Lambda:= FCurrDt0Sec / FCurrDtReqSec;
+    DefineAutosCurrPoint_(AAuto, Lambda);//передвинулся в точку
+    FCurrV:= FCurrV0 + (FCurrV1 - FCurrV0) * Lambda;//текущ.скорость
+    FCurrW:= FCurrW0 + (FCurrW1 - FCurrW0) * Lambda;//текущ.скорость
+    FCurrGx:= FCurrGxReq * Lambda;//израсходовано топлива
     //2.Доехал до конца тек.БУ? ------------------------------------------------
-    if FCurrDt1Sec<1 then
+    if FCurrDt1Sec < 1 then
     begin
-
-      if (AAuto.FParkNo=10) then
-        _tmp_test_auto:= '';
-
       //Суммарные показатели авто
-      FSumDSmtr[ADir,APos,AState] := FSumDSmtr[ADir,APos,AState] + CurrBlock.Lm;
-      FSumDTsec[ADir,APos,AState] := FSumDTsec[ADir,APos,AState] + FCurrDtReqSec;
-      FSumGXltr[ADir,APos,AState] := FSumGXltr[ADir,APos,AState] + FCurrGxReq;
-      FSumVavg := FSumVavg+FCurrVavg;
-      FSumVavgCount := FSumVavgCount+1;
-      eWAvgHmNum := 0.0;
-      eWAvgHmDen := 0.0;
-      eAvgHmNum := 0.0;
-      eAvgHmDen := 0.0;
+      FSumDSmtr[ADir,APos,AState]:= FSumDSmtr[ADir, APos, AState] + CurrBlock.Lm;
+      FSumDTsec[ADir,APos,AState]:= FSumDTsec[ADir, APos, AState] + FCurrDtReqSec;
+      FSumGXltr[ADir,APos,AState]:= FSumGXltr[ADir, APos, AState] + FCurrGxReq;
+      FSumVavg:= FSumVavg + FCurrVavg;
+      FSumVavgCount:= FSumVavgCount + 1;
+      eWAvgHmNum:= 0.0;
+      eWAvgHmDen:= 0.0;
+      eAvgHmNum:= 0.0;
+      eAvgHmDen:= 0.0;
       //$ Продолжение движения
       if ADir=adLoading then
       begin
@@ -7453,6 +7374,10 @@ begin
       if APos in [apManeuverFromPunkt0,apManeuverToPunkt1] then
       begin
         Events.Manevr(FCurrGxReq, FCurrDt0Sec + cut_sec, eDir, eIdPunkt0, eIdPunkt1, FCurrRock, FCurrRockVolume, eWAvgHmNum, eWAvgHmDen, eAvgHmNum, eAvgHmDen, FCurrVavg, 1, CurrBlock.Lm);
+        //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+//          SaveToTempfile(AAuto);
+        //u---
       end
       else//Двигаюсь по БУ маршрута
       begin
@@ -7474,6 +7399,10 @@ begin
         Events.FAvgHmNum  := Events.FAvgHmNum+eAvgHmNum;
         Events.FAvgHmDen  := Events.FAvgHmDen+eAvgHmDen;
         Events.FAvgVkmh   := esaSum(Events.AvgVkmh,FCurrVavg,1);
+        //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+//          SaveToTempfile(AAuto);
+        //u---
       end;
       //3. Доехал до конца маршрута? ----------------------------------------------------------
       if APos=apManeuverToPunkt1 then
@@ -7562,12 +7491,13 @@ begin
     //0. Hахожу текущий/следующий БУ-----------------------------------------------------------
     ABlock0 := AAuto.CurrCourse[ACourseBlockIndex0];
     //нахожу следующий БУ
-    if  AAuto.FCurrPosition=apManeuverToPunkt1
-    then ABlock1 := nil //если проехал последний БУ данного маршрута ИЛИ
+    if AAuto.FCurrPosition=apManeuverToPunkt1 then
+      ABlock1:= nil     //если проехал последний БУ данного маршрута ИЛИ
     else                //если еще не проехал последний БУ данного маршрута
-      if ADir=adUnLoading
-      then ABlock1 := AAuto.CurrCourse[ACourseBlockIndex0-1]
-      else ABlock1 := AAuto.CurrCourse[ACourseBlockIndex0+1];
+      if ADir=adUnLoading then
+        ABlock1 := AAuto.CurrCourse[ACourseBlockIndex0-1]
+      else
+        ABlock1 := AAuto.CurrCourse[ACourseBlockIndex0+1];
     //1. Суммарные параметры блок-участка------------------------------------------------------
     FSumRockVolume              := esaSum(FSumRockVolume,AAuto.FCurrRockVolume);
     FSumAutoDTsec1[ADir,AState] := FSumAutoDTsec1[ADir,AState]+AAuto.FCurrDtReqSec;
@@ -7576,19 +7506,19 @@ begin
     begin
       FSumAutoV1[ADir,AState]     := FSumAutoV1[ADir,AState]+AAuto.FCurrVavg;
       FSumAutoVCount1[ADir,AState]:= FSumAutoVCount1[ADir,AState]+1;
-    end;{if}
+    end;
 
-    if AState=asWaiting
-    then FSumWgCount1[ADir]:= FSumWgCount1[ADir]+1;
+    if AState=asWaiting then
+      FSumWgCount1[ADir]:= FSumWgCount1[ADir]+1;
     if ABlock0<>nil then
-    if ((ABlock1<>nil)and(ABlock1.FBlockIndex<>ABlock0.FBlockIndex))OR
-       (ABlock1=nil)
-    then
-    begin
-      FSumAutoCount1[ADir,AState] := FSumAutoCount1[ADir,AState]+1;
-      Events.Accumulate(ADir,AState,AAuto,True);
-    end{if}
-    else Events.Accumulate(ADir,AState,AAuto);
+      if ((ABlock1<>nil) and (ABlock1.FBlockIndex<>ABlock0.FBlockIndex)) OR
+         (ABlock1=nil) then
+      begin
+        FSumAutoCount1[ADir,AState] := FSumAutoCount1[ADir,AState]+1;
+        Events.Accumulate(ADir,AState,AAuto,True);
+      end{if}
+      else
+        Events.Accumulate(ADir,AState,AAuto);
     //2. Освобождаю тек.блок-участок-----------------------------------------------------------
     case ADir of
       adLoading:begin //грузовое направление---------------------------------------------------
@@ -7625,7 +7555,7 @@ begin
             end;
           end
           else
-            AAuto.CurrBlock.LeftAutoIndex := -1;     //освобождаю левую сторону дороги   
+            AAuto.CurrBlock.LeftAutoIndex := -1;     //освобождаю левую сторону дороги
         end;{if}
         if AAuto.FCurrPosition=apManeuverFromPunkt0 then
         begin//Покидает маневр. БУ пункта разгрузки
@@ -7653,7 +7583,7 @@ begin
             AAuto.CurrBlock.RightAutoIndex := -1;     //освобождаю левую сторону дороги
         end;{if}
       adToSP     : //от ПР к ППС---------------------------------------------------------------
-        begin                                                                          
+        begin
           if {(ABlock0.Kind=bukCrossRoad)OR}//ЕСЛИ перекресток
             (ABlock0.Block.StripsN=1) then//ИЛИ однопутка,
           begin
@@ -7794,7 +7724,8 @@ begin
     FCurrW0          := 0.0;   FCurrW1     := 0.0;
     FCurrW           := 0.0;
     FCurrDt0Sec      := 0;     FCurrDt1Sec := FCurrDtReqSec;//сек
-    FCurrGx          := 0.0;   FCurrGxReq  := DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
+    FCurrGx          := 0.0;
+    FCurrGxReq  := DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
   end;{with}
 end;{DefineAutosPlacePunkt_}
 
@@ -7825,6 +7756,7 @@ begin
     Result:= true;
   end;
 end;
+// todo: to place Next block
 //Занимаю следующий БУ
 procedure TDispatcher.DefineAutosPlaceNextBlock_(AAuto: TesaAuto);
 var
@@ -7836,25 +7768,32 @@ var
   AIndent: Single;               //Расстояние Сноса авто от оси дороги на правую полосу, m
   APos0,APos1: RPoint3D;
   _courseDirection: boolean;
+  //
+  _tmp_auot: string;
 begin
   with AAuto do
   begin
-    _courseDirection:= FCurrDirection<>adUnLoading;
+    if AAuto.FParkNo = _auto_1301 then
+      _tmp_auot:= format('%d', [_auto_1301]);
+
+    _courseDirection:= FCurrDirection <> adUnLoading;
     //1.Определяю след.БУ----------------------------------------------------------------------
-    if FCurrPunktIndex<>-1 then
+    if FCurrPunktIndex <> -1 then
     begin//стою на ПП или ПР или ППС
-      if FCurrDirection<>adUnLoading                     //Если не порожн.направление
-      then ACourseBlockIndex1 := 0                       //то первый БУ данного маршрута,
-      else ACourseBlockIndex1 := CurrCourse.Count-1;     //иначе последний БУ данного маршрута;
+      if FCurrDirection <> adUnLoading then           //Если не порожн.направление
+        ACourseBlockIndex1:= 0                        //то первый БУ данного маршрута,
+      else
+        ACourseBlockIndex1:= CurrCourse.Count-1;      //иначе последний БУ данного маршрута;
       ABlock0 := nil;
-    end{if}
+    end
     else
     begin//стою не на пункте
-      if FCurrDirection<>adUnLoading                     //Если не порожн.направление
-      then ACourseBlockIndex1 := FCurrCourseBlockIndex+1 //то след.БУ данного маршрута,
-      else ACourseBlockIndex1 := FCurrCourseBlockIndex-1;//иначе пред.БУ данного маршрута,
-      ABlock0 := CurrBlock;
-    end;{else}
+      if FCurrDirection <> adUnLoading then           //Если не порожн.направление
+        ACourseBlockIndex1:= FCurrCourseBlockIndex + 1//то след.БУ данного маршрута,
+      else
+        ACourseBlockIndex1:= FCurrCourseBlockIndex - 1;//иначе пред.БУ данного маршрута,
+      ABlock0:= CurrBlock;
+    end;
     //2.Занимаю след.БУ------------------------------------------------------------------------
     ABlock1 := CurrCourse[ACourseBlockIndex1];
     if(not CheckCascadeOneLane_(CurrCourse, ACourseBlockIndex1, _courseDirection, AutoIndex)) then
@@ -7865,15 +7804,16 @@ begin
           (ABlock0<>nil)and(ABlock0.Kind<>bukManeuver)and
           (not(FCurrDirection in [adLoading,adToSP])))then
       begin                                         //ТО занимаю обе стороны дороги
-        ABlock1.RightAutoIndex := AutoIndex;
-        ABlock1.LeftAutoIndex  := AutoIndex;
-      end{if}
+        ABlock1.RightAutoIndex:= AutoIndex;
+        ABlock1.LeftAutoIndex:= AutoIndex;
+      end
       else
       begin                                         //ИНАЧЕ занимаю одну сторону дороги
-        if FCurrDirection=adUnLoading
-        then ABlock1.LeftAutoIndex  := AutoIndex
-        else ABlock1.RightAutoIndex := AutoIndex;
-      end;{else}
+        if FCurrDirection=adUnLoading then
+          ABlock1.LeftAutoIndex  := AutoIndex
+        else
+          ABlock1.RightAutoIndex := AutoIndex;
+      end;
     end;
 
     //ul
@@ -7881,21 +7821,24 @@ begin
 
 
     //3.Параметры автосамосвала----------------------------------------------------------------
-    FCurrCourseBlockIndex := ACourseBlockIndex1;
-    FCurrPunktIndex       := -1;
-    FCurrState            := asMovingFk;
-    if FCurrDirection<>adUnLoading
-    then FCurrPoint       := ABlock1.Point0
-    else FCurrPoint       := ABlock1.Point1;
+    FCurrCourseBlockIndex:= ACourseBlockIndex1;
+    FCurrPunktIndex:= -1;
+    FCurrState:= asMovingFk;
+    if FCurrDirection <> adUnLoading then
+      FCurrPoint:= ABlock1.Point0
+    else
+      FCurrPoint:= ABlock1.Point1;
 
     FCurrIndentPoint := FCurrPoint;
     APos0 := FCurrPoint;
-    if FCurrDirection<>adUnLoading
-    then APos1 := ABlock1.Point1
-    else APos1 := ABlock1.Point0;
-    if CurrBlock.Block.StripsN=1
-    then AIndent := CurrBlock.Block.StripWm*0.25
-    else AIndent := CurrBlock.Block.StripWm*0.5;
+    if FCurrDirection<>adUnLoading then
+      APos1 := ABlock1.Point1
+    else
+      APos1 := ABlock1.Point0;
+    if CurrBlock.Block.StripsN=1 then
+      AIndent := CurrBlock.Block.StripWm*0.25
+    else
+      AIndent := CurrBlock.Block.StripWm*0.5;
     DefineAutosIndent(APos0,APos1,AIndent,CurrBlock.Lm,FCurrIndentPoint,FCurrAzimut,FCurrZenit);
     if (ABlock1.Kind=bukManeuver)and(ABlock0<>nil)and(ABlock0.Kind<>bukManeuver)
     then FCurrPosition    := apManeuverToPunkt1
@@ -7910,22 +7853,22 @@ begin
           lPunkt := TesaLoadingPunkt(AAuto.CurrCourse.Punkt1);
           lPunkt.FCurrState := psManeuver;
           AppendResultLoadingPunkt(AAuto.CurrCourse.FPunktIndex1);
-        end;{adFromSP}
+        end;
         adUnLoading: begin
           lPunkt := TesaLoadingPunkt(AAuto.CurrCourse.Punkt0);
           lPunkt.FCurrState := psManeuver;
           AppendResultLoadingPunkt(AAuto.CurrCourse.FPunktIndex0);
-        end;{adUnLoading}
+        end;
         adLoading: begin
           uPunkt := TesaUnLoadingPunkt(AAuto.CurrCourse.Punkt1);
           if uPunkt.FCurrState=psWaiting
           then uPunkt.FCurrState := psManeuver;
           AppendResultUnLoadingPunkt(AAuto.CurrCourse.FPunktIndex1);
-        end;{adLoading}
-      end;{case}
-    end;{if}
-  end;{with}
-end;{DefineAutosPlaceNextBlock_}
+        end;
+      end;
+    end;
+  end;
+end;
 
 
 procedure uFLog(s:string; fn: string = 'uFLog.txt'; createNew : boolean = false);
@@ -8036,11 +7979,14 @@ begin
   end;{with}
 end;{DefineAutosRequredParams_}
 *)
+// todo: required distance time
 //Определяю RequiredDistance и RequiredTime авто
-procedure TDispatcher.DefineMovingAutosRequredParams_(AAuto: TesaAuto; const V0: Single; const ADirection: TAutoDirection);
+procedure TDispatcher.DefineMovingAutosRequredParams_(AAuto: TesaAuto;
+                                                      const V0: Single;
+                                                      const ADirection: TAutoDirection);
 const
-  g=9.8;// ускорение свободного падения (м/c2)
-  dT=1;//sec
+  g = 9.8; // ускорение свободного падения (м/c2)
+  dT = 1;  //sec
 var
   I              : Integer;
   APoint0,APoint1: RPoint3D;//Начальная-конечная точка sub-блок-участка
@@ -8062,12 +8008,23 @@ var
 
   FkHkH : Single;
   AMaxVkmh: Single;
+  //
+  _check: boolean;
+  _v: single;
+  _blockid: integer;
+  _message0, _message1: string;
+  _fs: TFormatSettings;
+  _tmp: boolean;
 begin
   FkHkH := 0.0;
+  _check:= false;
+  _tmp:= false;
   with AAuto do
   begin
+    if (AAuto.FParkNo = _auto_1301)then
+      _check:= true;
     //значения КПД составляющих узлов силовой передачи в нормативном состоянии
-    nnu_d   := 0.4;
+    nnu_d:= 0.4;
 //    nnu_tr  := 0.78;
     nnu_tr  := AAuto.Model.TransmissionKPD;
     nnu_k   := 0.9;
@@ -8077,11 +8034,11 @@ begin
     nu_d    := 0.4;
     {nu_d    := AAuto.FEngineKPD;}
 //    nu_tr   := FTransmissionKPD*0.78;
-    nu_tr   := AAuto.FTransmissionKPD*AAuto.Model.TransmissionKPD;
+    nu_tr   := AAuto.FTransmissionKPD * AAuto.Model.TransmissionKPD;
     nu_k    := 0.9;
     nu_kom  := 0.9;
     //коэффициент снижения мощности
-    nu_n    := nu_d*nu_tr*nu_k*nu_kom/Max((nnu_d*nnu_tr*nnu_k*nnu_kom),0.001);
+    nu_n    := nu_d * nu_tr * nu_k * nu_kom / Max((nnu_d * nnu_tr * nnu_k * nnu_kom), 0.001);
     Q_kK_l  := 8500.0;   //Теплотворная способность дизтоплива, кКал/л
     //Масса груза/авто, т
     Ggm:= FCurrRockVolume.Qtn;
@@ -8096,6 +8053,13 @@ begin
     W1:= 0.0;
     for I := 1 to CurrBlock.FCount-1 do
     begin
+      if _check then
+        _message0:= format('%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&', [
+          nnu_d, nnu_tr, nnu_k, nnu_kom, nu_d,
+          nu_tr, nu_k, nu_kom, nu_n, Q_kK_l,
+          Ggm, Ga, AV0, AV1, Tsec,
+          GxLtr, Hmtr, W0, W1]);
+
       //Определяю начальную и конечную точку sub-блок-участка APoint0,APoint1
       if FCurrDirection=adUnLoading then
       begin
@@ -8117,6 +8081,7 @@ begin
 
       w0_:= DefineW0HkH(CurrBlock.RoadCoat, Model.MaxQtn, Ggm);
       FkHkH:= DefineFH(AV0) / (g * (Ga + Ggm));//H/(g*т)=H/kH
+//      dVkmh:= 2 * (dSmtr * 0.001) * (12.96 / 1 + 0.1) * (nu_n * FkHkH - ((w0_ * 0.1) + wi_));
       dVkmh:= 2 * (dSmtr * 0.001) * 12.96 * (nu_n * FkHkH - ((w0_ * 0.1) + wi_));
 
       if W0 < 0.0 then
@@ -8125,8 +8090,15 @@ begin
 
       if (AV0 * AV0 + dVkmh) < 0 then
         break;
-
-      AV1 := sqrt(AV0 * AV0 + dVkmh);
+      //u++
+      _v:= CurrBlock.Block.UnLoadingVmax;
+      if ADirection=adLoading then
+        _v:= CurrBlock.Block.LoadingVmax;
+      AV1:= sqrt(AV0 * AV0 + dVkmh);
+      if AV1 > _v then
+        AV1:= _v;
+      //u--
+//      AV1:= sqrt(AV0 * AV0 + dVkmh);
 ///////////////////////////////
       if AV1 > 0.0 then
       begin
@@ -8138,12 +8110,32 @@ begin
         //Определим расход топлива
         a:= FkHkH * (AV1 * AV1 - AV0 * AV0) * (Ga+Ggm);
         b:= 2 * Q_kK_l * (nu_d * nu_tr * nu_k * nu_kom) * 12.96 * (nu_n * FkHkH - ((w0_ * 0.1) + wi_));
+//        b:= 2 * Q_kK_l * (nu_d * nu_tr * nu_k * nu_kom) * (12.96 / 1 + 0.1) * (nu_n * FkHkH - ((w0_ * 0.1) + wi_));
         if a * b > 0.0 then
           dGxLtr:= a/b
         else
           dGxLtr:= 0.0;
         GxLtr:= GxLtr + dGxLtr;
         AV0:= AV1;
+
+        if _check then
+        begin
+          _v:= CurrBlock.Block.UnLoadingVmax;
+          if ADirection=adLoading then
+            _v:= CurrBlock.Block.LoadingVmax;
+          _blockid:= CurrBlock.Block.FId_Block;
+
+          _fs.ThousandSeparator:= #0;
+          _fs.DecimalSeparator:= ',';
+          _message1:= format('%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%n&%d&%n&',
+            [APoint0.X, APoint0.Y, APoint0.Z, APoint1.X, APoint1.Y,
+            APoint1.Z, dSmtr, dHmtr, Hmtr, wi_,
+            w0_, FkHkH, dVkmh, W0, W1,
+            AV1, AVavg, dTsec, Tsec, a,
+            b, dGxLtr, GxLtr, AV0,
+            _blockid, _v], _fs);
+//          SimpleSave(Format('%s%s', [_message0, _message1]));
+        end;
       end
       else
       begin//не смог преодолеть БУ
@@ -8156,10 +8148,10 @@ begin
         Break;
       end;
 /////////////////////////
-     if ADirection=adLoading then
-      AMaxVkmh:= CurrBlock.Block.LoadingVmax
-     else
-      AMaxVkmh:= CurrBlock.Block.UnLoadingVmax;
+      if ADirection=adLoading then
+        AMaxVkmh:= CurrBlock.Block.LoadingVmax
+      else
+        AMaxVkmh:= CurrBlock.Block.UnLoadingVmax;
       if AV1 >= AMaxVkmh then //Превысило ограничение скорости
       begin
         AV1:= AMaxVkmh;
@@ -8196,6 +8188,7 @@ begin
     //Определяю Gx
     FCurrGx:= 0.0;
     FCurrGxReq:= GxLtr;
+//    SaveToTempfile_GX0(aauto, FCurrGxReq);
   end;
 end;
 //Ухожу в простой на пункте разгрузки
@@ -8234,6 +8227,7 @@ begin
     FCurrGxReq           := DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
   end;{with}
 end;{DefineAutosUhozhuVProstoy_}
+// TODO: autos load
 //Выполнение автосамосвала(погрузка) выбранного действия на данный промежуток времени
 procedure TDispatcher.DefineLoadingAutosGoBy_(AAuto: TesaAuto; dTsec,ACurrTsecNaryad: Integer);
 var
@@ -8256,15 +8250,19 @@ begin
     APos   := FCurrPosition;
     AState := FCurrState;
     //1. Погружаюсь dT времени ----------------------------------------------------------------
-    if dTsec>FCurrDt1Sec then dTsec := FCurrDt1Sec;//на всякий пожарный
-    FCurrDt0Sec := FCurrDt0Sec+dTsec;//прошло
-    FCurrDt1Sec := FCurrDt1Sec-dTsec;//осталось
-    FCurrGx       := FCurrGxReq*FCurrDt0Sec/FCurrDtReqSec;
+    if dTsec > FCurrDt1Sec then dTsec:= FCurrDt1Sec;//на всякий пожарный
+    FCurrDt0Sec:= FCurrDt0Sec + dTsec;//прошло
+    FCurrDt1Sec:= FCurrDt1Sec - dTsec;//осталось
+    FCurrGx:= FCurrGxReq * FCurrDt0Sec / FCurrDtReqSec;
     //2. Погрузился? --------------------------------------------------------------------------
     if FCurrDt1Sec<1 then
     begin
       //$Конец погрузки
       Events.Loading(FCurrGxReq,FCurrDtReqSec,LoadingPunkts[FCurrPunktIndex]);
+      //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+//        SaveToTempfile(AAuto);
+      //u---
       //Парметры Пункта Погрузки --------------------------------------------------------------
       APunkt                  := LoadingPunkts[FCurrPunktIndex];
       pState                  := APunkt.FCurrState;
@@ -8274,8 +8272,6 @@ begin
       //ГМ
       ARock := APunkt.Rocks[FCurrRockLoadingPunktRockIndex];
       ARock.AddShiftFactRock(FCurrRockVolumeRequired.Vm3,FCurrRockVolumeRequired.Qtn);
-//      if ARock.RemainingRockVm3<0.001 {!}
-//      then SendWarningMsg(Format('На ПП %s закончилась ГМ %s',[APunkt.Name,ARock.Rock.Name]));
 
       //$Конец погрузки
       APunkt.Excavator.Events.Loading(FCurrDtReqSec,ARock.Rock,FCurrRockVolumeRequired,AAuto);
@@ -8331,10 +8327,11 @@ begin
                           CurrBlock.Lm,
                           FCurrIndentPoint,
                           FCurrAzimut,FCurrZenit);
-      end;{else}
-    end;{else}
-  end;{with}
-end;{DefineLoadingAutosGoBy}
+      end;
+    end;
+  end;
+end;
+// TODO: autos unload
 //Выполнение автосамосвала(разгрузка) выбранного действия на данный промежуток времени
 procedure TDispatcher.DefineUnLoadingAutosGoBy_(AAuto: TesaAuto; dTsec,ACurrTsecNaryad: Integer);
 var
@@ -8368,6 +8365,10 @@ begin
     begin
       //$Конец разгрузки
       Events.UnLoading(FCurrGxReq,FCurrDtReqSec,FCurrRock,FCurrRockVolume,UnLoadingPunkts[FCurrPunktIndex]);
+      //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+//        SaveToTempfile(AAuto);
+      //u---
       //Auto-----------------------------------------------------------------------------------
       FSumRocksVm3                := FSumRocksVm3+FCurrRockVolume.Vm3;
       FSumRocksQtn                := FSumRocksQtn+FCurrRockVolume.Qtn;
@@ -8430,7 +8431,7 @@ begin
       FCurrRockVolumeRequired:= esaRockVolume();
 
       if cIndex>-1 then//Если определен маршрут
-        if FCurrTsecNaryad<FShiftTsec-Openpit.Shift.TurnoverTmin*60 then
+        if FCurrTsecNaryad < FShiftTsec-Openpit.Shift.TurnoverTmin*60 then
         begin//Время смены не закончилось
           if ABlock.LeftAutoIndex=-1 then
           begin//След.БУ свободен, занял БУ
@@ -8443,9 +8444,10 @@ begin
             DefineMovingAutosRequredParams_(AAuto,0.0,FCurrDirection);
 
             FCurrIndentPoint := FCurrPoint;
-            if CurrBlock.Block.StripsN=1
-            then AIndent := CurrBlock.Block.StripWm*0.25
-            else AIndent := CurrBlock.Block.StripWm*0.5;
+            if CurrBlock.Block.StripsN=1 then
+              AIndent := CurrBlock.Block.StripWm*0.25
+            else
+              AIndent := CurrBlock.Block.StripWm*0.5;
             DefineAutosIndent(CurrBlock.Point1,
                               CurrBlock.Point0,
                               AIndent,CurrBlock.Lm,FCurrIndentPoint,FCurrAzimut,FCurrZenit);
@@ -8469,7 +8471,8 @@ begin
             FCurrW0 := 0.0; FCurrW1 := 0.0; FCurrW := 0.0;
             FCurrDt1Sec  := Autos[ABlock.LeftAutoIndex].FCurrDt1Sec;
             FCurrDtReqSec:= FCurrDt1Sec;
-            FCurrGx      := 0.0; FCurrGxReq:= DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
+            FCurrGx      := 0.0;
+            FCurrGxReq:= DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
           end;{else}
         end{if}
         else
@@ -8500,12 +8503,14 @@ begin
             FCurrDt0Sec:= 0;
             FCurrDt1Sec  := Autos[ABlock.RightAutoIndex].FCurrDt1Sec;
             FCurrDtReqSec:= FCurrDt1Sec;
-            FCurrGx      := 0.0;        FCurrGxReq:= DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
+            FCurrGx      := 0.0;
+            FCurrGxReq:= DefineAydarGx_(AAuto,0.0,0.0,0.0,FCurrDt1Sec);
           end;{else}
         end;{else}
     end;{else}
   end;{with}
 end;{DefineUnUnLoadingAutosGoBy}
+// todo: autos wait
 //Выполнение автосамосвала(простой) выбранного действия на данный промежуток времени {85 L}
 procedure TDispatcher.DefineWaitingAutosGoBy_(AAuto: TesaAuto; dTsec,ACurrTsecNaryad: Integer);
   procedure UpdateWaitingParams(const iBadAuto: Integer);
@@ -8561,6 +8566,10 @@ begin
           end;
           Events.Waiting(FCurrGxReq, FCurrDt0Sec + _cut_sec, eDir, FCurrRock, FCurrRockVolume,
             CurrCourse.Punkt1, CurrCourse.Punkt0);
+          //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+  //          SaveToTempfile(AAuto);
+          //u---
           DefineAutosEmptyCurrBlock_(AAuto);//Освобождаю тек.БУ
           DefineAutosPlacePunkt_(AAuto,ACurrTsecNaryad);    //Занимаю след.Пункт
         end{if}
@@ -8629,11 +8638,19 @@ begin
           begin
             Events.Waiting(FCurrGxReq,FCurrDt0Sec + _cut_sec,eDir,FCurrRock,
                            FCurrRockVolume,CurrCourse.Punkt0,CurrCourse.Punkt1);
+            //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+  //            SaveToTempfile(AAuto);
+            //u---
           end
           else
           begin
             Events.Waiting(FCurrGxReq,FCurrDt0Sec + _cut_sec,eDir,FCurrRock,
                            FCurrRockVolume,CurrCourse.Punkt1,CurrCourse.Punkt0);
+            //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+  //            SaveToTempfile(AAuto);
+            //u---
           end;
           if AAuto.FCurrCourseBlockIndex>-1 then
             DefineAutosEmptyCurrBlock_(AAuto);//Освобождаю текущий БУ
@@ -8644,7 +8661,10 @@ begin
           Events.Waiting(FCurrGxReq,FCurrDt0Sec + _cut_sec,eDir,FCurrRock,
                          FCurrRockVolume,CurrCourse.Punkt1,
                          CurrCourse.Punkt0);
-
+          //u+++
+//          if (AAuto.FParkNo = _test_auto_parkno) or _all_autos then
+  //          SaveToTempfile(AAuto);
+          //u---
           UpdateWaitingParams(iBadAuto);
         end;
       end;{else}
@@ -8720,31 +8740,40 @@ procedure TDispatcher.SaveAutosResultsNew;
 const
   T = True; F = False;
   procedure _AddReport(const AQuery: TADOQuery; const AKind: Integer; const AItem: TesaResultAuto);
-    procedure _Add(const q: TADOQuery; const ARecName: String; const AKey: ResaKeyParams; ANum: Single; const ADen: Single=-1.0); 
+    procedure _Add(const q: TADOQuery;
+                   const ARecName: String;
+                   const AKey: ResaKeyParams;
+                   ANum: Single;
+                   const ADen: Single=-1.0);
     var I: Integer;
     begin
       //Корректировка Value
-      if not(ADen<0.0) then if ADen>0.0 then ANum := ANum/ADen else ANum := 0.0; 
+      if not(ADen<0.0) then
+        if ADen>0.0 then
+          ANum := ANum/ADen
+        else
+          ANum := 0.0;
       //Записываю в БД
       q.Append;
       for I := 1 to q.Fields.Count-1 do
         q.Fields[I].Clear;
       q.FieldByName('Id_ResultShift').AsInteger          := ResultId_Shift;
-      if AKind = 1
-      then q.FieldByName('Id_ResultShiftAuto').AsInteger := AItem.Id_ResultShiftAuto;
-      if AKind = 2
-      then q.FieldByName('Id_DumpModel').AsInteger       := AItem.Id_DumpModel1;
-      if AKind = 2     //должно 3?
-      then q.FieldByName('DumpModel').AsString           := AItem.DumpModel;
+      if AKind = 1 then
+        q.FieldByName('Id_ResultShiftAuto').AsInteger := AItem.Id_ResultShiftAuto;
+      if AKind = 2 then
+        q.FieldByName('Id_DumpModel').AsInteger       := AItem.Id_DumpModel1;
+      if AKind = 2 then    //должно 3?
+        q.FieldByName('DumpModel').AsString           := AItem.DumpModel;
+
       q.FieldByName('Kind').AsInteger                    := AKind;
       q.FieldByName('IsChangeable').AsBoolean            := AKey.IsChangeable;
       q.FieldByName('RecordNo').AsInteger                := AKey.No;
       q.FieldByName('RecordName').AsString               := ARecName;
       q.FieldByName('Name').AsString                     := AKey.Key;
-      if ANum>-1.0
-      then q.FieldByName('Value').AsFloat                := ANum;
+      if ANum > -1.0 then
+        q.FieldByName('Value').AsFloat:= ANum;
       q.Post;
-    end;{_Add}
+    end;
   begin
     with AItem do
     begin
@@ -8774,16 +8803,16 @@ const
       _Add(AQuery, '22',CesaAutosAvgVkmhUnLoading,AvgVkmhUnLoading.Num,AvgVkmhUnLoading.Den);
       _Add(AQuery, '23',CesaAutosAvgTechVkmh,3.6*esaSummary(Sm),esaSummary(Tsec)-Tsec.Waiting);
       //Расход топлива
-      _Add(AQuery, 'II',CesaAutosFuel,-1.0);
-      _Add(AQuery,  '1',CesaAutosGx,esaSummary(Gx));
-      _Add(AQuery,  '2',CesaAutosGxWork,Gx.Work);
-      _Add(AQuery,  '3',CesaAutosGxWaiting,Gx.Waiting);
-      _Add(AQuery,  '4',CesaAutosDirGx,esaSummary(DirGx));
-      _Add(AQuery,  '5',CesaAutosGxNulled,DirGx.Nulled);
-      _Add(AQuery,  '6',CesaAutosGxLoading,DirGx.Loading);
-      _Add(AQuery,  '7',CesaAutosGxUnLoading,DirGx.UnLoading);
-      _Add(AQuery,  '8',CesaAutosUdGx_gr_tkm,UdGx_gr_tkm,-1.0);
-      _Add(AQuery,  '9',CesaAutosGxCtg,esaSummary(SumGxCtg));
+      _Add(AQuery, 'II',CesaAutosFuel, -1.0);
+      _Add(AQuery,  '1',CesaAutosGx, esaSummary(Gx));
+      _Add(AQuery,  '2',CesaAutosGxWork, Gx.Work);
+      _Add(AQuery,  '3',CesaAutosGxWaiting, Gx.Waiting);
+      _Add(AQuery,  '4',CesaAutosDirGx, esaSummary(DirGx));
+      _Add(AQuery,  '5',CesaAutosGxNulled, DirGx.Nulled);
+      _Add(AQuery,  '6',CesaAutosGxLoading, DirGx.Loading);
+      _Add(AQuery,  '7',CesaAutosGxUnLoading, DirGx.UnLoading);
+      _Add(AQuery,  '8',CesaAutosUdGx_gr_tkm, UdGx_gr_tkm,-1.0);
+      _Add(AQuery,  '9',CesaAutosGxCtg, esaSummary(SumGxCtg));
       //Время
       _Add(AQuery,'III',CesaAutosWorkTime,-1.0);
       _Add(AQuery,  '1',CesaAutosTmin,esaSummary(Tsec),60);
@@ -8854,7 +8883,8 @@ var
   AAutosCount1   : Integer; //количество авто в рабочем/нерабочем состоянии
   ATyresCount    : Integer; //количество всех шин
 begin
-  if ResultId_Shift<1 then Exit;
+  if ResultId_Shift < 1 then
+    Exit;
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования по автосамосвалам..');
   AShiftsCount := 24*60/Openpit.Shift.Tmin;
@@ -8866,7 +8896,7 @@ begin
   quEvents.SQL.Text := 'SELECT * FROM _ResultShiftAutoEvents';
 
   //----------------------------------------------------------------------------
-  // I. Вычислил все данные, сохраняю автосамосвалы, события 
+  // I. Вычислил все данные, сохраняю автосамосвалы, события
   //----------------------------------------------------------------------------
   _Models := TesaResultAutoModels.Create(Self);
   try
@@ -8877,7 +8907,7 @@ begin
     for I := 0 to Autos.Count-1 do
     begin
       SetGaugeValue(I);
-      
+
       //Добавляю автосамосвал --------------------------------------------------
       quAutos.Append;
       quAutos.FieldByName('Id_ResultShift').AsInteger             := ResultId_Shift;
@@ -8914,30 +8944,35 @@ begin
       ADirNext  := edNone;
       for J := 0 to Autos[I].Events.Count-1 do
       begin
-        _E := Autos[I].Events[J];
-        if J>0 then ADirPrior := Autos[I].Events[J-1].Direction;
-        if J<Autos[I].Events.Count-1 then ADirNext := Autos[I].Events[J+1].Direction;
+        _E:= Autos[I].Events[J];
+        if J > 0 then
+          ADirPrior:= Autos[I].Events[J-1].Direction;
+        if J < Autos[I].Events.Count-1 then
+          ADirNext := Autos[I].Events[J+1].Direction;
         //Сохраняю события -----------------------------------------------------
         quEvents.Append;
-        for K := 1 to quEvents.Fields.Count-1 do
+        for K:= 1 to quEvents.Fields.Count-1 do
           quEvents.Fields[K].Clear;
-        quEvents.FieldByName('Id_ResultShiftAuto').AsInteger :=
+        quEvents.FieldByName('Id_ResultShiftAuto').AsInteger:=
           quAutos.FieldByName('Id_ResultShiftAuto').AsInteger;
-        quEvents.FieldByName('Kind').AsInteger := Integer(_E.Kind);
-        if _E.Direction<>edNone
-        then quEvents.FieldByName('Direction').AsInteger := Integer(_E.Direction);
-        if _E.FKind in [ekMoving,ekManevr]
-        then quEvents.FieldByName('Sm').AsFloat := _E.Sm;
-        quEvents.FieldByName('Tmin').AsFloat := _E.Tsec/60;
-        quEvents.FieldByName('Gx').AsFloat := _E.Gx;
-        if _E.IdPunkt0>0
-        then quEvents.FieldByName('Id_Punkt0').AsInteger := _E.IdPunkt0;
-        if _E.Kind in [ekLoadingPunkt,ekUnLoadingPunkt,ekATC]
-        then quEvents.FieldByName('Horizont0').AsFloat := _E.FHorizont0;
-        if _E.IdPunkt1>0
-        then quEvents.FieldByName('Id_Punkt1').AsInteger := _E.IdPunkt1;
-        if _E.Kind in [ekLoadingPunkt,ekUnLoadingPunkt,ekATC]
-        then quEvents.FieldByName('Horizont1').AsFloat := _E.FHorizont1;
+        quEvents.FieldByName('Kind').AsInteger:= Integer(_E.Kind);
+        if _E.Direction <> edNone then
+          quEvents.FieldByName('Direction').AsInteger := Integer(_E.Direction);
+        if _E.FKind in [ekMoving,ekManevr] then
+          quEvents.FieldByName('Sm').AsFloat:= _E.Sm;
+        quEvents.FieldByName('Tmin').AsFloat:= _E.Tsec / 60;
+        quEvents.FieldByName('Gx').AsFloat:= _E.Gx;
+        //++
+//          SaveToTempfile_GX(Autos[I], _E, J);
+        //--
+        if _E.IdPunkt0 > 0 then
+          quEvents.FieldByName('Id_Punkt0').AsInteger := _E.IdPunkt0;
+        if _E.Kind in [ekLoadingPunkt,ekUnLoadingPunkt,ekATC] then
+          quEvents.FieldByName('Horizont0').AsFloat:= _E.FHorizont0;
+        if _E.IdPunkt1 > 0 then
+          quEvents.FieldByName('Id_Punkt1').AsInteger:= _E.IdPunkt1;
+        if _E.Kind in [ekLoadingPunkt,ekUnLoadingPunkt,ekATC] then
+          quEvents.FieldByName('Horizont1').AsFloat:= _E.FHorizont1;
         //Временные данные _SumLoadingSm
         if (_E.FKind in [ekMoving,ekManevr])and(_E.Direction = edLoading) then
         begin
@@ -9075,15 +9110,17 @@ begin
       begin
         _AddReport(quReps,1,_Models[I][J]);
         ATyresCount := ATyresCount+_Models[I][J].Auto.Model.TyresCount;
-        if _Models[I][J].Auto.FWorkState
-        then Inc(AAutosCount0)
-        else Inc(AAutosCount1);
-      end;{for}
+        if _Models[I][J].Auto.FWorkState then
+          Inc(AAutosCount0)
+        else
+          Inc(AAutosCount1);
+      end;
       _AddReport(quReps,2,_Models[I]);
-      if AAutos=''
-      then AAutos := Format('%s (%d шт)',[_Models[I].DumpModel,_Models[I].Count])
-      else AAutos := Format('%s; %s (%d шт)',[AAutos,_Models[I].DumpModel,_Models[I].Count]);
-    end;{for}
+      if AAutos='' then
+        AAutos := Format('%s (%d шт)',[_Models[I].DumpModel,_Models[I].Count])
+      else
+        AAutos := Format('%s; %s (%d шт)',[AAutos,_Models[I].DumpModel,_Models[I].Count]);
+    end;
     _AddReport(quReps,3,_Models);
     quReps.Free;
     //---------------------------------------------------------------------------------------------------
@@ -9470,6 +9507,7 @@ begin
   SetGaugeValue(FGauge.MaxValue);
   FOpenpit.SendMessage('Ok');
 end;{SaveUnLoadingPunktsResultsNew}
+
 //Сохранение в БД результатов моделирования по экономическим показателям
 procedure TDispatcher.SaveEconomResultsNew;
   //
@@ -9538,7 +9576,7 @@ procedure TDispatcher.SaveEconomResultsNew;
   procedure _Add(const q: TADOQuery;
                  const ARecName: String;
                  const AKey: ResaKeyParams;
-  // todo: Double -> Single
+  // Double -> Single
                  ANum: Single;
                  ADen: Single=-1.0);overload;
   var
@@ -9635,7 +9673,6 @@ procedure TDispatcher.SaveEconomResultsNew;
       Parameters.ParamByName('ProductPriceCtg').Value:= ProductPriceCtg;
       Parameters.ParamByName('MTWorkByScheduleCtg').Value:= MTWorkByScheduleCtg;
       Parameters.ParamByName('ServiceExpensesCtg').Value:= ServiceExpensesCtg;
-      //todo: Сохранение плана
       Parameters.ParamByName('PlannedRockVolumeCm').Value:= plan;
 
       Parameters.ParamByName('Id_ResultVariant').Value:= Id_ResultVariant;
@@ -9648,7 +9685,7 @@ var
   AWorkCtg0,AWorkCtg1,ARepairCtg2                      : Single;//Затраты в работе, тг (0-Auto;1-Excv;2-Block)
   AWaitingCtg0,AWaitingCtg1                            : Single;//Затраты в простое, тг
   AAmortizationCtg0,AAmortizationCtg1,AAmortizationCtg2: Single;//Амортиз.отчисления, тг
-  // todo: Double -> Single
+  // Double -> Single
   ACtg0,ACtg1,ACtg2                                    : Single;//Затраты суммарные, тг
   ARockVolume                                          : ResaRockVolume;//Производительность, м3. и т.
   AExpensesCtg                                         : Single;//Постоянные и неучтенные расходы, тг
@@ -9659,7 +9696,6 @@ var
   ServiceExpensesCtg: double;
 
 begin
-  // todo: eco
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования по экономическим показателям..');
   try
@@ -9700,7 +9736,6 @@ begin
       _Add(qu, '4',  CesaEconomExpensesCtg,(AExpensesCtg) / 1E3);
       _Add(qu, '5',  CesaEconomRockVm3,ARockVolume.Vm3);
       _Add(qu, '6',  CesaEconomRockQtn,ARockVolume.Qtn);
-      // todo: запись удельных затрат
       _Add(qu, '7',  CesaEconomUdExpluationCtgm3,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2,ARockVolume.Vm3);
       _Add(qu, '8',  CesaEconomUdExpluationCtgtn ,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2,ARockVolume.Qtn);
       _Add(qu, '9',  CesaEconomUdAmortizationCtgm3,AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2,ARockVolume.Vm3);
@@ -9850,7 +9885,6 @@ begin
   q0.Close;
   q1.Close;
   //Данные по видам горной массы ------------------------------------------------------------------------
-  // todo:    Показатели за период
   q1.SQL.Text := 'SELECT * FROM _ResultTechnologicRockParams';
   q1.Open;
   FGauge.MaxValue := Openpit.Rocks.Count;
@@ -10142,7 +10176,6 @@ begin
     quReps.SQL.Text := 'SELECT * FROM _ResultShiftBlockReports';
     quReps.Open;
     ABlocksCount:= 0;
-    //TODO: репорты 1-2-3
     for I := 0 to _Models.Count-1 do
     begin
       FGauge.MaxValue := _Models[I].Count;
@@ -10170,64 +10203,75 @@ begin
   quBlocks.Free;
 end;{SaveBlocksResultsNew}
 
+// удельное сопротивление от качения, H/kH
 function TDispatcher.DefineW0HkH(const ARoadCoat: TesaRoadCoat; const AutoQtn,RockQtn: Single): Single;
 var
-  Ptn0,Ptn1,Value0,Value1: Single;
+  Ptn0, Ptn1, Value0, Value1: Single;
   I: Integer;
 begin
-  Result := 0.0;
-  if (ARoadCoat<>nil)and(ARoadCoat.Count>0) then
+  Result:= 0.0;
+  if (ARoadCoat <> nil) and (ARoadCoat.Count > 0) then
   begin
-    Ptn0  := 0.0;
+    Ptn0:= 0.0;
     Value0:= 0.0;
+
     //Проверяю на превышение диапазона Ptn
-    
-    if AutoQtn>ARoadCoat[ARoadCoat.Count-1].Ptn then
+    if AutoQtn > ARoadCoat[ARoadCoat.Count-1].Ptn then
     begin
-      I := ARoadCoat.Count-1;
-      Ptn1  := ARoadCoat[I].Ptn;
-      if AutoQtn<=40.0
-      then Value1:= ARoadCoat[I].WminHkH
+      I:= ARoadCoat.Count-1;
+      Ptn1:= ARoadCoat[I].Ptn;
+      if AutoQtn <= 40.0 then
+        Value1:= ARoadCoat[I].WminHkH
       else
-      if AutoQtn>=110.0
-      then Value1:= ARoadCoat[I].WmaxHkH
-      else Value1:= ARoadCoat[I].WavgHkH;
+        if AutoQtn >= 110.0 then
+          Value1:= ARoadCoat[I].WmaxHkH
+        else
+          Value1:= ARoadCoat[I].WavgHkH;
       Dec(I);
-      if I<0 then I := 0;
-      Ptn0  := ARoadCoat[I].Ptn;
-      if AutoQtn<=40.0
-      then Value0:= ARoadCoat[I].WminHkH
+      if I < 0 then
+        I:= 0;
+
+      Ptn0:= ARoadCoat[I].Ptn;
+      if AutoQtn <= 40.0 then
+        Value0:= ARoadCoat[I].WminHkH
       else
-      if AutoQtn>=110.0
-      then Value0:= ARoadCoat[I].WmaxHkH
-      else Value0:= ARoadCoat[I].WavgHkH;
-      Result := Value0+(Value1-Value0)*(AutoQtn-Ptn0)/Max((Ptn1-Ptn0),1.0);
-    end{if}
+        if AutoQtn >= 110.0 then
+          Value0:= ARoadCoat[I].WmaxHkH
+        else
+          Value0:= ARoadCoat[I].WavgHkH;
+
+      Result:= Value0 + (Value1 - Value0) * (AutoQtn - Ptn0) / Max((Ptn1 - Ptn0), 1.0);
+    end
     else
     begin
       //Проверяю на превышение диапазона Ptn
-      for I := 1 to ARoadCoat.Count-1 do
+      for I:= 1 to ARoadCoat.Count-1 do
       begin
-        Ptn1  := ARoadCoat[I].Ptn;
-        if AutoQtn<=40.0
-        then Value1:= ARoadCoat[I].WminHkH
+        Ptn1:= ARoadCoat[I].Ptn;
+        if AutoQtn <= 40.0 then
+          Value1:= ARoadCoat[I].WminHkH
         else
-        if AutoQtn>=110.0
-        then Value1:= ARoadCoat[I].WmaxHkH
-        else Value1:= ARoadCoat[I].WavgHkH;
+          if AutoQtn >= 110.0 then
+            Value1:= ARoadCoat[I].WmaxHkH
+          else
+            Value1:= ARoadCoat[I].WavgHkH;
+
         if InRange(AutoQtn,Ptn0,Ptn1) then
         begin
-          Result := Value0+(Value1-Value0)*(AutoQtn-Ptn0)/Max((Ptn1-Ptn0),1.0);
+          Result:= Value0 + (Value1 - Value0) * (AutoQtn - Ptn0) / Max((Ptn1 - Ptn0), 1.0);
           Break;
-        end;{if}
-        Ptn0 := Ptn1;
-        Value0 := Value1;
-      end;{for}
-    end;{else}
+        end;
+
+        Ptn0:= Ptn1;
+        Value0:= Value1;
+      end;
+    end;
+    
     //Для поржних автосамосвалов увеличиваю на 20%
-    if RockQtn<0.01 then Result := Result*1.2;
-  end;{if}
-end;{DefineW0HkH}
+    if RockQtn < 0.01 then
+      Result:= Result * 1.2;
+  end;
+end;
 //Возвращаю суммарное сопротивление движению, уд.ед
 function TDispatcher.DefineAydarSumSoprotiv_(const ARoadCoat: TesaRoadCoat;
                                              const Ptn,Q, Vkmh, i_: Single): Single;
@@ -10272,6 +10316,7 @@ begin
   Result := (Result+(i_*0.1))*0.01;//в уд.единицах
 end;{DefineAydarSumSoprotiv_}
 
+// todo: aydar
 // расчет раcхода топлива автосамосвалами
 function TDispatcher.DefineAydarGx_(AAuto: TesaAuto;dLmtr,Vkmh,SumSoprotiv,dTsec: Single): Single;
 var
@@ -10281,7 +10326,8 @@ var
   Ga,Ggm,KPDfact: Single;
 begin
   //Полная масса авто, т
-  Ga := AAuto.Model.Ptn; Ggm := AAuto.FCurrRockVolume.Qtn;
+  Ga := AAuto.Model.Ptn;
+  Ggm := AAuto.FCurrRockVolume.Qtn;
   KPDfact := AAuto.FTransmissionKPD;
   Ptn := Ga + Ggm;
   // 1 л.с. = 0,736 кВт   (1 л.с. = 736 Вт)
@@ -10302,7 +10348,7 @@ begin
     Etalon := A / (4186.8 * 8500.0 * KPDfact * 0.4);
     Result := 0.1 * Etalon;
   end;
-end;{DefineAydarGx_}
+end;
 
 //Выходные данные по автосамосвалу ---------------------------------------------
 //Удельный расход топлива, г/ткм
@@ -11058,6 +11104,249 @@ begin
   end;
   Result.Vm3:= rock_plan_m3;
   Result.Qtn:= rock_plan_t;
+end;
+
+procedure TDispatcher.SaveToTempfile(auto: TesaAuto; first: boolean = False);
+var
+  info_msg: string;
+  _init_str: string;
+  _parkno: integer;
+  _model: string;
+  _fuel: single;
+  _state: string;
+  _dir: string;
+  _event: integer;
+  _sec: integer;
+  _block: integer;
+  _route: integer;
+  //
+  _filename: string;
+begin
+  _parkno:= auto.FParkNo;
+  _model:= auto.FName;
+  _fuel:= auto.FCurrGxReq;
+  _state:= TWriter.GetAutoState(auto.FCurrState);
+  _dir:= TWriter.GetAutoDirection(auto.FCurrDirection);
+  _event:= auto.Events.Count;
+  _sec:= auto.FCurrDtReqSec;
+  _block:= auto.FCurrCourseBlockIndex;
+  _route:= auto.FCurrCourseIndex;
+
+  _init_str:= '';
+  if first then
+  begin
+    _init_str:= format('Initialize auto [%d|%s]', [_parkno, _model]);
+    TWriter.WriteToTXT(_init_str);
+  end;
+
+  info_msg:= format('Event number:&%d&'+
+                    'Fuel control:&%n&'+
+                    'Auto state:&%s&'+
+                    'Auto direction:&%s&'+
+                    'Time:&%d&'+
+                    'Current block:&%d&'+
+                    'Current route:&%d&',
+                    [_event, _fuel, _state, _dir, _sec, _block, _route]);
+  _filename:= format('%d_info.txt', [_parkno]);
+  TWriter.WriteToTXT(info_msg, _filename);
+end;
+
+procedure TDispatcher.SaveToTempfile_info(auto: TesaAuto);
+  function _get_traction_force_params(ary: array of RESAAutoFk): string;
+  var
+    msg: string;
+    i: integer;
+    array_length: integer;
+  begin
+    array_length:= Length(ary);
+    msg:= '';
+    for i:= 0 to array_length-1 do
+      msg:= msg + format('Скорость, км/ч:&%n&'+
+                         'Сила тяги, кН:&%n&',
+                         [ary[i].Vkmh, ary[i].FkH]);
+    Result:= msg;
+  end;
+var
+  info_msg: string;
+  _parkno: integer;
+  _name: string;
+  _deport: integer; //Уникальный код автосамосвала списочного парка
+  _model_index: integer; //Индекс модели автосамосвала
+  _tonnage: single;  //Фактическая грузоподъемность, т
+  _transmissionKPD: single;  //КПД трансмиссии, 0..1
+  _engineKPD: single;  //КПД двигателя, 0..1
+  _auto_index: Integer; //Индекс авто в списочном парке
+  //
+  _model: RESAAutoModel;
+  _model_name: String; //Модель
+  _model_volume: Single; //Объем кузова, м3
+  _lifting_capacity: Single; //Грузоподъемность, т
+  _mass: Single; //Масса автосамосвала, т
+  _frontal_surface: Single; //Площадь лобовой поверхности, м2
+  _streamlining_coef: Single; //Коэф-нт обтекаемости авто
+//    TransmissionKind: TAutoTransmissionKind;//Тип трансмиссии: 0-ГМ, 1-ЭМ
+  _transmission_KPD: Single; //КПД трансмиссии
+  _unloading_time: Single; //Время разгрузки, с
+  _turning_radius: Single; //Минимальный радиус поворота, м #Rmin
+  _count_of_tyres: Integer;//Количество шин #TyresCount
+  _id_Engine: Integer;//Код двигателя
+  _engine: String; //Марка двигателя
+  _engine_power: Single; //Максимальная мощность двигателя, кВт
+  _length: Single; //Длина, м #Lm
+  _width: Single; //Ширина, м #Wm
+  _heigh: Single; //Высота, м #Hm
+  _velocity: Single; //Конструкционная скорость, км/ч #MaxVkmh
+  _traction_force: Single; //Максимальная сила тяги, кН #MaxFkH
+  _tf_array: string; //Тяговые характериситики
+begin
+  _parkno:= auto.FParkNo;
+  _model_index:= auto.FAutoModelIndex;
+  _auto_index:= auto.FAutoIndex;
+  _deport:= auto.FId_DeportAuto;
+  _name:= auto.FName;
+
+  _tonnage:= auto.FFactTonnage;
+  _transmissionKPD:= auto.FTransmissionKPD;
+  _engineKPD:= auto.FEngineKPD;
+
+  _model:= auto.GetModel();
+  _model_name:= _model.Name;
+  _model_volume:= _model.MaxVm3;
+  _lifting_capacity:= _model.MaxQtn;
+  _mass:= _model.Ptn;
+  _frontal_surface:= _model.F;
+  _streamlining_coef:= _model.Ro;
+  _transmission_KPD:= _model.TransmissionKPD;
+  _unloading_time:= _model.MaxTsec;
+  _turning_radius:= _model.Rmin;
+  _count_of_tyres:= _model.TyresCount;
+  _id_Engine:= _model.Id_Engine;
+  _engine:= _model.Engine;
+  _engine_power:= _model.EngineMaxNkVt;
+  _length:= _model.Lm;
+  _width:= _model.Wm;
+  _heigh:= _model.Hm;
+  _velocity:= _model.MaxVkmh;
+  _traction_force:= _model.MaxFkH;
+  _tf_array:= _get_traction_force_params(_model.Fks);
+
+  info_msg:= format('Индекс авто:&%d&'+
+                    'Парковый номер:&%d&'+
+                    'Индекс модели автосамосвала:&%d&'+
+                    'Kод автосамосвала списочного парка:&%d&'+
+                    'Наименование:&%s&'+
+                    'Фактическая грузоподъемность, т:&%n&'+
+                    'КПД трансмиссии:&%n&'+
+                    'КПД двигателя:&%n&'+
+
+                    'Модель:&%s&'+
+                    'Объем кузова, м3:&%n&'+
+                    'Грузоподъемность, т:&%n&'+
+                    'Масса автосамосвала, т:&%n&'+
+                    'Площадь лобовой поверхности, м2:&%n&'+
+                    'Коэф-нт обтекаемости авто:&%n&'+
+                    'КПД трансмиссии:&%n&'+
+                    'Время разгрузки, с:&%n&'+
+                    'Минимальный радиус поворота, м:&%n&'+
+                    'Количество шин:&%d&'+
+                    'Код двигателя:&%d&'+
+                    'Марка двигателя:&%s&'+
+                    'Максимальная мощность двигателя, кВт:&%n&'+
+                    'Длина, м:&%n&'+
+                    'Ширина, м:&%n&'+
+                    'Высота, м:&%n&'+
+                    'Конструкционная скорость, км/ч:&%n&'+
+                    'Максимальная сила тяги, кН:&%n&'+
+                    'Тяговые характериситики:&%s&',
+                    [
+                    _parkno, _model_index, _auto_index, _deport,
+                    _name, _tonnage, _transmissionKPD, _engineKPD,
+
+                    _model_name, _model_volume, _lifting_capacity, _mass,
+                    _frontal_surface, _streamlining_coef, _transmission_KPD,
+                    _unloading_time, _turning_radius, _count_of_tyres,
+                    _id_Engine, _engine, _engine_power, _length, _width,
+                    _heigh, _velocity, _traction_force, _tf_array]);
+  TWriter.WriteToTXT(info_msg, 'auto_info.txt');
+end;
+
+procedure TDispatcher.SaveToTempfile_GX(auto: TesaAuto; _e: TesaResultAutoEvent; j: integer);
+var
+  info_msg:string;
+  _parkno: integer;
+  _model: string;
+  //
+  _enumber: integer;
+  //
+  _ekind: string;      //Тип события
+  _edirection: string; //Направление движения
+  _egx: Single;                 //Расход топлива, л
+  //
+  _filename: string;
+  function _getEKind(_e: TesaResultAutoEventKind): string;
+  begin
+    case _e of
+      ekNone: Result:= 'ekNone';
+      ekLoadingPunkt: Result:= 'ekLoadingPunkt';
+      ekUnLoadingPunkt: Result:= 'ekUnLoadingPunkt';
+      ekWaiting: Result:= 'ekWaiting';
+      ekMoving: Result:= 'ekMoving';
+      ekManevr: Result:= 'ekManevr';
+      ekATC: Result:= 'ekATC';
+    else Result:= 'ekAbort';
+    end;
+  end;
+  function _getEDirection(_e: TesaResultAutoEventDirection): string;
+  begin
+  //TesaResultAutoEventDirection = (edNone,edLoading,edUnLoading,edNulled);
+    case _e of
+      edNone: Result:= 'ekNone';
+      edLoading: Result:= 'edLoading';
+      edUnLoading: Result:= 'edUnLoading';
+    else Result:= 'edNulled';
+    end;
+  end;
+begin
+  _parkno:= auto.FParkNo;
+  _model:= auto.FName;
+
+  _enumber:= j;
+  _ekind:= _getEKind(_e.Kind);
+  _edirection:= _getEDirection(_e.Direction);
+  _egx:= _e.Gx;
+
+  info_msg:= format('Event number:&%d&'+
+                    'Fuel control:&%n&'+
+                    'Event kind:&%s&'+
+                    'Event direction:&%s&',
+                    [_enumber, _egx, _ekind, _edirection]);
+  _filename:= format('%d_info.txt', [_parkno]);
+  TWriter.WriteToTXT(info_msg, _filename);
+end;
+
+procedure TDispatcher.SaveToTempfile_GX0(auto: TesaAuto; currGxReq: single);
+var
+  info_msg:string;
+  _parkno: integer;
+  _model: string;
+  //
+  _filename: string;
+begin
+  _parkno:= auto.FParkNo;
+  _model:= auto.FName;
+
+  info_msg:= format('CurrGxReq:&%n&',
+                    [currGxReq]);
+  _filename:= format('%d_info_gx.txt', [_parkno]);
+  TWriter.WriteToTXT(info_msg, _filename);
+end;
+
+procedure TDispatcher.SimpleSave(_message: string);
+var
+  _filename: string;
+begin
+  _filename:= format('%simple.txt', ['1301']);
+  TWriter.WriteToTXT(_message, _filename);
 end;
 
 end.

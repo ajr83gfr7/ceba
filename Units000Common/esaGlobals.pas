@@ -349,8 +349,8 @@ uses Math, SysUtils, Windows, esaMessages, Variants;
 //esaSummary
 function esaSummary(const AValue: ResaDirectionValue): Single;
 begin
-  Result := AValue.Loading+AValue.UnLoading+AValue.Nulled;
-end;{esaSummary}
+  Result:= AValue.Loading + AValue.UnLoading + AValue.Nulled;
+end;
 function esaSummary(const AValue: ResaWorkValue): Single;
 begin
   Result := AValue.Work+AValue.Waiting;

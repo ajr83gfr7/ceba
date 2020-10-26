@@ -425,7 +425,6 @@ begin
   quVariants.Close;
   quVariants.Open;
 
-  // todo: vars | создание _economics
   //_economics:= TResultVariants.Create();
   //_economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
 
@@ -451,11 +450,6 @@ var
 begin
   _economics:= TResultVariants.Create();
   _economics.CurrentVariantId:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
-
-  //_idResultVariant:= dbgVariants.DataSource.DataSet.FieldValues['Id_ResultVariant'];
-
-  // todo: проверить необходимость |
-  //                               V
 
   with DataSet do
   begin
@@ -620,7 +614,6 @@ var
     Result:= Format('%n', [dbl]);
   end;
 begin
-  // todo: vars | calculate
   _economic:= _economics.CurrentVariant;
   with DataSet do
   begin
@@ -1078,7 +1071,6 @@ end;
 
 procedure TfmVariants.SetView;
 begin
-  // todo: vars | views
   lbProductOutPutPercent.Caption:= PRODUCT_FROM_1TONNA;
 end;
 

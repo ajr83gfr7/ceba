@@ -10,59 +10,59 @@ object fmResultShiftAutos: TfmResultShiftAutos
   Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object pnBtns: TPanel
     Left = 0
-    Top = 694
-    Width = 782
-    Height = 50
+    Top = 710
+    Width = 784
+    Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     DesignSize = (
-      782
-      50)
+      784
+      41)
     object btClose: TButton
-      Left = 866
-      Top = 10
-      Width = 93
-      Height = 31
+      Left = 704
+      Top = 8
+      Width = 75
+      Height = 25
       Anchors = [akTop, akRight]
       Caption = #1047#1072#1082#1088#1099#1090#1100
       ModalResult = 2
       TabOrder = 1
     end
     object btExcel: TButton
-      Left = 193
-      Top = 10
-      Width = 93
-      Height = 31
+      Left = 157
+      Top = 8
+      Width = 75
+      Height = 25
       Caption = #1074' Excel'
       TabOrder = 2
       OnClick = btExcelClick
     end
     object btShift: TButton
-      Left = 20
-      Top = 10
-      Width = 157
-      Height = 31
+      Left = 16
+      Top = 8
+      Width = 128
+      Height = 25
       Caption = #1057#1084#1077#1085#1085#1099#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099'...'
       TabOrder = 0
       OnClick = btShiftClick
     end
     object btSpeedTime: TButton
-      Left = 320
-      Top = 10
-      Width = 153
-      Height = 31
+      Left = 260
+      Top = 8
+      Width = 124
+      Height = 25
       Caption = #1043#1088#1072#1092#1080#1082' '#1089#1082#1086#1088#1086#1089#1090#1080'...'
       TabOrder = 3
       OnClick = btSpeedTimeClick
@@ -71,8 +71,8 @@ object fmResultShiftAutos: TfmResultShiftAutos
   object PageControl: TPageControl
     Left = 0
     Top = 0
-    Width = 782
-    Height = 694
+    Width = 784
+    Height = 710
     ActivePage = tsResultShiftAutosReport1
     Align = alClient
     TabOrder = 1
@@ -82,17 +82,17 @@ object fmResultShiftAutos: TfmResultShiftAutos
       ImageIndex = 1
       object Splitter1: TSplitter
         Left = 0
-        Top = 249
-        Width = 774
-        Height = 7
+        Top = 202
+        Width = 776
+        Height = 6
         Cursor = crVSplit
         Align = alTop
       end
       object dbgResultShiftAutoReport1: TDBGridEh
         Left = 0
-        Top = 256
-        Width = 774
-        Height = 407
+        Top = 208
+        Width = 776
+        Height = 474
         Align = alClient
         DataSource = dsResultShiftAutoReport1
         DefaultDrawing = False
@@ -100,7 +100,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         FooterColor = clYellow
         FooterFont.Charset = DEFAULT_CHARSET
         FooterFont.Color = clWindowText
-        FooterFont.Height = -14
+        FooterFont.Height = -11
         FooterFont.Name = 'MS Sans Serif'
         FooterFont.Style = []
         MinAutoFitWidth = 30
@@ -109,7 +109,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
-        TitleFont.Height = -14
+        TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
         VTitleMargin = 2
@@ -130,7 +130,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MinWidth = 360
             Title.Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
-            Width = 443
+            Width = 360
           end
           item
             EditButtons = <>
@@ -138,7 +138,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
-            Width = 91
+            Width = 74
           end
           item
             EditButtons = <>
@@ -146,7 +146,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
-            Width = 91
+            Width = 74
           end
           item
             EditButtons = <>
@@ -154,21 +154,21 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
-            Width = 91
+            Width = 74
           end>
       end
       object dbgAutos1: TDBGridEh
         Left = 0
         Top = 0
-        Width = 774
-        Height = 249
+        Width = 776
+        Height = 202
         Align = alTop
         DataSource = dsResultShiftAutos
         Flat = False
         FooterColor = clYellow
         FooterFont.Charset = DEFAULT_CHARSET
         FooterFont.Color = clWindowText
-        FooterFont.Height = -14
+        FooterFont.Height = -11
         FooterFont.Name = 'MS Sans Serif'
         FooterFont.Style = []
         MinAutoFitWidth = 30
@@ -179,7 +179,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
-        TitleFont.Height = -14
+        TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
         VTitleMargin = 2
@@ -190,12 +190,13 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 64
             MinWidth = 40
+            Width = 52
           end
           item
             EditButtons = <>
             FieldName = 'DumpModel'
             Footers = <>
-            Width = 99
+            Width = 80
           end
           item
             EditButtons = <>
@@ -274,7 +275,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             MinWidth = 64
             Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100'|C, '#1090#1099#1089'.'#1090#1075
             Title.Hint = #1054#1089#1090#1072#1090#1086#1095#1085#1072#1103' '#1089#1090#1086#1080#1084#1086#1089#1090#1100' '#1072#1074#1090#1086#1089#1072#1084#1086#1089#1074#1072#1083#1072', '#1090#1099#1089'.'#1090#1075
-            Width = 80
+            Width = 65
           end
           item
             EditButtons = <>
@@ -306,7 +307,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             MinWidth = 64
             Title.Caption = #1064#1080#1085#1099'|C, '#1090#1099#1089'.'#1090#1075
             Title.Hint = #1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1096#1080#1085#1099', '#1090#1099#1089'.'#1090#1075
-            Width = 80
+            Width = 65
           end
           item
             EditButtons = <>
@@ -347,24 +348,24 @@ object fmResultShiftAutos: TfmResultShiftAutos
       ImageIndex = 2
       object Splitter2: TSplitter
         Left = 0
-        Top = 159
-        Width = 774
-        Height = 6
+        Top = 129
+        Width = 629
+        Height = 5
         Cursor = crVSplit
         Align = alTop
       end
       object dbgAutos2: TDBGridEh
         Left = 0
         Top = 0
-        Width = 774
-        Height = 159
+        Width = 629
+        Height = 129
         Align = alTop
         DataSource = dsResultShiftAutoModels
         Flat = False
         FooterColor = clYellow
         FooterFont.Charset = DEFAULT_CHARSET
         FooterFont.Color = clWindowText
-        FooterFont.Height = -14
+        FooterFont.Height = -11
         FooterFont.Name = 'MS Sans Serif'
         FooterFont.Style = []
         MinAutoFitWidth = 30
@@ -375,7 +376,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
-        TitleFont.Height = -14
+        TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
         VTitleMargin = 2
@@ -392,14 +393,14 @@ object fmResultShiftAutos: TfmResultShiftAutos
             FieldName = 'DumpModel'
             Footers = <>
             MinWidth = 640
-            Width = 788
+            Width = 640
           end>
       end
       object dbgResultShiftAutoReport2: TDBGridEh
         Left = 0
-        Top = 165
-        Width = 774
-        Height = 498
+        Top = 134
+        Width = 629
+        Height = 405
         Align = alClient
         DataSource = dsResultShiftAutoReport2
         DefaultDrawing = False
@@ -407,7 +408,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         FooterColor = clYellow
         FooterFont.Charset = DEFAULT_CHARSET
         FooterFont.Color = clWindowText
-        FooterFont.Height = -14
+        FooterFont.Height = -11
         FooterFont.Name = 'MS Sans Serif'
         FooterFont.Style = []
         MinAutoFitWidth = 30
@@ -416,7 +417,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
-        TitleFont.Height = -14
+        TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
         VTitleMargin = 2
@@ -437,7 +438,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MinWidth = 360
             Title.Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
-            Width = 443
+            Width = 360
           end
           item
             EditButtons = <>
@@ -446,7 +447,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             MaxWidth = 120
             MinWidth = 64
             Title.Caption = #1047#1072' '#1089#1084#1077#1085#1091
-            Width = 91
+            Width = 74
           end
           item
             EditButtons = <>
@@ -455,7 +456,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             MaxWidth = 120
             MinWidth = 64
             Title.Caption = #1047#1072' '#1089#1088#1077#1076#1085#1077'- '#1085#1077#1076#1077#1083#1100#1085#1091#1102' '#1089#1084#1077#1085#1091
-            Width = 91
+            Width = 74
           end
           item
             EditButtons = <>
@@ -464,7 +465,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             MaxWidth = 120
             MinWidth = 64
             Title.Caption = #1047#1072' '#1087#1077#1088#1080#1086#1076
-            Width = 91
+            Width = 74
           end>
       end
     end
@@ -474,8 +475,8 @@ object fmResultShiftAutos: TfmResultShiftAutos
       object dbgResultShiftAutoReport3: TDBGridEh
         Left = 0
         Top = 0
-        Width = 774
-        Height = 663
+        Width = 629
+        Height = 539
         Align = alClient
         DataSource = dsResultShiftAutoReport3
         DefaultDrawing = False
@@ -483,7 +484,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         FooterColor = clYellow
         FooterFont.Charset = DEFAULT_CHARSET
         FooterFont.Color = clWindowText
-        FooterFont.Height = -14
+        FooterFont.Height = -11
         FooterFont.Name = 'MS Sans Serif'
         FooterFont.Style = []
         MinAutoFitWidth = 30
@@ -492,7 +493,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
-        TitleFont.Height = -14
+        TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
         VTitleMargin = 2
@@ -513,7 +514,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MinWidth = 360
             Title.Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
-            Width = 443
+            Width = 360
           end
           item
             EditButtons = <>
@@ -521,7 +522,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
-            Width = 91
+            Width = 74
           end
           item
             EditButtons = <>
@@ -529,7 +530,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
-            Width = 91
+            Width = 74
           end
           item
             EditButtons = <>
@@ -537,7 +538,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
-            Width = 91
+            Width = 74
           end>
       end
     end
