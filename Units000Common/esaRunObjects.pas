@@ -8015,6 +8015,7 @@ var
   _message0, _message1: string;
   _fs: TFormatSettings;
   _tmp: boolean;
+  _engine_max, _engine_min, _engine_avg: single;
 begin
   FkHkH := 0.0;
   _check:= false;
@@ -8024,22 +8025,26 @@ begin
     if (AAuto.FParkNo = _auto_1301)then
       _check:= true;
     //значения КПД составляющих узлов силовой передачи в нормативном состоянии
-    nnu_d:= 0.4;
+    //nnu_d:= 0.4;
+    _engine_min:= 0.4;
+    _engine_max:= AAuto.Model.EngineMaxNkVt / 1000;
+    _engine_avg:= _engine_min + (_engine_max - _engine_min)/2;
+
+    nnu_d:= _engine_avg;
 //    nnu_tr  := 0.78;
     nnu_tr  := AAuto.Model.TransmissionKPD;
     nnu_k   := 0.9;
     nnu_kom := 0.95;
 
     //значения КПД составляющих узлов силовой передачи текущие
-    nu_d    := 0.4;
-    {nu_d    := AAuto.FEngineKPD;}
-//    nu_tr   := FTransmissionKPD*0.78;
-    nu_tr   := AAuto.FTransmissionKPD * AAuto.Model.TransmissionKPD;
-    nu_k    := 0.9;
-    nu_kom  := 0.9;
+    //nu_d:= 0.4;
+    nu_d:= AAuto.FEngineKPD;// * (_engine_avg);
+    nu_tr:= AAuto.FTransmissionKPD * AAuto.Model.TransmissionKPD;
+    nu_k:= 0.9;
+    nu_kom:= 0.9;
     //коэффициент снижения мощности
-    nu_n    := nu_d * nu_tr * nu_k * nu_kom / Max((nnu_d * nnu_tr * nnu_k * nnu_kom), 0.001);
-    Q_kK_l  := 8500.0;   //Теплотворная способность дизтоплива, кКал/л
+    nu_n:= nu_d * nu_tr * nu_k * nu_kom / Max((nnu_d * nnu_tr * nnu_k * nnu_kom), 0.001);
+    Q_kK_l:= 8500.0;   //Теплотворная способность дизтоплива, кКал/л
     //Масса груза/авто, т
     Ggm:= FCurrRockVolume.Qtn;
     Ga:= Model.Ptn;
@@ -8134,7 +8139,7 @@ begin
             AV1, AVavg, dTsec, Tsec, a,
             b, dGxLtr, GxLtr, AV0,
             _blockid, _v], _fs);
-//          SimpleSave(Format('%s%s', [_message0, _message1]));
+          SimpleSave(Format('%s%s', [_message0, _message1]));
         end;
       end
       else
