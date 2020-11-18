@@ -8025,12 +8025,12 @@ begin
     if (AAuto.FParkNo = _auto_1301)then
       _check:= true;
     //значени€  ѕƒ составл€ющих узлов силовой передачи в нормативном состо€нии
-    //nnu_d:= 0.4;
+    nnu_d:= 0.4;
     _engine_min:= 0.4;
     _engine_max:= AAuto.Model.EngineMaxNkVt / 1000;
     _engine_avg:= _engine_min + (_engine_max - _engine_min)/2;
 
-    nnu_d:= _engine_avg;
+    //nnu_d:= _engine_avg;
 //    nnu_tr  := 0.78;
     nnu_tr  := AAuto.Model.TransmissionKPD;
     nnu_k   := 0.9;
