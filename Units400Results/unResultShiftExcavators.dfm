@@ -64,7 +64,7 @@ object fmResultShiftExcavators: TfmResultShiftExcavators
     Top = 0
     Width = 784
     Height = 522
-    ActivePage = tsResultShiftExcavatorsReport1
+    ActivePage = tsResultShiftExcavatorsReport3
     Align = alClient
     TabOrder = 1
     object tsResultShiftExcavatorsReport1: TTabSheet
@@ -440,7 +440,7 @@ object fmResultShiftExcavators: TfmResultShiftExcavators
         Left = 0
         Top = 0
         Width = 776
-        Height = 496
+        Height = 494
         Align = alClient
         DataSource = dsResultShiftExcavatorReport3
         DefaultDrawing = False

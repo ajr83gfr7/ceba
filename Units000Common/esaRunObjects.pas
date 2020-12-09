@@ -439,6 +439,11 @@ type
     FCurrState   : TPunktState;//Состояние экскаватора
     FSumDTsec    : array[TPunktState] of Integer;//Время работы, маневра, простоя, sec
     FSumAutoCount: Integer;//К-во погруженных авто
+    //
+  	FPeriodPlan_by_ore_m3: Single;  //Плановый объем руды на период, м3
+    FPeriodPlan_by_ore_tn: Single;  //Плановый объем руды на период, т
+    FPeriodPlan_by_rock_m3: Single; //Плановый объем породы на период, м3
+    FPeriodPlan_by_rock_tn: Single; //Плановый объем породы на период, т
 
     function GetItem(const Index: Integer): TesaLoadingPunktRock;
     function GetExcavator: TesaExcavator;
@@ -463,7 +468,7 @@ type
     constructor Create(ADispatcher: TDispatcher);
     destructor Destroy; override;
     function IndexOf(const AId_Rock: Integer): Integer;
-    procedure AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single);
+    procedure AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single; IsMineralWealth:boolean);
   end;
 
   //TesaLoadingPunkts - класс "Пункты погрузки" -----------------------------------------------
@@ -3147,10 +3152,20 @@ begin
     Result := I; Break;
   end;{for}
 end;{IndexOf}
-procedure TesaLoadingPunkt.AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single);
+procedure TesaLoadingPunkt.AddPeriodPlanRock(const APeriodPlanVm3,APeriodPlanQtn: Single; IsMineralWealth:boolean);
 begin
- FPeriodPlanVm3:= PeriodPlanVm3 + APeriodPlanVm3;
- FPeriodPlanQtn:= PeriodPlanQtn + APeriodPlanQtn;
+  if IsMineralWealth then
+  begin
+    FPeriodPlan_by_ore_m3:= FPeriodPlan_by_ore_m3 + APeriodPlanVm3;
+    FPeriodPlan_by_ore_tn:= FPeriodPlan_by_ore_tn + APeriodPlanQtn;
+  end
+  else
+  begin
+    FPeriodPlan_by_rock_m3:= FPeriodPlan_by_rock_m3 + APeriodPlanVm3;
+    FPeriodPlan_by_rock_tn:= FPeriodPlan_by_rock_tn + APeriodPlanQtn;
+  end;
+  FPeriodPlanVm3:= PeriodPlanVm3 + APeriodPlanVm3;
+  FPeriodPlanQtn:= PeriodPlanQtn + APeriodPlanQtn;
 end;{AddPeriodPlanRock}
 //TesaLoadingPunkts - класс "Пункты погрузки" -------------------------------------------------
 function TesaLoadingPunkts.GetItem(const Index: Integer): TesaLoadingPunkt;
@@ -3203,9 +3218,14 @@ begin
       quLoadingPunktRocks := TADOQuery.Create(nil);
       try
         quLoadingPunktRocks.Connection := DBConnection;
-        quLoadingPunktRocks.SQL.Text := 'SELECT R.* '+
-                                        'FROM OpenpitLoadingPunktRocks R '+
-                                        'WHERE R.Id_LoadingPunkt=:Id_LoadingPunkt '+
+//        quLoadingPunktRocks.SQL.Text := 'SELECT R.* '+
+//                                        'FROM OpenpitLoadingPunktRocks R '+
+//                                        'WHERE R.Id_LoadingPunkt=:Id_LoadingPunkt '+
+//                                        'ORDER BY R.SortIndex';
+        quLoadingPunktRocks.SQL.Text := 'SELECT R.*,  rock.IsMineralWealth as IsMineralWealth ' +
+                                        'FROM OpenpitLoadingPunktRocks R, OpenpitRocks as rock ' +
+                                        'WHERE R.Id_LoadingPunkt=:Id_LoadingPunkt ' +
+                                        'AND R.id_rock=rock.id_rock ' +
                                         'ORDER BY R.SortIndex';
         quLoadingPunktRocks.DataSource := dsLoadingPunkts;
         quLoadingPunktRocks.Open;
@@ -3245,7 +3265,8 @@ begin
             ARock.FPeriodPlanQtn  := Round(FieldByName('PlannedV1000m3').AsFloat*1000)*FieldByName('DensityInBlock').AsFloat;
             ARock.FDensityInBlock := FieldByName('DensityInBlock').AsFloat;
             ARock.FShatteringCoef := FieldByName('ShatteringCoef').AsFloat;
-            APunkt.AddPeriodPlanRock(FieldByName('PlannedV1000m3').AsFloat*1000, ARock.PeriodPlanQtn);
+//            APunkt.AddPeriodPlanRock(FieldByName('PlannedV1000m3').AsFloat*1000, ARock.PeriodPlanQtn);
+            APunkt.AddPeriodPlanRock(FieldByName('PlannedV1000m3').AsFloat*1000, ARock.PeriodPlanQtn, FieldByName('IsMineralWealth').AsBoolean);
             Next;
           end;{while}
           quLoadingPunkts.Next;
@@ -9907,6 +9928,21 @@ begin
     ARockVolume       := esaRockVolume();
     for J := 0 to LoadingPunkts.Count-1 do
     begin
+      if Openpit.Rocks[I].IsMineralWealth then
+      begin
+        AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlan_by_ore_tn / 620.5);
+        AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlan_by_ore_tn / 620.5);
+        AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlan_by_ore_m3 / 620.5);
+        AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlan_by_ore_m3 / 620.5);
+      end
+      else
+      begin
+        AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlan_by_rock_tn / 620.5);
+        AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlan_by_rock_tn / 620.5);
+        AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlan_by_rock_m3 / 620.5);
+        AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlan_by_rock_m3 / 620.5);
+      end;
+      (*
       for K := 0 to LoadingPunkts[J].RockCount-1 do
         if LoadingPunkts[J].Rocks[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock then
         begin
@@ -9916,6 +9952,7 @@ begin
           AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlanVm3 / 620.5);
           AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlanVm3 / 620.5);
         end;
+        *)
       for K := 0 to LoadingPunkts[J].Excavator.Events.Count-1 do
         if (LoadingPunkts[J].Excavator.Events[K].Rock.Id_Rock = Openpit.Rocks[I].Id_Rock) and
            (LoadingPunkts[J].Excavator.Events[K].Kind = eekLoading) then
