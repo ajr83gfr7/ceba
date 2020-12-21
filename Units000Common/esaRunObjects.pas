@@ -7755,9 +7755,7 @@ function uGetGrAuto( course : TesaCourse; dir: TAutoDirection; blInd:integer):in
 begin
   Result:=-1;
 end;
-//ul-
-
-
+//ul-                               
 
 function TDispatcher.CheckCascadeOneLane_(CurrCourse: TesaCourse; BlockIndex: integer; upDirection: boolean; Value: integer): boolean;
 var
@@ -9342,40 +9340,40 @@ begin
     SetGaugeValue(0);
     FGauge.MaxValue := Openpit.Excavators.Count;
     for I := 0 to Openpit.Excavators.Count-1 do //Экскаваторы в нерабочем состоянии
-    if not Openpit.Excavators[I].WorkState then
-    begin
-      SetGaugeValue(I);
-      //Добавляю автосамосвал --------------------------------------------------
-      quExcavators.Append;
-      quExcavators.FieldByName('Id_ResultShift').AsInteger := ResultId_Shift;
-      quExcavators.FieldByName('Id_DumpModel').AsInteger := Openpit.Excavators[I].Model.Id_Excavator;
-      quExcavators.FieldByName('DumpModel').AsString := Openpit.Excavators[I].Model.Name;
-      quExcavators.FieldByName('DumpNo').AsInteger := Openpit.Excavators[I].ParkNo;
-      quExcavators.FieldByName('DumpYear').AsInteger := Openpit.Excavators[I].EYear;
-      quExcavators.FieldByName('DumpTsec').AsFloat := Openpit.Excavators[I].Tsec;
-      quExcavators.FieldByName('DumpMaxVm3').AsFloat := Openpit.Excavators[I].Model.MaxVm3;
-      quExcavators.FieldByName('DumpMaxNkVt').AsFloat := Openpit.Excavators[I].Model.EngineMaxNkVt;
-      quExcavators.FieldByName('DumpEngineKIM').AsFloat := Openpit.Excavators[I].EngineKIM;
-      quExcavators.FieldByName('DumpEngineKPD').AsFloat := Openpit.Excavators[I].EngineKPD;
-      quExcavators.FieldByName('DumpC1000tg').AsFloat := Openpit.Excavators[I].C1000tg;
-      quExcavators.FieldByName('DumpMaterialsMonthC1000tg').AsFloat := Openpit.Excavators[I].AddMaterialsMonthC1000tg;
-      quExcavators.FieldByName('DumpUnAccountedMonthC1000tg').AsFloat := Openpit.Excavators[I].AddUnAccountedMonthC1000tg;
-      quExcavators.FieldByName('Id_LoadingPunkt').Clear;
-      quExcavators.FieldByName('Horizont').Clear;
-      quExcavators.FieldByName('DumpWorkState').AsBoolean := Openpit.Excavators[I].WorkState;
-      quExcavators.Post;
-      //Добавляю автосамосвал --------------------------------------------------
-      _Ex                          := TesaResultExcavator.Create(Self);
-      _Ex.FExcavator               := Openpit.Excavators[I];
-      _Ex.FId_ResultShift          := ResultId_Shift;
-      _Ex.FId_ResultShiftExcavator := quExcavators.FieldByName('Id_ResultShiftExcavator').AsInteger;
-      _Ex.FId_DumpModel            := Openpit.Excavators[I].Model.Id_Excavator;
-      _Ex.FDumpModel               := Openpit.Excavators[I].Model.Name;
-      _Ex.FSumTmin.Waiting         := 0.0;
-      _Ex.FSumGx                   := esaWorkValue();
-      _Models.Append(_Ex);
-    end;{for}
-    
+      if not Openpit.Excavators[I].WorkState then
+      begin
+        SetGaugeValue(I);
+        //Добавляю автосамосвал --------------------------------------------------
+        quExcavators.Append;
+        quExcavators.FieldByName('Id_ResultShift').AsInteger := ResultId_Shift;
+        quExcavators.FieldByName('Id_DumpModel').AsInteger := Openpit.Excavators[I].Model.Id_Excavator;
+        quExcavators.FieldByName('DumpModel').AsString := Openpit.Excavators[I].Model.Name;
+        quExcavators.FieldByName('DumpNo').AsInteger := Openpit.Excavators[I].ParkNo;
+        quExcavators.FieldByName('DumpYear').AsInteger := Openpit.Excavators[I].EYear;
+        quExcavators.FieldByName('DumpTsec').AsFloat := Openpit.Excavators[I].Tsec;
+        quExcavators.FieldByName('DumpMaxVm3').AsFloat := Openpit.Excavators[I].Model.MaxVm3;
+        quExcavators.FieldByName('DumpMaxNkVt').AsFloat := Openpit.Excavators[I].Model.EngineMaxNkVt;
+        quExcavators.FieldByName('DumpEngineKIM').AsFloat := Openpit.Excavators[I].EngineKIM;
+        quExcavators.FieldByName('DumpEngineKPD').AsFloat := Openpit.Excavators[I].EngineKPD;
+        quExcavators.FieldByName('DumpC1000tg').AsFloat := Openpit.Excavators[I].C1000tg;
+        quExcavators.FieldByName('DumpMaterialsMonthC1000tg').AsFloat := Openpit.Excavators[I].AddMaterialsMonthC1000tg;
+        quExcavators.FieldByName('DumpUnAccountedMonthC1000tg').AsFloat := Openpit.Excavators[I].AddUnAccountedMonthC1000tg;
+        quExcavators.FieldByName('Id_LoadingPunkt').Clear;
+        quExcavators.FieldByName('Horizont').Clear;
+        quExcavators.FieldByName('DumpWorkState').AsBoolean := Openpit.Excavators[I].WorkState;
+        quExcavators.Post;
+        //Добавляю автосамосвал --------------------------------------------------
+        _Ex                          := TesaResultExcavator.Create(Self);
+        _Ex.FExcavator               := Openpit.Excavators[I];
+        _Ex.FId_ResultShift          := ResultId_Shift;
+        _Ex.FId_ResultShiftExcavator := quExcavators.FieldByName('Id_ResultShiftExcavator').AsInteger;
+        _Ex.FId_DumpModel            := Openpit.Excavators[I].Model.Id_Excavator;
+        _Ex.FDumpModel               := Openpit.Excavators[I].Model.Name;
+        _Ex.FSumTmin.Waiting         := 0.0;
+        _Ex.FSumGx                   := esaWorkValue();
+        _Models.Append(_Ex);
+      end;
+
     quExcavators.Close;
     quEvents.Close;
     _Models.Update;
@@ -9397,15 +9395,17 @@ begin
       for J := 0 to _Models[I].Count-1 do
       begin
         _AddReport(quReps,1,_Models[I][J]);
-        if _Models[I][J].Excavator.FWorkState
-        then Inc(AExcavatorsCount0)
-        else Inc(AExcavatorsCount1);
-      end;{for}
+        if _Models[I][J].Excavator.FWorkState then
+          Inc(AExcavatorsCount0)
+        else
+          Inc(AExcavatorsCount1);
+      end;
       _AddReport(quReps,2,_Models[I]);
-      if AExcavators=''
-      then AExcavators := Format('%s (%d шт)',[_Models[I].DumpModel,_Models[I].Count])
-      else AExcavators := Format('%s; %s (%d шт)',[AExcavators,_Models[I].DumpModel,_Models[I].Count]);
-    end;{for}
+      if AExcavators='' then
+        AExcavators := Format('%s (%d шт)',[_Models[I].DumpModel,_Models[I].Count])
+      else
+        AExcavators := Format('%s; %s (%d шт)',[AExcavators,_Models[I].DumpModel,_Models[I].Count]);
+    end;
     _AddReport(quReps,3,_Models);
     quReps.Free;
     Variant.SaveExcavators(AExcavators,AExcavatorsCount0,AExcavatorsCount1,
@@ -9866,6 +9866,8 @@ var
   //
   _tmpQtn: double;
   _tmpPlan: double;
+  //
+  _kshift: double;
 begin
   SetGaugeValue(0);
   FOpenpit.SendMessage('Сохранение результатов моделирования за период моделирования..');
@@ -9895,6 +9897,7 @@ begin
                          CesaAutosUsedTyresCount.No,CesaAutosTyresCtg.No]);
   q0.Open;
   FGauge.MaxValue := q0.RecordCount;
+  _kshift:= Openpit.Period.Kshift;
   SetGaugeValue(0);
   while not q0.Eof do
   begin
@@ -9930,17 +9933,17 @@ begin
     begin
       if Openpit.Rocks[I].IsMineralWealth then
       begin
-        AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlan_by_ore_tn / 620.5);
-        AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlan_by_ore_tn / 620.5);
-        AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlan_by_ore_m3 / 620.5);
-        AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlan_by_ore_m3 / 620.5);
+        AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlan_by_ore_tn); // / _kshift); //620.5
+        AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlan_by_ore_tn); // / _kshift);
+        AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlan_by_ore_m3); // / _kshift);
+        AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlan_by_ore_m3); // / _kshift);
       end
       else
       begin
-        AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlan_by_rock_tn / 620.5);
-        AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlan_by_rock_tn / 620.5);
-        AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlan_by_rock_m3 / 620.5);
-        AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlan_by_rock_m3 / 620.5);
+        AShiftPlanRockQtn:= AShiftPlanRockQtn + (LoadingPunkts[J].FPeriodPlan_by_rock_tn); // / _kshift);
+        AShiftPlanRockQtn_sum:= AShiftPlanRockQtn_sum + (LoadingPunkts[J].FPeriodPlan_by_rock_tn); // / _kshift);
+        AShiftPlanRockVm3:= AShiftPlanRockVm3 + (LoadingPunkts[J].FPeriodPlan_by_rock_m3); // / _kshift);
+        AShiftPlanRockVm3_sum:= AShiftPlanRockVm3_sum + (LoadingPunkts[J].FPeriodPlan_by_rock_m3); // / _kshift);
       end;
       (*
       for K := 0 to LoadingPunkts[J].RockCount-1 do
@@ -10813,7 +10816,12 @@ begin
         Items[I][J].FSumSalaryCtg.Waiting       := AMonthSalaryCtg/AMonthTmin*(Items[I].SumTmin.Waiting);
         Items[I][J].FSumExploatationCtg.Work    := Items[I][J].SumGxCtg.Work+Items[I][J].SumSalaryCtg.Work+Items[I][J].SumMaterialsGxCtg.Work+Items[I][J].SumUnAccountedCtg.Work;
         Items[I][J].FSumExploatationCtg.Waiting := Items[I][J].SumGxCtg.Waiting+Items[I][J].SumSalaryCtg.Waiting+Items[I][J].SumMaterialsGxCtg.Waiting+Items[I][J].SumUnAccountedCtg.Waiting;
-        Items[I][J].FRockShiftPlan              := esaRockVolume(Items[I][J].Excavator.LoadingPunkt.ShiftPlanVm3,Items[I][J].Excavator.LoadingPunkt.ShiftPlanQtn);
+        Items[I][J].FRockShiftPlan              := esaRockVolume(
+                                                                  //Items[I][J].Excavator.LoadingPunkt.ShiftPlanVm3,
+                                                                  //Items[I][J].Excavator.LoadingPunkt.ShiftPlanQtn
+                                                                  Items[I][J].Excavator.LoadingPunkt.PeriodPlanVm3,
+                                                                  Items[I][J].Excavator.LoadingPunkt.PeriodPlanQtn
+                                                                  );
       end{if}
       else
       begin

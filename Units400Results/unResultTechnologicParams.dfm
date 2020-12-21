@@ -297,6 +297,7 @@ object fmResultTechnologicParams: TfmResultTechnologicParams
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
+            Title.Caption = #1047#1072' '#1087#1077#1088#1080#1086#1076
             Width = 74
           end
           item
@@ -313,6 +314,7 @@ object fmResultTechnologicParams: TfmResultTechnologicParams
             Footers = <>
             MaxWidth = 120
             MinWidth = 64
+            Title.Caption = #1047#1072' '#1089#1084#1077#1085#1091
             Width = 73
           end>
       end

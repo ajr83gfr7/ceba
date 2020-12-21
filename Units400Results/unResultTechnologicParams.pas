@@ -173,9 +173,10 @@ begin
       dbl:= Dataset.FieldByName('AValue').AsFloat;
       dbl:= quResultShiftsShiftKweek.AsFloat;
       dbl:= Dataset.FieldByName('AValue').AsFloat * quResultShiftsShiftKweek.AsFloat;
-      Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('AValue').AsFloat *
+      Dataset.FieldByName('Value1').AsFloat := (Dataset.FieldByName('AValue').AsFloat /
+                                               quResultShiftsPeriodKshift.AsFloat) *
                                                quResultShiftsShiftKweek.AsFloat;
-      Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat *
+      Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat /
                                                quResultShiftsPeriodKshift.AsFloat;
     end
     else

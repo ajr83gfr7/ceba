@@ -494,8 +494,8 @@ begin
     n1 := Max(0,5-n2);                //дневные смены = 5 рабочих дней - взрывные дни
     n0 := AShiftsCountInWeek-n2-n1;   //дневные смены = количество смен в неделе - взрывные и дневные смены
     Result.Kweek := (n0*ACoef0+n1*ACoef1+n2*ACoef2)/AShiftsCountInWeek;
-  end;{if}
-end;{esaShiftTimeUsing}
+  end;
+end;
 //Shift
 function esaShift(const ATimeUsingCoef0,ATimeUsingCoef1,ATimeUsingCoef2: Single; const ATimeUsingCoef3: TesaShiftExplosion; const ATmin,ATurnoverTmin: Cardinal): ResaShift;
 begin
