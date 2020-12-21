@@ -9992,7 +9992,7 @@ begin
 
     _tmpQtn:= 100 * AQt;
     //_tmpPlan:= AShiftPlanRockQtn_sum / 620.5 * 1000;
-    _tmpPlan:= AShiftPlanRockQtn;
+    _tmpPlan:= AShiftPlanRockQtn / _kshift; // план за смену
     if AShiftPlanRockQtn > 0.0 then
       _Add(Openpit.Rocks[I], '4', 104, False, 'Относительно плана, %', _tmpQtn / _tmpPlan)
     else
@@ -10013,7 +10013,7 @@ begin
   //
   _tmpQtn:= 100 * AVm3_sum;
   //_tmpPlan:= AShiftPlanRockVm3_sum / 620.5 * 1000;
-  _tmpPlan:= AShiftPlanRockVm3_sum;
+  _tmpPlan:= AShiftPlanRockVm3_sum / _kshift;
 
   _Add(_RESARock, '4', 104, False, _str, _tmpQtn / _tmpPlan);
   //

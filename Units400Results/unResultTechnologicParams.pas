@@ -167,23 +167,33 @@ var
   dbl: double;
 begin
   if not(Dataset.FieldByName('AValue').IsNull) then
-//    if Dataset.FieldByName('IsChangeable').AsBoolean then
-    if Dataset.FieldByName('RecordName').AsInteger <> 4 then
+    if Dataset.FieldByName('RecordName').AsInteger = 1 then
     begin
-      dbl:= Dataset.FieldByName('AValue').AsFloat;
-      dbl:= quResultShiftsShiftKweek.AsFloat;
-      dbl:= Dataset.FieldByName('AValue').AsFloat * quResultShiftsShiftKweek.AsFloat;
+
       Dataset.FieldByName('Value1').AsFloat := (Dataset.FieldByName('AValue').AsFloat /
                                                quResultShiftsPeriodKshift.AsFloat) *
                                                quResultShiftsShiftKweek.AsFloat;
+
       Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat /
                                                quResultShiftsPeriodKshift.AsFloat;
     end
-    else
+    else if Dataset.FieldByName('RecordName').AsInteger = 4 then
     begin
       Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('AValue').AsFloat*1.0;
       Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('AValue').AsFloat*1.0;
-    end;
+    end
+    else
+    begin
+      dbl:= Dataset.FieldByName('AValue').AsFloat; 
+
+      Dataset.FieldByName('AValue').AsFloat := dbl *
+                                               quResultShiftsPeriodKshift.AsFloat;
+
+      Dataset.FieldByName('Value1').AsFloat := dbl *
+                                               quResultShiftsShiftKweek.AsFloat;
+
+      Dataset.FieldByName('Value2').AsFloat := dbl;
+    end
 end;
 
 end.
