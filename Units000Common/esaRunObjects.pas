@@ -8119,8 +8119,8 @@ begin
       if ADirection=adLoading then
         _v:= CurrBlock.Block.LoadingVmax;
       AV1:= sqrt(AV0 * AV0 + dVkmh);
-//!      if AV1 > _v then
-//!        AV1:= _v;
+      if AV1 > _v then   //!
+        AV1:= _v;        //!
       //u--
 //      AV1:= sqrt(AV0 * AV0 + dVkmh);
 ///////////////////////////////
