@@ -1198,7 +1198,7 @@ type
     property LoadingPunkts  : TesaLoadingPunkts read FLoadingPunkts;
     property UnLoadingPunkts: TesaUnLoadingPunkts read FUnLoadingPunkts;
     property ShiftPunkts    : TesaShiftPunkts read FShiftPunkts;
-    property Courses: TesaCourses read FCourses;          
+    property Courses: TesaCourses read FCourses;
     property AutoAccordances          : TesaAutoAccordances read FAutoAccordances;
     constructor Create(ADispatcher: TDispatcher);
     destructor Destroy; override;
@@ -5736,6 +5736,7 @@ begin
 end;{RunReadData}
 procedure TDispatcher.RunSaveResults(var ATime: _SystemTime);
 begin
+  // todo: saves
   if (not FIsRunning)OR FIsStop OR FIsErrorInputData then Exit;
   //III. Сохранение результатов моделирования -------------------------------------------------
   SendMessageStartTime(ATime,'III. Сохранение результатов расчета варианта');
@@ -6774,8 +6775,12 @@ begin
   end;{for}
   if FCurrOreQtn > 0.0 then
   begin
-//    FCurrStrippingCoef := FCurrStrippingQtn/FCurrOreQtn;
+    FCurrStrippingCoef := FCurrStrippingQtn/FCurrOreQtn;
 //    FCurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3;
+  end
+  else
+  begin
+//    FCurrStrippingCoef := FOpenpit.LoadingPunkts.FPlannedStrippingCoef;
   end;
 end;{DefineCurrStrippingCoef_}
 //Инициализация начального состояния блок-участков
@@ -8720,9 +8725,9 @@ begin
     Openpit.FCommon.CurrOreVm3:=FCurrOreVm3;
     Openpit.FCommon.CurrStrippingQtn:=FCurrStrippingQtn;
     Openpit.FCommon.CurrStrippingVm3:=FCurrStrippingVm3;
-    
-    if FCurrOreQtn > 0.0 then
-      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingQtn/FCurrOreQtn;    
+
+    //if FCurrOreQtn > 0.0 then
+      //Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingQtn/FCurrOreQtn;
 //      Openpit.FCommon.CurrStrippingCoef:= Openpit.LoadingPunkts.FPlannedStrippingCoefVm3;
 //      Openpit.FCommon.CurrStrippingCoef:= FCurrStrippingVm3/FCurrOreVm3
     Post;
@@ -9031,7 +9036,7 @@ begin
         //-----------------------------------------------------------------------------------------------
         //-----------------------------------------------------------------------------------------------
         //Вычисляю по событиям выходные данные по данному автосамосвалу ---------------------------------
-        
+
         //Количество рейсов -----------------------------------------------------------------------------
         if ((ADirPrior=edNulled)and(_E.Kind=ekLoadingPunkt))OR  //Погрузка и предыдущее нулевое направление
            ((ADirNext =edNulled)and(_E.Kind=ekUnLoadingPunkt))  //Разгрузка и следующее нулевое направление
@@ -9103,7 +9108,7 @@ begin
       if _A.Auto.FAmortizationKind=ak1000km
       then _A.FSumAmortizationCtg := (esaSummary(_A.Sm)*(1E-6))*_A.Auto.FAmortizationRate*(1000.0*_A.Auto.FC1000tg)
       else _A.FSumAmortizationCtg := _A.Auto.FAmortizationRate/(Openpit.Period.Tday*AShiftsCount)*(1000.0*_A.Auto.FC1000tg);
-      
+
 //Сулеймен 2007_10_14 Перебиваю расчет амортизации по пробегу на амортизацию по времени!!!
 //      _A.FSumAmortizationCtg := (_A.Sm*(1E-6))*_A.Auto.FAmortizationRate*(1000.0*_A.Auto.FC1000tg);
 //      _A.FSumAmortizationCtg := {_A.Auto.FAmortizationRate}0.125*(1000.0*_A.Auto.FC1000tg)/(365*AShiftsCount);
@@ -9239,7 +9244,7 @@ var
   _Models        : TesaResultExcavatorModels;
   _Ex            : TesaResultExcavator;
   AGxCoef        : Single;
-  AExcavators     : String;  //Модели экскаваторов 
+  AExcavators     : String;  //Модели экскаваторов
   AExcavatorsCount0: Integer; //количество экскаваторов в рабочем состоянии
   AExcavatorsCount1: Integer; //количество экскаваторов в рабочем состоянии
 begin
