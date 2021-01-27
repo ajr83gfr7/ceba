@@ -101,6 +101,7 @@ end;
 procedure TfmResultEconomParams.quResultEconomReportsCalcFields(DataSet: TDataSet);
 var AValue,AKoef: double;  shiftValue: double;
   val2, val3: double;
+  _shiftKweek, _periodKshift: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
   begin
@@ -114,6 +115,9 @@ begin
     Dataset.FieldByName('Value2').AsFloat := AValue;
     Dataset.FieldByName('Value3').AsFloat := AValue;
 
+    _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
+    _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
+
     if Dataset.FieldByName('IsChangeable').AsBoolean then
     begin
       if (Dataset.FieldByName('RecordNo').AsInteger <> 103) and
@@ -126,9 +130,12 @@ begin
          (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
-        val3:= AValue * quResultShiftsShiftKweek.AsFloat * 2 * 365
+//        val3:= AValue * quResultShiftsShiftKweek.AsFloat * 2 * 270
+//        val3:= AValue * _shiftKweek * _periodKshift
+        val3:= AValue * _periodKshift
       else
-        val3:= AValue * 2 * 365;
+//        val3:= AValue * 2 * 270;
+        val3:= AValue * _periodKshift;
       if (Dataset.FieldByName('RecordNo').AsInteger <> 401) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 402) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and

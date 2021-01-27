@@ -165,7 +165,11 @@ procedure TfmResultTechnologicParams.quResultRockParamsCalcFields(
   DataSet: TDataSet);
 var
   dbl: double;
+  _shiftKweek, _periodKshift: double;
 begin
+  _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
+  _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
+
   if not(Dataset.FieldByName('AValue').IsNull) then
     if Dataset.FieldByName('RecordName').AsInteger = 1 then
     begin
