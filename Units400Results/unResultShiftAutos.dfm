@@ -73,7 +73,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
     Top = 0
     Width = 784
     Height = 710
-    ActivePage = tsResultShiftAutosReport1
+    ActivePage = tsResultShiftAutosReport3
     Align = alClient
     TabOrder = 1
     OnChange = PageControlChange
@@ -475,8 +475,8 @@ object fmResultShiftAutos: TfmResultShiftAutos
       object dbgResultShiftAutoReport3: TDBGridEh
         Left = 0
         Top = 0
-        Width = 629
-        Height = 539
+        Width = 776
+        Height = 682
         Align = alClient
         DataSource = dsResultShiftAutoReport3
         DefaultDrawing = False

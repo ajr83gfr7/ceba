@@ -183,31 +183,47 @@ end;{FormClose}
 
 
 procedure TfmResultShiftBlocks.quResultShiftBlockReport1CalcFields(DataSet: TDataSet);
+var
+  _value: double;
+  _shiftKweek, _periodKshift: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
-  if Dataset.FieldByName('IsChangeable').AsBoolean then
   begin
-    Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*quResultShiftsShiftKweek.AsFloat;
-    Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*quResultShiftsPeriodKshift.AsFloat;
-  end{if}
-  else
-  begin
-    Dataset.FieldByName('Value1').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
-    Dataset.FieldByName('Value2').AsFloat := Dataset.FieldByName('Value').AsFloat*1.0;
-  end;{else}
-end;{quResultShiftBlockReport1CalcFields}
+    _value:= Dataset.FieldByName('Value').AsFloat;
+    _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
+    _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
+    if Dataset.FieldByName('IsChangeable').AsBoolean then
+    begin
+      if (Dataset.FieldByName('RecordNo').AsInteger = 402) then
+      begin
+        Dataset.FieldByName('Value1').AsFloat:= _value;
+        Dataset.FieldByName('Value2').AsFloat := _value * 2 * 365;
+      end
+      else
+      begin
+        Dataset.FieldByName('Value1').AsFloat:= _value * _shiftKweek;
+        Dataset.FieldByName('Value2').AsFloat := _value * _periodKshift;
+      end;
+    end
+    else
+    begin
+      Dataset.FieldByName('Value1').AsFloat := _value * 1.0;
+      Dataset.FieldByName('Value2').AsFloat := _value * 1.0;
+    end;
+  end;
+end;
 procedure TfmResultShiftBlocks.dbgResultShiftBlockEventsDrawFooterCell(
   Sender: TObject; DataCol, Row: Integer; Column: TColumnEh; Rect: TRect;
   State: TGridDrawState);
 begin
   (Sender As TDBGridEh).DefaultDrawFooterCell(Rect, DataCol, Row, Column, State);
-end;{dbgResultShiftBlockEventsDrawFooterCell}
+end;
 
 procedure TfmResultShiftBlocks.quResultShiftsCalcFields(DataSet: TDataSet);
 begin
-  quResultShiftsShiftPlanNaryadTmin.AsFloat :=
+  quResultShiftsShiftPlanNaryadTmin.AsFloat:=
     quResultShiftsShiftTmin.AsFloat - quResultShiftsShiftPeresmenkaTmin.AsFloat;
-end;{quResultShiftsCalcFields}
+end;
 
 procedure TfmResultShiftBlocks.xlDrawPrintSetup(XL,ASheet: Variant; const AIsPortrait: Boolean);
 begin
@@ -514,9 +530,11 @@ begin
         Inc(ARow);
       end;{while}
       quResultShiftBlockReport3.First;
-    end{if}
-    else Inc(ARow);
-    if ARow=3 then Inc(ARow);
+    end
+    else
+      Inc(ARow);
+    if ARow=3 then
+      Inc(ARow);
     ARange := ASheet.Range['A1','E'+IntToStr(ARow-1)];
     ASheet.Range['A1','E2'].HorizontalAlignment := xlCenter;
     ASheet.Range['A1','E2'].VerticalAlignment := xlCenter;
@@ -533,8 +551,8 @@ begin
     xlDrawPrintSetup(XL,ASheet,False);
   finally
     quResultShiftBlockReport3.EnableControls;
-  end;{try}
-end;{xlDrawBlocksReport3}
+  end;
+end;
 procedure TfmResultShiftBlocks.btExcelClick(Sender: TObject);
 var
   XL    : Variant; //Microsoft Excel
@@ -565,20 +583,21 @@ end;{btExcelClick}
 procedure TfmResultShiftBlocks.quResultShiftBlocksCalcFields(DataSet: TDataSet);
 begin
   Dataset.FieldByName('Lm').AsFloat := Dataset.FieldByName('Lsm').AsInteger*0.01;
-  if quResultShiftBlockLengthsTotalLm.AsFloat<=0.0
-  then Dataset.FieldByName('LengthRatio').Clear
-  else Dataset.FieldByName('LengthRatio').AsFloat := 100*0.01*Dataset.FieldByName('Lsm').AsFloat/quResultShiftBlockLengthsTotalLm.AsFloat;
-end;{quResultShiftBlocksCalcFields}
+  if quResultShiftBlockLengthsTotalLm.AsFloat<=0.0 then
+    Dataset.FieldByName('LengthRatio').Clear
+  else
+    Dataset.FieldByName('LengthRatio').AsFloat:= 100 * 0.01 * Dataset.FieldByName('Lsm').AsFloat / quResultShiftBlockLengthsTotalLm.AsFloat;
+end;
 
 
 procedure TfmResultShiftBlocks.dbgResultShiftBlockReport1DrawColumnCell(
   Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
-  if TDBGridEh(Sender).DataSource.Dataset.FieldByName('RecordNo').AsInteger mod 100 = 0
-  then TDBGridEh(Sender).Canvas.Font.Style := [fsBold];
+  if TDBGridEh(Sender).DataSource.Dataset.FieldByName('RecordNo').AsInteger mod 100 = 0 then
+    TDBGridEh(Sender).Canvas.Font.Style := [fsBold];
   TDBGridEh(Sender).DefaultDrawColumnCell(Rect,DataCol,Column,State);
-end;{dbgResultShiftBlockReport1DrawColumnCell}
+end;
 
 procedure TfmResultShiftBlocks.btShiftClick(Sender: TObject);
 begin

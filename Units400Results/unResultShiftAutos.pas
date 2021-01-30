@@ -209,18 +209,46 @@ begin
   end;{case}
 end;{quResultShiftAutoEventsDirectionGetText}
 procedure TfmResultShiftAutos.quResultShiftAutoReport1CalcFields(DataSet: TDataSet);
+var
+  _value: double;
+  _shiftKweek, _periodKshift: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
+  begin
+    _value:= Dataset.FieldByName('Value').AsFloat;
+    _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
+    _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
     if Dataset.FieldByName('IsChangeable').AsBoolean then
     begin
-      Dataset.FieldByName('Value1').AsFloat:= Dataset.FieldByName('Value').AsFloat * quResultShiftsShiftKweek.AsFloat;
-      Dataset.FieldByName('Value2').AsFloat:= Dataset.FieldByName('Value').AsFloat * quResultShiftsPeriodKshift.AsFloat;
+      if (Dataset.FieldByName('RecordNo').AsInteger = 514) then
+      begin
+        Dataset.FieldByName('Value1').AsFloat:= _value;
+        Dataset.FieldByName('Value2').AsFloat := _value * 2 * 365;
+      end
+      else
+      begin
+        Dataset.FieldByName('Value1').AsFloat:= _value * _shiftKweek;
+        Dataset.FieldByName('Value2').AsFloat := _value * _periodKshift;
+      end;
     end
     else
     begin
-      Dataset.FieldByName('Value1').AsFloat:= Dataset.FieldByName('Value').AsFloat * 1.0;
-      Dataset.FieldByName('Value2').AsFloat:= Dataset.FieldByName('Value').AsFloat * 1.0;
+      Dataset.FieldByName('Value1').AsFloat := _value * 1.0;
+      Dataset.FieldByName('Value2').AsFloat := _value * 1.0;
     end;
+  end;
+//begin
+//  if not(Dataset.FieldByName('Value').IsNull) then
+//    if Dataset.FieldByName('IsChangeable').AsBoolean then
+//    begin
+//      Dataset.FieldByName('Value1').AsFloat:= Dataset.FieldByName('Value').AsFloat * quResultShiftsShiftKweek.AsFloat;
+//      Dataset.FieldByName('Value2').AsFloat:= Dataset.FieldByName('Value').AsFloat * quResultShiftsPeriodKshift.AsFloat;
+//    end
+//    else
+//    begin
+//      Dataset.FieldByName('Value1').AsFloat:= Dataset.FieldByName('Value').AsFloat * 1.0;
+//      Dataset.FieldByName('Value2').AsFloat:= Dataset.FieldByName('Value').AsFloat * 1.0;
+//    end;
 end;{quResultShiftAutoReport1CalcFields}
 procedure TfmResultShiftAutos.quResultShiftAutoReport1ValueGetText(Sender: TField; var Text: String; DisplayText: Boolean);
 begin

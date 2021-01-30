@@ -117,25 +117,36 @@ begin
 
     _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
     _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
-
+    //todo: amortzation
     if Dataset.FieldByName('IsChangeable').AsBoolean then
     begin
+      // set value 2
       if (Dataset.FieldByName('RecordNo').AsInteger <> 103) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
+//         (Dataset.FieldByName('RecordNo').AsInteger <> 301) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
-        val2:= AValue * quResultShiftsShiftKweek.AsFloat;
+        val2:= AValue * _shiftKweek
+      else
+        val2:= AValue;
 
+      // set value 3
       if (Dataset.FieldByName('RecordNo').AsInteger <> 103) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 203) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
+         (Dataset.FieldByName('RecordNo').AsInteger <> 301) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 302)then
-//        val3:= AValue * quResultShiftsShiftKweek.AsFloat * 2 * 270
-//        val3:= AValue * _shiftKweek * _periodKshift
         val3:= AValue * _periodKshift
       else
-//        val3:= AValue * 2 * 270;
-        val3:= AValue * _periodKshift;
+        if (Dataset.FieldByName('RecordNo').AsInteger = 103) or
+           (Dataset.FieldByName('RecordNo').AsInteger = 203) or
+           (Dataset.FieldByName('RecordNo').AsInteger = 403) or
+           (Dataset.FieldByName('RecordNo').AsInteger = 301) or
+           (Dataset.FieldByName('RecordNo').AsInteger = 302) then
+          val3:= AValue * _shiftKweek * 2 * 365
+        else
+          val3:= AValue * _periodKshift;
+
       if (Dataset.FieldByName('RecordNo').AsInteger <> 401) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 402) and
          (Dataset.FieldByName('RecordNo').AsInteger <> 403) and
