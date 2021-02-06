@@ -55,6 +55,8 @@ type
       State: TGridDrawState);
     procedure btShiftClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure sgDataDrawCell(Sender: TObject; ACol, ARow: Integer;
+      Rect: TRect; State: TGridDrawState);
   private
     procedure sgView();
     procedure fetchData();
@@ -103,7 +105,7 @@ var
 begin
   form_width:= sgData.Width;
   number_col:= 25;
-  data_cols:= form_width - 25;
+  data_cols:= form_width - 30;
   param_col:= ROUND(data_cols * 0.5);
   value_col:= ROUND((data_cols - param_col - 20) / 3);
 
@@ -112,6 +114,12 @@ begin
   sgData.ColWidths[2]:= value_col;
   sgData.ColWidths[3]:= value_col;
   sgData.ColWidths[4]:= value_col;
+
+  sgData.Cells[0,0]:= '№';
+  sgData.Cells[1,0]:= 'Параметры';
+  sgData.Cells[2,0]:= 'За смену';
+  sgData.Cells[3,0]:= 'За усредн. смену';
+  sgData.Cells[4,0]:= 'За период';
 
   sgData.RowCount:= 28;
 end;
@@ -243,7 +251,11 @@ var
   _cost_amortization: double;
   _cost_addition: double;
   _cost_productivity_m3: double;
+  _cost_productivity_m3_per_week: double;
+  _cost_productivity_m3_per_period: double;
   _cost_productivity_tn: double;
+  _cost_productivity_tn_per_week: double;
+  _cost_productivity_tn_per_period: double;
 
   _cost_expluatation_per_week,
   _cost_amortization_per_week,
@@ -251,6 +263,10 @@ var
   _cost_expluatation_per_period,
   _cost_amortization_per_period,
   _cost_addition_per_period: double;
+
+  _value: double;
+
+  tmp: string;
 begin
   _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
   _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
@@ -265,39 +281,39 @@ begin
         sgData.Cells[0,2]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,2]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_auto_work_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,2]:= floattostr(_cost_auto_work_value);
-        sgData.Cells[3,2]:= floattostr(_cost_auto_work_value * _shiftKweek);
-        sgData.Cells[4,2]:= floattostr(_cost_auto_work_value * _periodKshift);
+        sgData.Cells[2,2]:= FormatFloat(',0.00', _cost_auto_work_value);
+        sgData.Cells[3,2]:= FormatFloat(',0.00', _cost_auto_work_value * _shiftKweek);
+        sgData.Cells[4,2]:= FormatFloat(',0.00', _cost_auto_work_value * _periodKshift);
       end;
       102: begin
         sgData.Cells[0,3]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,3]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_auto_wait_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,3]:= floattostr(_cost_auto_wait_value);
-        sgData.Cells[3,3]:= floattostr(_cost_auto_wait_value * _shiftKweek);
-        sgData.Cells[4,3]:= floattostr(_cost_auto_wait_value * _periodKshift);
+        sgData.Cells[2,3]:= FormatFloat(',0.00', _cost_auto_wait_value);
+        sgData.Cells[3,3]:= FormatFloat(',0.00', _cost_auto_wait_value * _shiftKweek);
+        sgData.Cells[4,3]:= FormatFloat(',0.00', _cost_auto_wait_value * _periodKshift);
       end;
       103: begin
         sgData.Cells[0,4]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,4]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_auto_amort_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,4]:= floattostr(_cost_auto_amort_value);
-        sgData.Cells[3,4]:= floattostr(_cost_auto_amort_value);
-        sgData.Cells[4,4]:= floattostr(_cost_auto_amort_value * _periodKshift);
+        sgData.Cells[2,4]:= FormatFloat(',0.00', _cost_auto_amort_value);
+        sgData.Cells[3,4]:= FormatFloat(',0.00', _cost_auto_amort_value);
+        sgData.Cells[4,4]:= FormatFloat(',0.00', _cost_auto_amort_value * _periodKshift);
       end;
       104: begin
         sgData.Cells[0,5]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,5]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_auto_sum_value:= _cost_auto_work_value + _cost_auto_wait_value + _cost_auto_amort_value;
-        sgData.Cells[2,5]:= floattostr(_cost_auto_sum_value);
+        sgData.Cells[2,5]:= FormatFloat(',0.00', _cost_auto_sum_value);
         _cost_auto_sum_avg_value:= _cost_auto_work_value * _shiftKweek +
                                    _cost_auto_wait_value * _shiftKweek +
                                    _cost_auto_amort_value;
-        sgData.Cells[3,5]:= floattostr(_cost_auto_sum_avg_value);
+        sgData.Cells[3,5]:= FormatFloat(',0.00', _cost_auto_sum_avg_value);
         _cost_auto_sum_period_value:= _cost_auto_work_value * _periodKshift +
                                       _cost_auto_wait_value * _periodKshift +
                                       _cost_auto_amort_value * _periodKshift;
-        sgData.Cells[4,5]:= floattostr(_cost_auto_sum_period_value);
+        sgData.Cells[4,5]:= FormatFloat(',0.00', _cost_auto_sum_period_value);
       end;
 
       200: begin
@@ -308,39 +324,39 @@ begin
         sgData.Cells[0,7]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,7]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_excv_work_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,7]:= floattostr(_cost_excv_work_value);
-        sgData.Cells[3,7]:= floattostr(_cost_excv_work_value * _shiftKweek);
-        sgData.Cells[4,7]:= floattostr(_cost_excv_work_value * _periodKshift);
+        sgData.Cells[2,7]:= FormatFloat(',0.00', _cost_excv_work_value);
+        sgData.Cells[3,7]:= FormatFloat(',0.00', _cost_excv_work_value * _shiftKweek);
+        sgData.Cells[4,7]:= FormatFloat(',0.00', _cost_excv_work_value * _periodKshift);
       end;
       202: begin
         sgData.Cells[0,8]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,8]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_excv_wait_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,8]:= floattostr(_cost_excv_wait_value);
-        sgData.Cells[3,8]:= floattostr(_cost_excv_wait_value * _shiftKweek);
-        sgData.Cells[4,8]:= floattostr(_cost_excv_wait_value * _periodKshift);
+        sgData.Cells[2,8]:= FormatFloat(',0.00', _cost_excv_wait_value);
+        sgData.Cells[3,8]:= FormatFloat(',0.00', _cost_excv_wait_value * _shiftKweek);
+        sgData.Cells[4,8]:= FormatFloat(',0.00', _cost_excv_wait_value * _periodKshift);
       end;
       203: begin
         sgData.Cells[0,9]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,9]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_excv_amort_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,9]:= floattostr(_cost_excv_amort_value);
-        sgData.Cells[3,9]:= floattostr(_cost_excv_amort_value);
-        sgData.Cells[4,9]:= floattostr(_cost_excv_amort_value * _periodKshift);
+        sgData.Cells[2,9]:= FormatFloat(',0.00', _cost_excv_amort_value);
+        sgData.Cells[3,9]:= FormatFloat(',0.00', _cost_excv_amort_value);
+        sgData.Cells[4,9]:= FormatFloat(',0.00', _cost_excv_amort_value * _periodKshift);
       end;
       204: begin
         sgData.Cells[0,10]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,10]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_excv_sum_value:= _cost_excv_work_value + _cost_excv_wait_value + _cost_excv_amort_value;
-        sgData.Cells[2,10]:= floattostr(_cost_excv_sum_value);
+        sgData.Cells[2,10]:= FormatFloat(',0.00', _cost_excv_sum_value);
         _cost_excv_sum_avg_value:= _cost_excv_work_value * _shiftKweek +
                                    _cost_excv_wait_value * _shiftKweek +
                                    _cost_excv_amort_value;
-        sgData.Cells[3,10]:= floattostr(_cost_excv_sum_avg_value);
+        sgData.Cells[3,10]:= FormatFloat(',0.00', _cost_excv_sum_avg_value);
         _cost_excv_sum_period_value:= _cost_excv_work_value * _periodKshift +
                                       _cost_excv_wait_value * _periodKshift +
                                       _cost_excv_amort_value * _periodKshift;
-        sgData.Cells[4,10]:= floattostr(_cost_excv_sum_period_value);
+        sgData.Cells[4,10]:= FormatFloat(',0.00', _cost_excv_sum_period_value);
       end;
 
       300: begin
@@ -351,29 +367,29 @@ begin
         sgData.Cells[0,12]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,12]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_block_support_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,12]:= floattostr(_cost_block_support_value);
-        sgData.Cells[3,12]:= floattostr(_cost_block_support_value * _shiftKweek);
-        sgData.Cells[4,12]:= floattostr(_cost_block_support_value * _periodKshift);
+        sgData.Cells[2,12]:= FormatFloat(',0.00', _cost_block_support_value);
+        sgData.Cells[3,12]:= FormatFloat(',0.00', _cost_block_support_value * _shiftKweek);
+        sgData.Cells[4,12]:= FormatFloat(',0.00', _cost_block_support_value * _periodKshift);
       end;
       302: begin
         sgData.Cells[0,13]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,13]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_block_amort_value:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,13]:= floattostr(_cost_block_amort_value);
-        sgData.Cells[3,13]:= floattostr(_cost_block_amort_value);
-        sgData.Cells[4,13]:= floattostr(_cost_block_amort_value * _periodKshift);
+        sgData.Cells[2,13]:= FormatFloat(',0.00', _cost_block_amort_value);
+        sgData.Cells[3,13]:= FormatFloat(',0.00', _cost_block_amort_value);
+        sgData.Cells[4,13]:= FormatFloat(',0.00', _cost_block_amort_value * _periodKshift);
       end;
       303: begin
         sgData.Cells[0,14]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,14]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_block_sum_value:= _cost_block_support_value + _cost_block_amort_value;
-        sgData.Cells[2,14]:= floattostr(_cost_block_sum_value);
+        sgData.Cells[2,14]:= FormatFloat(',0.00', _cost_block_sum_value);
         _cost_block_sum_avg_value:= _cost_block_support_value * _shiftKweek +
                                     _cost_block_amort_value;
-        sgData.Cells[3,14]:= floattostr(_cost_block_sum_avg_value);
+        sgData.Cells[3,14]:= FormatFloat(',0.00', _cost_block_sum_avg_value);
         _cost_block_sum_period_value:= _cost_block_support_value * _periodKshift +
                                       _cost_block_amort_value * _periodKshift;
-        sgData.Cells[4,14]:= floattostr(_cost_block_sum_period_value);
+        sgData.Cells[4,14]:= FormatFloat(',0.00', _cost_block_sum_period_value);
       end;
 
       400: begin
@@ -384,133 +400,155 @@ begin
         sgData.Cells[0,16]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,16]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_GTK_total:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,16]:= floattostr(_cost_GTK_total);
+        sgData.Cells[2,16]:= FormatFloat(',0.00', _cost_GTK_total);
         _cost_GTK_avg_total:= _cost_expluatation_per_week +
                               _cost_amortization_per_week +
                               _cost_addition_per_week;
-        sgData.Cells[3,16]:= floattostr(_cost_GTK_avg_total);
+        sgData.Cells[3,16]:= FormatFloat(',0.00', _cost_GTK_avg_total);
         _cost_GTK_period_total:= _cost_expluatation_per_period +
                                  _cost_amortization_per_period +
                                  _cost_addition_per_period;
-        sgData.Cells[4,16]:= floattostr(_cost_GTK_period_total);
+        sgData.Cells[4,16]:= FormatFloat(',0.00', _cost_GTK_period_total);
       end;
       402: begin
         sgData.Cells[0,17]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,17]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_expluatation:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,17]:= floattostr(_cost_expluatation);
+        sgData.Cells[2,17]:= FormatFloat(',0.00', _cost_expluatation);
         _cost_expluatation_per_week:= _cost_expluatation * _shiftKweek;
-        sgData.Cells[3,17]:= floattostr(_cost_expluatation_per_week);
+        sgData.Cells[3,17]:= FormatFloat(',0.00', _cost_expluatation_per_week);
         _cost_expluatation_per_period:= _cost_expluatation * _periodKshift;
-        sgData.Cells[4,17]:= floattostr(_cost_expluatation_per_period);
+        sgData.Cells[4,17]:= FormatFloat(',0.00', _cost_expluatation_per_period);
       end;
       403: begin
         sgData.Cells[0,18]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,18]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_amortization:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,18]:= floattostr(_cost_amortization);
+        sgData.Cells[2,18]:= FormatFloat(',0.00', _cost_amortization);
         _cost_amortization_per_week:= _cost_amortization;
-        sgData.Cells[3,18]:= floattostr(_cost_amortization);
+        sgData.Cells[3,18]:= FormatFloat(',0.00', _cost_amortization);
         _cost_amortization_per_period:= _cost_amortization * _periodKshift;
-        sgData.Cells[4,18]:= floattostr(_cost_amortization * _periodKshift);
+        sgData.Cells[4,18]:= FormatFloat(',0.00', _cost_amortization * _periodKshift);
       end;
       404: begin
         sgData.Cells[0,19]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,19]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_addition:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,19]:= floattostr(_cost_addition);
+        sgData.Cells[2,19]:= FormatFloat(',0.00', _cost_addition);
         _cost_addition_per_week:= _cost_addition * _shiftKweek;
-        sgData.Cells[3,19]:= floattostr(_cost_addition_per_week);
+        sgData.Cells[3,19]:= FormatFloat(',0.00', _cost_addition_per_week);
         _cost_addition_per_period:= _cost_addition * _periodKshift;
-        sgData.Cells[4,19]:= floattostr(_cost_addition_per_period);
+        sgData.Cells[4,19]:= FormatFloat(',0.00', _cost_addition_per_period);
       end;
       405: begin
         sgData.Cells[0,20]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,20]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,20]:= floattostr(_cost_productivity_m3);
-        sgData.Cells[3,20]:= floattostr(_cost_productivity_m3 * _shiftKweek);
-        sgData.Cells[4,20]:= floattostr(_cost_productivity_m3 * _periodKshift);
+        sgData.Cells[2,20]:= FormatFloat(',0.00', _cost_productivity_m3);
+        _cost_productivity_m3_per_week:= _cost_productivity_m3 * _shiftKweek;
+        sgData.Cells[3,20]:= FormatFloat(',0.00', _cost_productivity_m3_per_week);
+        _cost_productivity_m3_per_period:= _cost_productivity_m3 * _periodKshift;
+        sgData.Cells[4,20]:= FormatFloat(',0.00', _cost_productivity_m3_per_period);
       end;
       406: begin
         sgData.Cells[0,21]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,21]:= quResultEconomReports.FieldByName('Name').AsString;
         _cost_productivity_tn:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,21]:= floattostr(_cost_productivity_tn);
-        sgData.Cells[3,21]:= floattostr(_cost_productivity_tn * _shiftKweek);
-        sgData.Cells[4,21]:= floattostr(_cost_productivity_tn * _periodKshift);
+        sgData.Cells[2,21]:= FormatFloat(',0.00', _cost_productivity_tn);
+        _cost_productivity_tn_per_week:= _cost_productivity_tn * _shiftKweek;
+        sgData.Cells[3,21]:= FormatFloat(',0.00', _cost_productivity_tn_per_week);
+        _cost_productivity_tn_per_period:= _cost_productivity_tn * _periodKshift;
+        sgData.Cells[4,21]:= FormatFloat(',0.00', _cost_productivity_tn_per_period);
       end;
       407: begin
         sgData.Cells[0,22]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,22]:= quResultEconomReports.FieldByName('Name').AsString;
-        _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,22]:= floattostr(_cost_productivity_m3);
-        sgData.Cells[3,22]:= floattostr(_cost_productivity_m3 * _shiftKweek);
-        sgData.Cells[4,22]:= floattostr(_cost_productivity_m3 * _periodKshift);
+        _value:= quResultEconomReports.FieldByName('Value').AsFloat;
+        sgData.Cells[2,22]:= FormatFloat(',0.00', _value);
+        sgData.Cells[3,22]:= FormatFloat(',0.00', _value * _shiftKweek);
+        sgData.Cells[4,22]:= FormatFloat(',0.00', _value * _periodKshift);
       end;
       408: begin
         sgData.Cells[0,23]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,23]:= quResultEconomReports.FieldByName('Name').AsString;
-        _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,23]:= floattostr(_cost_productivity_m3);
-        sgData.Cells[3,23]:= floattostr(_cost_productivity_m3 * _shiftKweek);
-        sgData.Cells[4,23]:= floattostr(_cost_productivity_m3 * _periodKshift);
+        _value:= quResultEconomReports.FieldByName('Value').AsFloat;
+        sgData.Cells[2,23]:= FormatFloat(',0.00', _value);
+        sgData.Cells[3,23]:= FormatFloat(',0.00', _value * _shiftKweek);
+        sgData.Cells[4,23]:= FormatFloat(',0.00', _value * _periodKshift);
       end;
       409: begin
         sgData.Cells[0,24]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,24]:= quResultEconomReports.FieldByName('Name').AsString;
-        _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,24]:= floattostr(_cost_productivity_m3);
-        sgData.Cells[3,24]:= floattostr(_cost_productivity_m3 * _shiftKweek);
-        sgData.Cells[4,24]:= floattostr(_cost_productivity_m3 * _periodKshift);
+        _value:= quResultEconomReports.FieldByName('Value').AsFloat;
+        sgData.Cells[2,24]:= FormatFloat(',0.00', _value);
+        sgData.Cells[3,24]:= FormatFloat(',0.00', _value);
+        sgData.Cells[4,24]:= FormatFloat(',0.00', _value * _periodKshift);
       end;
       410: begin
         sgData.Cells[0,25]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,25]:= quResultEconomReports.FieldByName('Name').AsString;
-        _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,25]:= floattostr(_cost_productivity_m3);
-        sgData.Cells[3,25]:= floattostr(_cost_productivity_m3 * _shiftKweek);
-        sgData.Cells[4,25]:= floattostr(_cost_productivity_m3 * _periodKshift);
+        _value:= quResultEconomReports.FieldByName('Value').AsFloat;
+        sgData.Cells[2,25]:= FormatFloat(',0.00', _value);
+        sgData.Cells[3,25]:= FormatFloat(',0.00', _value);
+        sgData.Cells[4,25]:= FormatFloat(',0.00', _value * _periodKshift);
       end;
       411: begin
         sgData.Cells[0,26]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,26]:= quResultEconomReports.FieldByName('Name').AsString;
-        _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,26]:= floattostr(_cost_GTK_total * 1000 / _cost_productivity_m3);
-        sgData.Cells[3,26]:= floattostr(_cost_GTK_avg_total * 1000 / (_cost_productivity_m3 * _shiftKweek));
-        sgData.Cells[4,26]:= floattostr(_cost_GTK_period_total * 1000 / (_cost_productivity_m3 * _periodKshift));
+        _value:= quResultEconomReports.FieldByName('Value').AsFloat;
+//        sgData.Cells[2,26]:= FormatFloat(',0.00', _cost_GTK_total * 1000 / _cost_productivity_m3);
+//        sgData.Cells[3,26]:= FormatFloat(',0.00', _cost_GTK_avg_total * 1000 / (_cost_productivity_m3 * _shiftKweek));
+//        sgData.Cells[4,26]:= FormatFloat(',0.00', _cost_GTK_period_total * 1000 / (_cost_productivity_m3 * _periodKshift));
       end;
       412: begin
         sgData.Cells[0,27]:= quResultEconomReports.FieldByName('RecordName').AsString;
         sgData.Cells[1,27]:= quResultEconomReports.FieldByName('Name').AsString;
-        _cost_productivity_m3:= quResultEconomReports.FieldByName('Value').AsFloat;
-        sgData.Cells[2,27]:= floattostr(_cost_GTK_total * 1000 / _cost_productivity_tn);
-        sgData.Cells[3,27]:= floattostr(_cost_GTK_avg_total * 1000 / (_cost_productivity_tn * _shiftKweek));
-        sgData.Cells[4,27]:= floattostr(_cost_GTK_period_total * 1000 / (_cost_productivity_tn * _periodKshift));
+        _value:= quResultEconomReports.FieldByName('Value').AsFloat;
+//        sgData.Cells[2,27]:= FormatFloat(',0.00', _cost_GTK_total * 1000 / _cost_productivity_tn);
+//        sgData.Cells[3,27]:= FormatFloat(',0.00', _cost_GTK_avg_total * 1000 / (_cost_productivity_tn * _shiftKweek));
+//        sgData.Cells[4,27]:= FormatFloat(',0.00', _cost_GTK_period_total * 1000 / (_cost_productivity_tn * _periodKshift));
       end;
     end;
     quResultEconomReports.Next;
   end;
 
   begin
-    sgData.Cells[2,16]:= floattostr(_cost_GTK_total);
+    sgData.Cells[2,16]:= FormatFloat(',0.00', _cost_GTK_total);
     _cost_GTK_avg_total:= _cost_expluatation_per_week +
                           _cost_amortization_per_week +
                           _cost_addition_per_week;
-    sgData.Cells[3,16]:= floattostr(_cost_GTK_avg_total);
+    sgData.Cells[3,16]:= FormatFloat(',0.00', _cost_GTK_avg_total);
     _cost_GTK_period_total:= _cost_expluatation_per_period +
                              _cost_amortization_per_period +
                              _cost_addition_per_period;
-    sgData.Cells[4,16]:= floattostr(_cost_GTK_period_total);
+    sgData.Cells[4,16]:= FormatFloat(',0.00', _cost_GTK_period_total);
 
-    sgData.Cells[2,26]:= floattostr(_cost_GTK_total * 1000 / _cost_productivity_m3);
-    sgData.Cells[3,26]:= floattostr(_cost_GTK_avg_total * 1000 / (_cost_productivity_m3 * _shiftKweek));
-    sgData.Cells[4,26]:= floattostr(_cost_GTK_period_total * 1000 / (_cost_productivity_m3 * _periodKshift));
+    sgData.Cells[2,26]:= FormatFloat(',0.00', _cost_GTK_total * 1000 / _cost_productivity_m3);
+    sgData.Cells[3,26]:= FormatFloat(',0.00', _cost_GTK_avg_total * 1000 / (_cost_productivity_m3 * _shiftKweek));
+    sgData.Cells[4,26]:= FormatFloat(',0.00', _cost_GTK_period_total * 1000 / (_cost_productivity_m3 * _periodKshift));
 
-    sgData.Cells[2,27]:= floattostr(_cost_GTK_total * 1000 / _cost_productivity_tn);
-    sgData.Cells[3,27]:= floattostr(_cost_GTK_avg_total * 1000 / (_cost_productivity_tn * _shiftKweek));
-    sgData.Cells[4,27]:= floattostr(_cost_GTK_period_total * 1000 / (_cost_productivity_tn * _periodKshift));
+    sgData.Cells[2,27]:= FormatFloat(',0.00', _cost_GTK_total * 1000 / _cost_productivity_tn);
+    sgData.Cells[3,27]:= FormatFloat(',0.00', _cost_GTK_avg_total * 1000 / (_cost_productivity_tn * _shiftKweek));
+    sgData.Cells[4,27]:= FormatFloat(',0.00', _cost_GTK_period_total * 1000 / (_cost_productivity_tn * _periodKshift));
   end;
+
+end;
+
+procedure TfmResultEconomParams.sgDataDrawCell(Sender: TObject; ACol,
+  ARow: Integer; Rect: TRect; State: TGridDrawState);
+var
+  s: string;
+  savedAlign: word;
+begin
+  if ARow = 0 then
+  begin
+    s:= sgData.Cells[ACol, ARow];
+    savedAlign:= SetTextAlign(sgData.Canvas.Handle, TA_CENTER);
+    sgData.Canvas.TextRect(Rect, Rect.Left + (Rect.Right - Rect.Left) div 2, Rect.Top + 2, s);
+    SetTextAlign(sgData.Canvas.Handle, savedAlign);
+  end
+  else
+
 
 end;
 
