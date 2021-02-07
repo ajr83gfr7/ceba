@@ -299,7 +299,7 @@ begin
         _cost_auto_amort_value:= quResultEconomReports.FieldByName('Value').AsFloat;
         sgData.Cells[2,4]:= FormatFloat(',0.00', _cost_auto_amort_value);
         sgData.Cells[3,4]:= FormatFloat(',0.00', _cost_auto_amort_value);
-        sgData.Cells[4,4]:= FormatFloat(',0.00', _cost_auto_amort_value * _periodKshift);
+        sgData.Cells[4,4]:= FormatFloat(',0.00', _cost_auto_amort_value * 2 * 365);
       end;
       104: begin
         sgData.Cells[0,5]:= quResultEconomReports.FieldByName('RecordName').AsString;
@@ -342,7 +342,7 @@ begin
         _cost_excv_amort_value:= quResultEconomReports.FieldByName('Value').AsFloat;
         sgData.Cells[2,9]:= FormatFloat(',0.00', _cost_excv_amort_value);
         sgData.Cells[3,9]:= FormatFloat(',0.00', _cost_excv_amort_value);
-        sgData.Cells[4,9]:= FormatFloat(',0.00', _cost_excv_amort_value * _periodKshift);
+        sgData.Cells[4,9]:= FormatFloat(',0.00', _cost_excv_amort_value * 2 * 365);
       end;
       204: begin
         sgData.Cells[0,10]:= quResultEconomReports.FieldByName('RecordName').AsString;
@@ -377,7 +377,7 @@ begin
         _cost_block_amort_value:= quResultEconomReports.FieldByName('Value').AsFloat;
         sgData.Cells[2,13]:= FormatFloat(',0.00', _cost_block_amort_value);
         sgData.Cells[3,13]:= FormatFloat(',0.00', _cost_block_amort_value);
-        sgData.Cells[4,13]:= FormatFloat(',0.00', _cost_block_amort_value * _periodKshift);
+        sgData.Cells[4,13]:= FormatFloat(',0.00', _cost_block_amort_value * 2 * 365);
       end;
       303: begin
         sgData.Cells[0,14]:= quResultEconomReports.FieldByName('RecordName').AsString;
@@ -427,8 +427,8 @@ begin
         sgData.Cells[2,18]:= FormatFloat(',0.00', _cost_amortization);
         _cost_amortization_per_week:= _cost_amortization;
         sgData.Cells[3,18]:= FormatFloat(',0.00', _cost_amortization);
-        _cost_amortization_per_period:= _cost_amortization * _periodKshift;
-        sgData.Cells[4,18]:= FormatFloat(',0.00', _cost_amortization * _periodKshift);
+        _cost_amortization_per_period:= _cost_amortization * 2 * 365;
+        sgData.Cells[4,18]:= FormatFloat(',0.00', _cost_amortization_per_period);
       end;
       404: begin
         sgData.Cells[0,19]:= quResultEconomReports.FieldByName('RecordName').AsString;
