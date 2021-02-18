@@ -183,9 +183,22 @@ end;{FormClose}
 
 
 procedure TfmResultShiftBlocks.quResultShiftBlockReport1CalcFields(DataSet: TDataSet);
+const
+  SUM_COSTS_OF_BLOKS = 'SELECT ' +
+                       ' WorkValue.Value as WorkCost, ' +
+                       ' AmorValue.Value as AmorCost ' +
+                       'FROM ' +
+                       ' (SELECT Value FROM _ResultShiftBlockReports WHERE Kind=3 AND RecordNo=401) as WorkValue, ' +
+                       ' (SELECT Value FROM _ResultShiftBlockReports WHERE Kind=3 AND RecordNo=402) as AmorValue';
 var
   _value: double;
   _shiftKweek, _periodKshift: double;
+  //
+  _qry: TADOQuery;
+  _WorkCost, _AmorCost: double;
+  _WorkCost_avg, _AmorCost_avg: double;
+  _WorkCost_period, _AmorCost_period: double;
+  _Cost_sum, _Cost_arg_sum, _Cost_period_sum: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
   begin
@@ -199,10 +212,38 @@ begin
         Dataset.FieldByName('Value1').AsFloat:= _value;
         Dataset.FieldByName('Value2').AsFloat := _value * 2 * 365;
       end
+      else if (Dataset.FieldByName('RecordNo').AsInteger = 404) then
+      begin
+        _qry:= TADOQuery.Create(nil);
+        _qry.Connection:= fmDM.ADOConnection;
+        _qry.SQL.Text:= SUM_COSTS_OF_BLOKS;
+        _qry.Open;
+        try
+          _WorkCost:= _qry.FieldByName('WorkCost').AsFloat;
+          _AmorCost:= _qry.FieldByName('AmorCost').AsFloat;
+          //
+          _WorkCost_avg:= _WorkCost * _shiftKweek;
+          _AmorCost_avg:= _AmorCost;
+          //
+          _WorkCost_period:= _WorkCost_avg * _periodKshift;
+          _AmorCost_period:= _AmorCost_avg * 2 * 365;
+          //
+          _Cost_sum:= _WorkCost + _AmorCost;
+          _Cost_arg_sum:= _WorkCost_avg + _AmorCost_avg;
+          _Cost_period_sum:= _WorkCost_period + _AmorCost_period;
+          //
+          Dataset.FieldByName('Value').AsFloat:= _Cost_sum;
+          Dataset.FieldByName('Value1').AsFloat:= _Cost_arg_sum;
+          Dataset.FieldByName('Value2').AsFloat:= _Cost_period_sum;
+        finally
+          _qry.Close;
+          _qry.Free;
+        end;
+      end
       else
       begin
         Dataset.FieldByName('Value1').AsFloat:= _value * _shiftKweek;
-        Dataset.FieldByName('Value2').AsFloat := _value * _periodKshift;
+        Dataset.FieldByName('Value2').AsFloat := (_value * _shiftKweek) * _periodKshift;
       end;
     end
     else

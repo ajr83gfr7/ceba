@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls, Mask, DBCtrlsEh, DBLookupEh, DB, ADODB,
-  Grids, DBGridEh, DBSumLst, ComCtrls, Excel2000;//, GridsEh;
+  Grids, DBGridEh, DBSumLst, ComCtrls, Excel2000;
 
 type
   TfmResultShiftAutos = class(TForm)
@@ -136,7 +136,7 @@ type
     procedure xlDrawAutosReport2(XL,ASheet: Variant);
     procedure xlDrawAutosReport3(XL,ASheet: Variant);
   public
-  end;{TfmResultShiftAutos}
+  end;
 
 var
   fmResultShiftAutos: TfmResultShiftAutos;
@@ -161,8 +161,8 @@ begin
     fmResultShiftAutos.ShowModal;
   finally
     fmResultShiftAutos.Free;
-  end;{try}
-end;{esaShowResultShiftAutosDlg}
+  end;
+end;
 procedure TfmResultShiftAutos.FormCreate(Sender: TObject);
 begin
   PageControl.ActivePageIndex := 0;
@@ -173,7 +173,7 @@ begin
   quResultShiftAutoReport2.Open;
   quResultShiftAutoReport3.Open;
   Index_of_First:= quResultShiftAutosId_ResultShiftAuto.AsInteger;
-end;{FormCreate}
+end;
 
 procedure TfmResultShiftAutos.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -183,7 +183,7 @@ begin
   quResultShiftAutoModels.Close;
   quResultShiftAutos.Close;
   quResultShifts.Close;
-end;{FormClose}
+end;
 
 
 procedure TfmResultShiftAutos.quResultShiftAutoEventsKindGetText(Sender: TField; var Text: String; DisplayText: Boolean);
@@ -207,11 +207,26 @@ begin
     2: Text := 'Порожняк.';
     3: Text := 'Нулевое';
   end;{case}
-end;{quResultShiftAutoEventsDirectionGetText}
+end;
 procedure TfmResultShiftAutos.quResultShiftAutoReport1CalcFields(DataSet: TDataSet);
+const
+  SUM_COSTS_OF_AUTOS = 'SELECT ' +
+                       ' WorkValue.Value as WorkCost, ' +
+                       ' WaitValue.Value as WaitCost, ' +
+                       ' AmorValue.Value as AmorCost ' +
+                       'FROM ' +
+                       ' (SELECT Value FROM _ResultShiftAutoReports WHERE Kind=3 AND RecordNo=501) as WorkValue, ' +
+                       ' (SELECT Value FROM _ResultShiftAutoReports WHERE Kind=3 AND RecordNo=508) as WaitValue, ' +
+                       ' (SELECT Value FROM _ResultShiftAutoReports WHERE Kind=3 AND RecordNo=514) as AmorValue';
 var
   _value: double;
   _shiftKweek, _periodKshift: double;
+  //
+  _qry: TADOQuery;
+  _WorkCost, _WaitCost, _AmorCost: double;
+  _WorkCost_avg, _WaitCost_avg, _AmorCost_avg: double;
+  _WorkCost_period, _WaitCost_period, _AmorCost_period: double;
+  _Cost_sum, _Cost_arg_sum, _Cost_period_sum: double;
 begin
   if not(Dataset.FieldByName('Value').IsNull) then
   begin
@@ -225,10 +240,41 @@ begin
         Dataset.FieldByName('Value1').AsFloat:= _value;
         Dataset.FieldByName('Value2').AsFloat := _value * 2 * 365;
       end
+      else if (Dataset.FieldByName('RecordNo').AsInteger = 515) then
+      begin
+        _qry:= TADOQuery.Create(nil);
+        _qry.Connection:= fmDM.ADOConnection;
+        _qry.SQL.Text:= SUM_COSTS_OF_AUTOS;
+        _qry.Open;
+        try
+          _WorkCost:= _qry.FieldByName('WorkCost').AsFloat;
+          _WaitCost:= _qry.FieldByName('WaitCost').AsFloat;
+          _AmorCost:= _qry.FieldByName('AmorCost').AsFloat;
+          //
+          _WorkCost_avg:= _WorkCost * _shiftKweek;
+          _WaitCost_avg:= _WaitCost * _shiftKweek;
+          _AmorCost_avg:= _AmorCost;
+          //
+          _WorkCost_period:= _WorkCost_avg * _periodKshift;
+          _WaitCost_period:= _WaitCost_avg * _periodKshift;
+          _AmorCost_period:= _AmorCost_avg * 2 * 365;
+          //
+          _Cost_sum:= _WorkCost + _WaitCost + _AmorCost;
+          _Cost_arg_sum:= _WorkCost_avg + _WaitCost_avg + _AmorCost_avg;
+          _Cost_period_sum:= _WorkCost_period + _WaitCost_period + _AmorCost_period;
+          //
+          Dataset.FieldByName('Value').AsFloat:= _Cost_sum;
+          Dataset.FieldByName('Value1').AsFloat:= _Cost_arg_sum;
+          Dataset.FieldByName('Value2').AsFloat:= _Cost_period_sum;
+        finally
+          _qry.Close;
+          _qry.Free;
+        end;
+      end
       else
       begin
         Dataset.FieldByName('Value1').AsFloat:= _value * _shiftKweek;
-        Dataset.FieldByName('Value2').AsFloat := _value * _periodKshift;
+        Dataset.FieldByName('Value2').AsFloat := _value * _shiftKweek * _periodKshift;
       end;
     end
     else
@@ -526,8 +572,8 @@ begin
     xlDrawPrintSetup(XL,ASheet,False);
   finally
     quResultShiftAutoReport3.EnableControls;
-  end;{try}
-end;{xlDrawAutosReport3}
+  end;
+end;
 procedure TfmResultShiftAutos.btExcelClick(Sender: TObject);
 var
   XL    : Variant; //Microsoft Excel
@@ -588,7 +634,7 @@ begin
     {SEE added code}
     fmResultAutoSpeeds.Caption := 'Скорость, время движения автосамосвала № '+
     quResultShiftAutosDumpNo.AsString+' по автотрассе';
-    fmResultAutoSpeeds.LoadFromFile(quResultShiftAutosId_ResultShiftAuto.AsInteger-Index_of_First);
+    fmResultAutoSpeeds.LoadFromFile(quResultShiftAutosId_ResultShiftAuto.AsInteger - Index_of_First);
 
     fmResultAutoSpeeds.ShowModal;
   finally
@@ -603,12 +649,4 @@ end;
 
 end.
 ////////////////////////////////////
-
-procedure TfmResultAutos.btSpeedTimeClick(Sender: TObject);
-begin
-
-end;{btSpeedTimeClick}
-
-procedure TfmResultAutos.TabControlChange(Sender: TObject);
-begin
 

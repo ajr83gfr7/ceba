@@ -559,16 +559,23 @@ var
   s: string;
   savedAlign: word;
 begin
-  if ARow = 0 then
+  if (ARow = 0) or (ACol <> 1) then
   begin
     s:= sgData.Cells[ACol, ARow];
     savedAlign:= SetTextAlign(sgData.Canvas.Handle, TA_CENTER);
+
     sgData.Canvas.TextRect(Rect, Rect.Left + (Rect.Right - Rect.Left) div 2, Rect.Top + 2, s);
     SetTextAlign(sgData.Canvas.Handle, savedAlign);
-  end
-  else
+  end;
+  if (ARow = 0) or (ARow = 1) or (ARow = 6) or (ARow = 11) or (ARow = 15) then
+  begin
+    s:= sgData.Cells[ACol, ARow];
+    savedAlign:= SetTextAlign(sgData.Canvas.Handle, TA_CENTER);
 
-
+    sgData.Canvas.Font.Style:= [fsBold];
+    sgData.Canvas.TextRect(Rect, Rect.Left + (Rect.Right - Rect.Left) div 2, Rect.Top + 2, s);
+    SetTextAlign(sgData.Canvas.Handle, savedAlign);
+  end;
 end;
 
 end.

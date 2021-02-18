@@ -349,7 +349,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
       object Splitter2: TSplitter
         Left = 0
         Top = 129
-        Width = 629
+        Width = 776
         Height = 5
         Cursor = crVSplit
         Align = alTop
@@ -357,7 +357,7 @@ object fmResultShiftAutos: TfmResultShiftAutos
       object dbgAutos2: TDBGridEh
         Left = 0
         Top = 0
-        Width = 629
+        Width = 776
         Height = 129
         Align = alTop
         DataSource = dsResultShiftAutoModels
@@ -399,8 +399,8 @@ object fmResultShiftAutos: TfmResultShiftAutos
       object dbgResultShiftAutoReport2: TDBGridEh
         Left = 0
         Top = 134
-        Width = 629
-        Height = 405
+        Width = 776
+        Height = 548
         Align = alClient
         DataSource = dsResultShiftAutoReport2
         DefaultDrawing = False
