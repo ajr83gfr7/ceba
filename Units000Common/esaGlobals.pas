@@ -450,6 +450,7 @@ begin
   Result.Kshift              := 0.0;
   Result.AnimationTsec       := 0;
 end;{esaPeriod}
+// todo: kshift
 function esaPeriod(const ATday,AAnimationTsec,AShiftTmin: Cardinal; const AShiftKweek: Single): ResaPeriod;
 begin
   Result.Tday          := ATday;
@@ -457,7 +458,7 @@ begin
   if AShiftTmin>0
   then Result.Kshift   := (Result.Tday/7 * 7*24*60/AShiftTmin * AShiftKweek)
   else Result.Kshift   := 0.0;
-end;{esaPeriod}
+end;
 //Shift
 function esaShift(): ResaShift;
 begin
@@ -476,6 +477,7 @@ begin
   Result.Coef2 := 0.0;
   Result.Coef3 := 0;
 end;{esaShiftTimeUsing}
+// todo: kweek
 function esaShiftTimeUsing(const ACoef0,ACoef1,ACoef2: Single; const ACoef3: TesaShiftExplosion; const AShiftTmin: Cardinal): ResaShiftTimeUsing;
 var
   AShiftsCountInWeek: Cardinal;//Количество рабочих смен в неделе

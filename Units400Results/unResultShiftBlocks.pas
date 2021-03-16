@@ -225,8 +225,8 @@ begin
           _WorkCost_avg:= _WorkCost * _shiftKweek;
           _AmorCost_avg:= _AmorCost;
           //
-          _WorkCost_period:= _WorkCost_avg * _periodKshift;
-          _AmorCost_period:= _AmorCost_avg * 2 * 365;
+          _WorkCost_period:= _WorkCost * _periodKshift;
+          _AmorCost_period:= _AmorCost * 2 * 365;
           //
           _Cost_sum:= _WorkCost + _AmorCost;
           _Cost_arg_sum:= _WorkCost_avg + _AmorCost_avg;
@@ -243,7 +243,7 @@ begin
       else
       begin
         Dataset.FieldByName('Value1').AsFloat:= _value * _shiftKweek;
-        Dataset.FieldByName('Value2').AsFloat := (_value * _shiftKweek) * _periodKshift;
+        Dataset.FieldByName('Value2').AsFloat := _value * _periodKshift;
       end;
     end
     else

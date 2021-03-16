@@ -9769,10 +9769,10 @@ begin
       _Add(qu, '4',  CesaEconomExpensesCtg,(AExpensesCtg) / 1E3);
       _Add(qu, '5',  CesaEconomRockVm3,ARockVolume.Vm3);
       _Add(qu, '6',  CesaEconomRockQtn,ARockVolume.Qtn);
-      _Add(qu, '7',  CesaEconomUdExpluationCtgm3,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2,ARockVolume.Vm3);
-      _Add(qu, '8',  CesaEconomUdExpluationCtgtn ,AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2,ARockVolume.Qtn);
-      _Add(qu, '9',  CesaEconomUdAmortizationCtgm3,AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2,ARockVolume.Vm3);
-      _Add(qu,'10',  CesaEconomUdAmortizationCtgtn,AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2,ARockVolume.Qtn);
+      _Add(qu, '7',  CesaEconomUdExpluationCtgm3, AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2, ARockVolume.Vm3);
+      _Add(qu, '8',  CesaEconomUdExpluationCtgtn, AWorkCtg0+AWaitingCtg0+AWorkCtg1+AWaitingCtg1+ARepairCtg2, ARockVolume.Qtn);
+      _Add(qu, '9',  CesaEconomUdAmortizationCtgm3, AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2, ARockVolume.Vm3);
+      _Add(qu,'10',  CesaEconomUdAmortizationCtgtn, AAmortizationCtg0+AAmortizationCtg1+AAmortizationCtg2, ARockVolume.Qtn);
       _Add(qu,'11',  CesaEconomUdCtgm3,ACtg0+ACtg1+ACtg2+AExpensesCtg,ARockVolume.Vm3);
       _Add(qu,'12',  CesaEconomUdCtgtn,ACtg0+ACtg1+ACtg2+AExpensesCtg,ARockVolume.Qtn);
       qu.Close;

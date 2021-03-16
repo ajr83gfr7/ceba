@@ -231,9 +231,9 @@ begin
           _WaitCost_avg:= _WaitCost * _shiftKweek;
           _AmorCost_avg:= _AmorCost;
           //
-          _WorkCost_period:= _WorkCost_avg * _periodKshift;
-          _WaitCost_period:= _WaitCost_avg * _periodKshift;
-          _AmorCost_period:= _AmorCost_avg * 2 * 365;
+          _WorkCost_period:= _WorkCost * _periodKshift;
+          _WaitCost_period:= _WaitCost * _periodKshift;
+          _AmorCost_period:= _AmorCost * 2 * 365;
           //
           _Cost_sum:= _WorkCost + _WaitCost + _AmorCost;
           _Cost_arg_sum:= _WorkCost_avg + _WaitCost_avg + _AmorCost_avg;
