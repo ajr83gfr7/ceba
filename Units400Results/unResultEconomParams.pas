@@ -4,7 +4,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls, Mask, DBCtrls, DB, ADODB, ComCtrls, Grids,
-  DBGridEh;//, GridsEh;
+  DBGridEh,//, GridsEh;
+  unResultEconomParams_Excel;
 
 type
   TfmResultEconomParams = class(TForm)
@@ -57,6 +58,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure sgDataDrawCell(Sender: TObject; ACol, ARow: Integer;
       Rect: TRect; State: TGridDrawState);
+    procedure btExcelClick(Sender: TObject);
+    function ToExcel(sg: Variant; colcount, rowcount: integer): boolean;
   private
     procedure sgView();
     procedure fetchData();
@@ -576,6 +579,65 @@ begin
     sgData.Canvas.TextRect(Rect, Rect.Left + (Rect.Right - Rect.Left) div 2, Rect.Top + 2, s);
     SetTextAlign(sgData.Canvas.Handle, savedAlign);
   end;
+end;
+
+procedure TfmResultEconomParams.btExcelClick(Sender: TObject);
+var
+  _colcount: integer;
+  _rowcount: integer;
+  _isSaved: boolean;
+  data_to_excel: Variant;
+  i, j: integer;
+begin
+  with sgData do
+  begin
+    _colcount:= ColCount;
+    _rowcount:= RowCount;
+
+    data_to_excel:= VarArrayCreate([1, _rowcount, 1, _colcount],varVariant);
+    for i:= 1 to VarArrayHighBound(data_to_excel, 1) do
+      for j:= 1 to VarArrayHighBound(data_to_excel, 2) do
+        data_to_excel[i, j]:= Cells[j-1, i-1];
+  end;
+
+  _isSaved:= ToExcel(data_to_excel, _colcount, _rowcount);
+  if _isSaved then
+    MessageBox(0, PAnsiChar(SAVE_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK)
+  else
+    MessageBox(0, PAnsiChar(SAVE_IS_WARNING), PAnsiChar(APP_NAME), MB_OK);
+end;
+
+function TfmResultEconomParams.ToExcel(sg: Variant; colcount,
+  rowcount: integer): boolean;
+var
+  doc: TExcelDocEconomParams;
+  _filename: string;
+  saver: TSaveDialog;
+begin
+  Result:= false;
+
+  saver:= TSaveDialog.Create(nil);
+  with saver do
+    try
+      InitialDir := GetCurrentDir;
+      Filter := '*.xls|*.xlsx';
+      DefaultExt := 'xls';
+      FilterIndex := 1;
+      if Execute then
+        _filename:= FileName;
+    finally
+      Destroy;
+    end;
+
+  doc:= TExcelDocEconomParams.Create();
+  with doc do
+    try
+      SetData(sg, colcount, rowcount);
+      Result:= SaveWorkBook(_filename, 1);
+    finally
+      Destroy;
+    end;
+
 end;
 
 end.
