@@ -73,7 +73,7 @@ procedure esaShowResultEconomParamsDlg();
 implementation
 
 uses unDM, unResultEconomParamsDistributation, esaConstants, ComObj, Excel2000,
-  unResultShift;
+  unResultShift, unExcel;
 
 {$R *.dfm}
 
@@ -278,11 +278,15 @@ var
   _cost_udel,
   _cost_udel_avg,
   _cost_udel_period: double;
+
+  _is_empty: boolean;
 begin
   _shiftKweek:= quResultShiftsShiftKweek.AsFloat;
   _periodKshift:= quResultShiftsPeriodKshift.AsFloat;
+  _is_empty:= true;
   while not (quResultEconomReports.Eof) do
   begin
+    _is_empty:= false;
     case quResultEconomReports.FieldByName('RecordNo').AsInteger of
       100: begin
         sgData.Cells[0,1]:= quResultEconomReports.FieldByName('RecordName').AsString;
@@ -525,6 +529,7 @@ begin
     quResultEconomReports.Next;
   end;
 
+  if not _is_empty then
   begin
     _cost_GTK_total:= _cost_expluatation +
                       _cost_amortization +
@@ -552,7 +557,9 @@ begin
     sgData.Cells[2,27]:= FormatFloat(',0.00', _cost_udel);
     sgData.Cells[3,27]:= FormatFloat(',0.00', _cost_udel_avg);
     sgData.Cells[4,27]:= FormatFloat(',0.00', _cost_udel_period);
-  end;
+  end
+  else
+    sgData.RowCount:= 1;
 
 end;
 
@@ -585,7 +592,6 @@ procedure TfmResultEconomParams.btExcelClick(Sender: TObject);
 var
   _colcount: integer;
   _rowcount: integer;
-  _isSaved: boolean;
   data_to_excel: Variant;
   i, j: integer;
 begin
@@ -600,11 +606,7 @@ begin
         data_to_excel[i, j]:= Cells[j-1, i-1];
   end;
 
-  _isSaved:= ToExcel(data_to_excel, _colcount, _rowcount);
-  if _isSaved then
-    MessageBox(0, PAnsiChar(SAVE_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK)
-  else
-    MessageBox(0, PAnsiChar(SAVE_IS_WARNING), PAnsiChar(APP_NAME), MB_OK);
+  ToExcel(data_to_excel, _colcount, _rowcount);
 end;
 
 function TfmResultEconomParams.ToExcel(sg: Variant; colcount,
@@ -635,7 +637,14 @@ begin
       SetData(sg, colcount, rowcount);
       Result:= SaveWorkBook(_filename, 1);
     finally
-      Destroy;
+      if Result then
+        MessageBox(0, PAnsiChar(SAVE_IS_SUCCESS), PAnsiChar(APP_NAME), MB_OK)
+      else
+        MessageBox(0, PAnsiChar(SAVE_IS_WARNING), PAnsiChar(APP_NAME), MB_OK);
+
+      Visible:= true;
+      //if Visible then
+      //  Destroy;
     end;
 
 end;

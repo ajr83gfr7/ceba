@@ -377,7 +377,7 @@ type
     quResultAutosModelsGxToSP0: TFloatField;
     quResultAutosModelsGxSpecific0: TFloatField;
     quResultAutosModelsTimesWork0: TFloatField;
-    quResultAutosModelsTimesWaiting0: TFloatField;
+
     quResultAutosModelsTimesManeuver0: TFloatField;
     quResultAutosModelsTimesLoading0: TFloatField;
     quResultAutosModelsTimesUnloading0: TFloatField;
@@ -685,7 +685,7 @@ type
     quResultUnLoadingPunktContents: TADOQuery;
     dsResultUnLoadingPunktContents: TDataSource;
     quResultUnLoadingPunktContentsTsec: TIntegerField;
-    quResultUnLoadingPunktContentsC: TFloatField;
+
     quAutoEnginesSortIndex: TIntegerField;
     quAutosSortIndex: TIntegerField;
     quExcavatorEnginesSortIndex: TIntegerField;
@@ -733,6 +733,7 @@ type
     ADOSebadan: TADOCommand;
     quDeportExcavatorsSENAmortizationRate: TFloatField;
     quAutosBalanceC1000tg: TFloatField;
+    quAutoFkskg: TFloatField;
     procedure quAutosTransmissionKindGetText(Sender: TField;
       var Text: String; DisplayText: Boolean);
     procedure quAutosTransmissionKindSetText(Sender: TField;
@@ -781,15 +782,17 @@ type
     procedure quDeportAutosAmortizationKindGetText(Sender: TField;
       var Text: String; DisplayText: Boolean);
   private
-  
+
   public
   end;{TfmDM}
 
 var
   fmDM: TfmDM;
   DefaultParams: TDBDefaultParams;
+
 //Сжатие и восстановление базы данных MS Access 1997,2000 -------------------
 function esaPackMicrosoftAccess1997_2000Database(const ASource: String; const ADest: String; const APassword: String): Boolean;
+
 implementation
 
 {$R *.dfm}
@@ -841,56 +844,65 @@ procedure TfmDM.quAutosTransmissionKindGetText(Sender: TField;
   var Text: String; DisplayText: Boolean);
 begin
   if Sender.AsString <> '' then
-  case Sender.AsInteger of
-    0: Text := 'ГМ';
-    1: Text := 'ЭМ';
-    else Text := '';
-  end{case}
+  begin
+    case Sender.AsInteger of
+      0: Text := 'ГМ';
+      1: Text := 'ЭМ';
+      else Text := '';
+    end;
+  end
   else Text := '';
-end;{quAutosTransmissionKindGetText}
+end;
 procedure TfmDM.quAutosTransmissionKindSetText(Sender: TField; const Text: String);
 begin
-  if Text='ГМ'
-  then Sender.AsInteger := 0
+  if Text='ГМ' then
+    Sender.AsInteger:= 0
   else
-  if Text='ЭМ'
-  then Sender.AsInteger := 1;
-end;{quAutosTransmissionKindSetText}
+    if Text='ЭМ' then
+      Sender.AsInteger := 1;
+end;
 procedure TfmDM.quRoadCoatUSKsCalcFields(DataSet: TDataSet);
 begin
-  Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-  DataSet.FieldByName('Value').AsFloat := (DataSet.FieldByName('ValueMin').AsFloat+
-                                           DataSet.FieldByName('ValueMax').AsFloat)*0.5;
-end;{quRoadCoatUSKsCalcFields}
+  Dataset.FieldByName('No').AsInteger:= abs(Dataset.RecNo);
+  DataSet.FieldByName('Value').AsFloat:= (DataSet.FieldByName('ValueMin').AsFloat+
+                                          DataSet.FieldByName('ValueMax').AsFloat)*0.5;
+end;
 procedure TfmDM.quRocksIsMineralWealthGetText(Sender: TField;
   var Text: String; DisplayText: Boolean);
 begin
-  if Sender.AsVariant=null
-  then Text := ''
+  if Sender.AsVariant=null then
+    Text:= ''
   else
-    if Sender.AsBoolean
-    then Text := 'Полезное ископаемое'
-    else Text := 'Пустая порода';
-end;{quRocksIsMineralWealthGetText}
+    if Sender.AsBoolean then
+      Text:= 'Полезное ископаемое'
+    else
+      Text:= 'Пустая порода';
+end;
 procedure TfmDM.quRocksIsMineralWealthSetText(Sender: TField;
   const Text: String);
 begin
-  if Text=''
-  then Sender.AsVariant := null
-  else Sender.AsBoolean := Text='Полезное ископаемое';
-end;{quRocksIsMineralWealthSetText}
+  if Text='' then
+    Sender.AsVariant := null
+  else
+    Sender.AsBoolean := Text='Полезное ископаемое';
+end;
 procedure TfmDM.quDeportExcavatorsCalcFields(DataSet: TDataSet);
 begin
-  DataSet.FieldByName('TotalName').AsString :=
-    Format('%s (№%0.2d)',
-    [DataSet.FieldByName('Name').AsString,DataSet.FieldByName('ParkNo').AsInteger]);
-end;{quDeportExcavatorsCalcFields}
+  DataSet.FieldByName('TotalName').AsString:= Format('%s (№%0.2d)',
+    [DataSet.FieldByName('Name').AsString,
+     DataSet.FieldByName('ParkNo').AsInteger]);
+end;
 procedure TfmDM.quDeportExcavatorsWorkStateGetText(Sender: TField;
   var Text: String; DisplayText: Boolean);
 begin
   if Sender.FieldName='WorkState' then
-    if Sender.AsBoolean then Text := '+' else Text := '-';
-end;{quDeportExcavatorsWorkStateGetText}
+  begin
+    if Sender.AsBoolean then
+      Text := '+'
+    else
+      Text := '-';
+  end;
+end;
 procedure TfmDM.quUnLoadingPunktsKindGetText(Sender: TField;
   var Text: String; DisplayText: Boolean);
 begin
@@ -899,30 +911,39 @@ begin
       0: Text := 'Фабрика';
       1: Text := 'Перегрузочный склад';
       2: Text := 'Отвал';
-    else Text := '?';
-    end;{case}
-end;{quUnLoadingPunktsKindGetText}
+    else
+      Text := '?';
+    end;
+end;
 procedure TfmDM.quLoadingPunktRocksIsMineralWealthGetText(Sender: TField;
   var Text: String; DisplayText: Boolean);
 begin
-  if Sender.AsVariant=null then Text := ''
+  if Sender.AsVariant=null then
+    Text := ''
   else
-  if Sender.AsBoolean then Text := 'Да' else Text := 'Нет';
-end;{quLoadingPunktRocksIsMineralWealthGetText}
+  begin
+    if Sender.AsBoolean then
+      Text := 'Да'
+    else
+      Text := 'Нет';
+  end;
+end;
 procedure TfmDM.quLoadingPunktRocksCalcFields(DataSet: TDataSet);
 begin
-  Dataset.FieldByName('PlannedQ1000tn').AsFloat :=
-    Dataset.FieldByName('PlannedV1000m3').AsFloat*
+  Dataset.FieldByName('PlannedQ1000tn').AsFloat:=
+    Dataset.FieldByName('PlannedV1000m3').AsFloat *
     Dataset.FieldByName('DensityInBlock').AsFloat;
-end;{quLoadingPunktRocksCalcFields}
+end;
 procedure TfmDM.quLoadingPunktsCalcFields(DataSet: TDataSet);
 begin
-  if quLoadingPunktsZ.AsFloat<0.0
-  then quLoadingPunktsGrnt.AsString := Format('%.1f м',[quLoadingPunktsZ.AsFloat])
-  else quLoadingPunktsGrnt.AsString := Format('+%.1f м',[quLoadingPunktsZ.AsFloat]);
+  if quLoadingPunktsZ.AsFloat<0.0 then
+    quLoadingPunktsGrnt.AsString := Format('%.1f м',[quLoadingPunktsZ.AsFloat])
+  else
+    quLoadingPunktsGrnt.AsString := Format('+%.1f м',[quLoadingPunktsZ.AsFloat]);
   quLoadingPunktsTotalName.AsString :=
-    Format('%s (%s)',[quLoadingPunktsDeportExcavator.AsString,quLoadingPunktsGrnt.AsString]);
-end;{quLoadingPunktsCalcFields}
+    Format('%s (%s)',[ quLoadingPunktsDeportExcavator.AsString,
+                       quLoadingPunktsGrnt.AsString]);
+end;
 procedure TfmDM.quUnLoadingPunktsCalcFields(DataSet: TDataSet);
 begin
   case Dataset.FieldByName('Kind').AsInteger of
@@ -930,29 +951,36 @@ begin
     1: Dataset.FieldByName('SKind').AsString := 'П.Cклад';
     2: Dataset.FieldByName('SKind').AsString := 'Отвал  ';
   else Dataset.FieldByName('SKind').AsString := '';
-  end;{case}
-  if quUnLoadingPunktsZ.AsFloat<0.0
-  then quUnLoadingPunktsTotalName.AsString :=
+  end;
+  if quUnLoadingPunktsZ.AsFloat<0.0 then
+    quUnLoadingPunktsTotalName.AsString :=
          Format('%s (%.1f м)',[quUnLoadingPunktsSKind.AsString,
-                                   quUnLoadingPunktsZ.AsFloat])
-  else quUnLoadingPunktsTotalName.AsString :=
+                               quUnLoadingPunktsZ.AsFloat])
+  else
+    quUnLoadingPunktsTotalName.AsString :=
          Format('%s (+%.1f м)',[quUnLoadingPunktsSKind.AsString,
-                                    quUnLoadingPunktsZ.AsFloat]);
-end;{quUnLoadingPunktsCalcFields}
+                                quUnLoadingPunktsZ.AsFloat]);
+end;
 
 procedure TfmDM.quDeportAutosCalcFields(DataSet: TDataSet);
 begin
   DataSet.FieldByName('TotalName').AsString :=
     Format('%s (№%.2d)',[DataSet.FieldByName('Name').AsString,
-                        DataSet.FieldByName('ParkNo').AsInteger]);
-end;{quDeportAutosCalcFields}
+                         DataSet.FieldByName('ParkNo').AsInteger]);
+end;
 
 procedure TfmDM.quAutoExcavAccordancesCalcFields(DataSet: TDataSet);
 begin
-  if (quAutoExcavAccordancesAuto.AsString<>'')and(quAutoExcavAccordancesExcavator.AsString<>'')
-  then quAutoExcavAccordancesTotalName.AsString := quAutoExcavAccordancesAuto.AsString+' - '+
-                                                   quAutoExcavAccordancesExcavator.AsString
-  else quAutoExcavAccordancesTotalName.AsString := '';
+  if (quAutoExcavAccordancesAuto.AsString<>'') and
+     (quAutoExcavAccordancesExcavator.AsString<>'') then
+  begin
+    quAutoExcavAccordancesTotalName.AsString:=
+      quAutoExcavAccordancesAuto.AsString +
+      ' - ' +
+      quAutoExcavAccordancesExcavator.AsString;
+  end
+  else
+    quAutoExcavAccordancesTotalName.AsString := '';
 end;
 
 procedure TfmDM.quOpenpitsAutosFuelCostTarifGetText(Sender: TField;
@@ -962,18 +990,21 @@ begin
     0: Text := 'по зимнему тарифу';
     1: Text := 'по летнему тарифу';
   else Text := 'по среднему значению';
-  end;{case}
-end;{quOpenpitsAutosFuelCostTarifGetText}
+  end;
+end;
 procedure TfmDM.quOpenpitsAutosFuelCostTarifSetText(Sender: TField;
   const Text: String);
 begin
-  if Text='по зимнему тарифу'
-  then Sender.AsInteger := 0
+  if Text='по зимнему тарифу' then
+    Sender.AsInteger := 0
   else
-  if Text='по летнему тарифу'
-  then Sender.AsInteger := 1
-  else Sender.AsInteger := 2;
-end;{quOpenpitsAutosFuelCostTarifSetText}
+  begin
+    if Text='по летнему тарифу' then
+      Sender.AsInteger := 1
+    else
+      Sender.AsInteger := 2;
+  end;
+end;
 
 procedure TfmDM.quOpenpitsWorkRegimeKindGetText(Sender: TField;
   var Text: String; DisplayText: Boolean);
@@ -982,44 +1013,49 @@ begin
     0: Text := 'Усреднение качества';
     1: Text := 'Равномерное распределение по пунктам погрузки';
   else Text := '';
-  end;{case}
-end;{quOpenpitsWorkRegimeKindGetText}
+  end;
+end;
 
 procedure TfmDM.quOpenpitsWorkRegimeKindSetText(Sender: TField;
   const Text: String);
 begin
-  if Text='Усреднение качества'
-  then Sender.AsInteger := 0
+  if Text='Усреднение качества' then
+    Sender.AsInteger := 0
   else
-  if Text='Равномерное распределение по пунктам погрузки'
-  then Sender.AsInteger := 1
-  else Sender.AsVariant := Null;
+  begin
+    if Text='Равномерное распределение по пунктам погрузки' then
+      Sender.AsInteger := 1
+    else
+      Sender.AsVariant := Null;
+  end;
 end;
 
 procedure TfmDM.quResultAutosDetailCalcFields(DataSet: TDataSet);
 begin
   Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
   DataSet.FieldByName('Name').AsString :=
-    Format('%s (№%.2d)',
-    [DataSet.FieldByName('AutoName').AsString,DataSet.FieldByName('ParkNo').AsInteger]);
-end;{quResultAutosCalcFields}
+    Format('%s (№%.2d)', [ DataSet.FieldByName('AutoName').AsString,
+                           DataSet.FieldByName('ParkNo').AsInteger]);
+end;
 
 procedure TfmDM.quResultLoadingPunktsDetailCalcFields(DataSet: TDataSet);
 begin
   Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-  DataSet.FieldByName('Name').AsString := DataSet.FieldByName('ExcavatorName').AsString+' (№'+
-                                          DataSet.FieldByName('ParkNo').AsString+ ')';
-end;{quResultExcavatorsDetailCalcFields}
+  DataSet.FieldByName('Name').AsString := DataSet.FieldByName('ExcavatorName').AsString +
+                                          ' (№' +
+                                          DataSet.FieldByName('ParkNo').AsString +
+                                          ')';
+end;
 
 procedure TfmDM.quResultBlocksDetailCalcFields(DataSet: TDataSet);
 begin
   Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-  if quResultBlocksSummary.Active and (quResultBlocksSummaryBLength0.AsFloat>0.0)
-  then Dataset.FieldByName('Rate').AsFloat :=
-    Dataset.FieldByName('BLength0').AsFloat/
-    quResultBlocksSummaryBLength0.AsFloat*100
-  else Dataset.FieldByName('Rate').AsFloat := 0.0;
-end;{quResultBlocksDetailCalcFields}
+  if quResultBlocksSummary.Active and (quResultBlocksSummaryBLength0.AsFloat>0.0) then
+    Dataset.FieldByName('Rate').AsFloat:= Dataset.FieldByName('BLength0').AsFloat /
+                                          quResultBlocksSummaryBLength0.AsFloat * 100
+  else
+    Dataset.FieldByName('Rate').AsFloat := 0.0;
+end;
 
 procedure TfmDM.quResultUnLoadingPunktsCalcFields(DataSet: TDataSet);
 var Z: Single;
@@ -1031,32 +1067,32 @@ begin
     1: quResultUnLoadingPunktsName.AsString := Format('Перегрузочный склад Гор.%.1f м',[Z]);
     2: quResultUnLoadingPunktsName.AsString := Format('Отвал Гор.%.1f м',[Z]);
     else quResultUnLoadingPunktsName.AsString := '';
-  end;{case}
-  if quResultUnLoadingPunktsMaxV1000m3.AsFloat>0.0
-  then quResultUnLoadingPunktsBunkerRatio.AsFloat :=
-         quResultUnLoadingPunktsRockVm3.AsFloat/quResultUnLoadingPunktsMaxV1000m3.AsFloat
-  else quResultUnLoadingPunktsBunkerRatio.AsFloat := 0.0;
-end;{quResultUnLoadingPunktsCalcFields}
+  end;
+  if quResultUnLoadingPunktsMaxV1000m3.AsFloat > 0.0 then
+    quResultUnLoadingPunktsBunkerRatio.AsFloat:= quResultUnLoadingPunktsRockVm3.AsFloat /
+                                                 quResultUnLoadingPunktsMaxV1000m3.AsFloat
+  else
+    quResultUnLoadingPunktsBunkerRatio.AsFloat:= 0.0;
+end;
 
 procedure TfmDM.quResultUnLoadingPunktRocksCalcFields(DataSet: TDataSet);
 begin
-  Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-  quResultUnLoadingPunktRocksDContent.AsFloat :=
-    quResultUnLoadingPunktRocksRequiredContent.AsFloat-
-    quResultUnLoadingPunktRocksContent.AsFloat;
-end;{quResultUnLoadingPunktRocksCalcFields}
+  Dataset.FieldByName('No').AsInteger:= abs(Dataset.RecNo);
+  quResultUnLoadingPunktRocksDContent.AsFloat:= quResultUnLoadingPunktRocksRequiredContent.AsFloat -
+                                                quResultUnLoadingPunktRocksContent.AsFloat;
+end;
 
 procedure TfmDM.quResultEconomBlocksCalcFields(DataSet: TDataSet);
 begin
-  quResultEconomBlocksCostsSummary.AsFloat := quResultEconomBlocksCostsAmortization.AsFloat+
-                                               quResultEconomBlocksCostsRepair.AsFloat;
-end;{quResultEconomBlocksCalcFields}
+  quResultEconomBlocksCostsSummary.AsFloat:= quResultEconomBlocksCostsAmortization.AsFloat +
+                                             quResultEconomBlocksCostsRepair.AsFloat;
+end;
 
 procedure TfmDM.quResultEconomParamsCalcFields(DataSet: TDataSet);
 var USD: Single;
 begin
-  USD := quResultEconomParamsTotalKurs.AsFloat;
-  quResultEconomParamsBlocksCostsRepair.AsFloat := quResultEconomBlocksCostsRepair.AsFloat;
+  USD:= quResultEconomParamsTotalKurs.AsFloat;
+  quResultEconomParamsBlocksCostsRepair.AsFloat:= quResultEconomBlocksCostsRepair.AsFloat;
   quResultEconomParamsBlocksCostsAmortization.AsFloat := quResultEconomBlocksCostsAmortization.AsFloat;
   quResultEconomParamsBlocksCostsSummary.AsFloat := quResultEconomBlocksCostsSummary.AsFloat;
   quResultEconomParamsExcavsCostsWork.AsFloat := quResultEconomLoadingPunktsCostsWork.AsFloat;
@@ -1092,7 +1128,7 @@ begin
                                                          quResultEconomParamsTotalCostsAmortization.AsFloat+
                                                          quResultEconomParamsTotalCostsExpenses.AsFloat)/
                                                          quResultEconomParamsRockVm3.AsFloat;
-  end;{if}
+  end;
   if quResultEconomParamsRockQtn.AsFloat>0.0 then
   begin
     quResultEconomParamsTotalUdCostsSummary1.AsFloat := (quResultEconomParamsTotalCostsSummary.AsFloat+
@@ -1104,8 +1140,8 @@ begin
                                                    quResultEconomParamsTotalCostsAmortization.AsFloat+
                                                    quResultEconomParamsTotalCostsExpenses.AsFloat)/
                                                    quResultEconomParamsRockQtn.AsFloat;
-  end;{if}
-  if USD>0.0 then
+  end;
+  if USD > 0.0 then
   begin
     quResultEconomParamsBlocksCostsRepairUSD.AsFloat := quResultEconomParamsBlocksCostsRepair.AsFloat/USD;
     quResultEconomParamsBlocksCostsAmortizationUSD.AsFloat := quResultEconomParamsBlocksCostsAmortization.AsFloat/USD;
@@ -1133,63 +1169,83 @@ begin
     quResultEconomParamsTotalUdCostsSummary1USD.AsFloat := quResultEconomParamsTotalUdCostsSummary1.AsFloat/USD;
     quResultEconomParamsTotalUdCostsAmortization1USD.AsFloat := quResultEconomParamsTotalUdCostsAmortization1.AsFloat/USD;
     quResultEconomParamsTotalUdCostsCurrent1USD.AsFloat := quResultEconomParamsTotalUdCostsCurrent1.AsFloat/USD;
-  end;{if}
-end;{quResultEconomParamsCalcFields}
+  end;
+end;
 
 procedure TfmDM.quShiftPunktsCalcFields(DataSet: TDataSet);
 begin
-  Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-  if Dataset.FieldByName('Z').AsFloat<0.0
-  then Dataset.FieldByName('Name').AsString :=
+  Dataset.FieldByName('No').AsInteger:= abs(Dataset.RecNo);
+  if Dataset.FieldByName('Z').AsFloat<0.0 then
+    Dataset.FieldByName('Name').AsString:=
          Format('ППС №%d (%.1f)',[Dataset.FieldByName('No').AsInteger,
                                   Dataset.FieldByName('Z').AsFloat])
-  else Dataset.FieldByName('Name').AsString :=
+  else
+    Dataset.FieldByName('Name').AsString :=
          Format('ППС №%d (+%.1f)',[Dataset.FieldByName('No').AsInteger,
                                    Dataset.FieldByName('Z').AsFloat]);
-end;{quShiftPunktsCalcFields}
+end;
 
 procedure TfmDM.quAutoOtherAccountsCalcFields(DataSet: TDataSet);
 begin
   DataSet.FieldByName('SortIndex').AsInteger := abs(DataSet.RecNo);
-end;{quAutoOtherAccountsCalcFields}
+end;
 
 procedure TfmDM.quOpenpitsCalcFields(DataSet: TDataSet);
 begin
   Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-end;{quOpenpitsCalcFields}
+end;
 
 procedure TfmDM.quResultEconomParamsDistributionCalcFields(DataSet: TDataSet);
 begin
   Dataset.FieldByName('Name').AsString := Dataset.FieldByName('Article').AsString;
-end;{quResultEconomParamsDistributionCalcFields}
+end;
 
 procedure TfmDM.quAutoFksCalcFields(DataSet: TDataSet);
+var
+  fk: double;
+  kg: double;
+  a: double;
 begin
   Dataset.FieldByName('No').AsInteger := abs(Dataset.RecNo);
-end;{quAutoFksCalcFields}
+
+  if not(Dataset.FieldByName('Fk').IsNull) then
+  begin
+    a:= 9.80665;
+    fk:= Dataset.FieldByName('Fk').AsFloat;
+    kg:= fk / a;
+    Dataset.FieldByName('kg').AsFloat:= kg;
+  end;
+end;
 
 procedure TfmDM.quAutosCalcFields(DataSet: TDataSet);
 begin
-  if not quAutosTonnage.IsNull
-  then quAutosStrQtn.AsString := FormatFloat('0.0 т',quAutosTonnage.AsFloat)
-  else quAutosStrQtn.AsString := '';
-end;{quAutosCalcFields}
+  if not quAutosTonnage.IsNull then
+    quAutosStrQtn.AsString := FormatFloat('0.0 т',quAutosTonnage.AsFloat)
+  else
+    quAutosStrQtn.AsString := '';
+end;
 
 procedure TfmDM.quDeportAutosAmortizationKindSetText(Sender: TField; const Text: String);
 begin
-  if (Text='0')or(Text='Годовая норма амортизации')or(Text='годовая')
-  then Sender.AsInteger := 0 else
-  if (Text='1')or(Text='Норма амортизации на тыс.км')or(Text='тыс.км')
-  then Sender.AsInteger := 1
-  else Sender.Clear;
-end;{quDeportAutosAmortizationKindSetText}
+  if (Text='0')or(Text='Годовая норма амортизации')or(Text='годовая') then
+    Sender.AsInteger := 0
+  else
+    if (Text='1')or(Text='Норма амортизации на тыс.км')or(Text='тыс.км') then
+      Sender.AsInteger := 1
+    else
+      Sender.Clear;
+end;
 
 procedure TfmDM.quDeportAutosAmortizationKindGetText(Sender: TField; var Text: String; DisplayText: Boolean);
 begin
-  if Sender.AsString='0' then Text := 'годовая'else
-  if Sender.AsString='1' then Text := 'тыс.км'
-  else Text := '';
-end;{quDeportAutosAmortizationKindGetText}
+  if Sender.AsString='0' then
+    Text := 'годовая'
+  else
+    if Sender.AsString='1' then
+      Text := 'тыс.км'
+    else
+      Text := '';
+end;
 
 end.
 

@@ -1,7 +1,8 @@
 object fmDM: TfmDM
   OldCreateOrder = False
-  Left = 346
-  Height = 560
+  Left = 660
+  Top = 217
+  Height = 800
   Width = 993
   object ADOConnection: TADOConnection
     ConnectionString = 
@@ -520,6 +521,14 @@ object fmDM: TfmDM
       FieldName = 'Fk'
       DisplayFormat = '#,###,##0.00'
       EditFormat = '0.00'
+    end
+    object quAutoFkskg: TFloatField
+      DisplayLabel = #1052#1072#1089#1089#1072', kg'
+      FieldKind = fkCalculated
+      FieldName = 'kg'
+      DisplayFormat = '#,###,##0.00'
+      EditFormat = '0.00'
+      Calculated = True
     end
   end
   object dsAutoFks: TDataSource

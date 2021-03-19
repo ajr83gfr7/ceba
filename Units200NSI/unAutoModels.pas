@@ -363,6 +363,8 @@ begin
       esaDrawGridCell(Cvs,FFkColWidths[0]+1,1,FFkColWidths[1],hCell,['—корость V, км/ч']);
     with Columns[2] do
       esaDrawGridCell(Cvs,FFkColWidths[1]+1,1,FFkColWidths[2],hCell,['—ила т€ги Fk, кЌ']);
+    with Columns[3] do
+      esaDrawGridCell(Cvs,FFkColWidths[2]+1,1,FFkColWidths[3],hCell,['ћасса, кg']);
   end;{with}
 end;{pbFksPaint}
 

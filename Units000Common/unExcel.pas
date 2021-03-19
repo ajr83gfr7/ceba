@@ -37,6 +37,8 @@ type
     function RunExcel(DisableAlerts:boolean=true; Visible: boolean=false): boolean;
     function AddWorkBook(AutoRun:boolean=true):boolean;
     function ActivateSheet(WBIndex: integer; SheetName: string): boolean;
+    procedure SetVisible(visible: boolean);
+    function GetVisible(): boolean;
   protected
     document: OleVariant;
   public
@@ -47,6 +49,7 @@ type
     //
     procedure SetData(sg: Variant; colcount, rowcount: integer); Virtual; Abstract;
     //procedure SetTitle(colcount: integer); Virtual; Abstract;
+    property Visible: boolean read GetVisible write SetVisible;
   end;
 
 implementation
@@ -219,6 +222,16 @@ begin
   except
     Result:=false;
   end;
+end;
+
+procedure TExcelDoc.SetVisible(visible: boolean);
+begin
+  document.visible:= visible;
+end;
+
+function TExcelDoc.GetVisible: boolean;
+begin
+  Result:= document.visible;
 end;
 
 function TExcelDoc.StopExcel: boolean;

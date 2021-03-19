@@ -1,6 +1,6 @@
 object fmAutoModels: TfmAutoModels
-  Left = 562
-  Top = 314
+  Left = 711
+  Top = 62
   Width = 800
   Height = 600
   HelpType = htKeyword
@@ -12,7 +12,7 @@ object fmAutoModels: TfmAutoModels
   Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
@@ -21,29 +21,29 @@ object fmAutoModels: TfmAutoModels
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnResize = FormResize
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object pnAutos: TPanel
     Left = 0
     Top = 0
-    Width = 280
-    Height = 555
+    Width = 377
+    Height = 562
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
     object pbAutos: TPaintBox
       Left = 0
-      Top = 20
-      Width = 280
-      Height = 44
+      Top = 17
+      Width = 377
+      Height = 36
       Align = alTop
       OnPaint = pbAutosPaint
     end
     object sttAutos: TStaticText
       Left = 0
       Top = 0
-      Width = 280
-      Height = 20
+      Width = 377
+      Height = 17
       Align = alTop
       Alignment = taCenter
       BevelInner = bvNone
@@ -55,9 +55,9 @@ object fmAutoModels: TfmAutoModels
     end
     object dbgAutos: TDBGrid
       Left = 0
-      Top = 64
-      Width = 280
-      Height = 491
+      Top = 53
+      Width = 377
+      Height = 509
       Align = alClient
       DataSource = fmDM.dsAutos
       Options = [dgIndicator, dgColLines, dgRowLines, dgRowSelect]
@@ -65,7 +65,7 @@ object fmAutoModels: TfmAutoModels
       TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
-      TitleFont.Height = -14
+      TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
       Columns = <
@@ -95,11 +95,11 @@ object fmAutoModels: TfmAutoModels
     end
   end
   object PageControl: TPageControl
-    Left = 280
+    Left = 377
     Top = 0
-    Width = 502
-    Height = 555
-    ActivePage = tsTotal
+    Width = 407
+    Height = 562
+    ActivePage = tsFK
     Align = alRight
     TabOrder = 1
     OnChange = PageControlChange
@@ -108,131 +108,131 @@ object fmAutoModels: TfmAutoModels
       Caption = '&'#1054#1073#1097#1077#1077
       PopupMenu = pmAutos
       DesignSize = (
-        494
-        524)
+        399
+        534)
       object lbBodySpace: TLabel
-        Left = 20
-        Top = 10
-        Width = 214
-        Height = 16
+        Left = 16
+        Top = 8
+        Width = 170
+        Height = 13
         Caption = #1054'&'#1073#1098#1077#1084' '#1082#1091#1079#1086#1074#1072', '#1082#1091#1073'.'#1084'. '#1089' "'#1096#1072#1087#1082#1086#1081'"'
         FocusControl = dbeBodySpace
       end
       object lbTonnage: TLabel
-        Left = 20
-        Top = 39
-        Width = 151
-        Height = 16
+        Left = 16
+        Top = 32
+        Width = 111
+        Height = 13
         Caption = #1043#1088#1091#1079#1086#1087#1086#1076'&'#1098#1077#1084#1085#1086#1089#1090#1100', '#1090'.'
         FocusControl = dbeTonnage
       end
       object lbTransmissionKind: TLabel
-        Left = 20
-        Top = 217
-        Width = 122
-        Height = 16
+        Left = 16
+        Top = 176
+        Width = 89
+        Height = 13
         Caption = #1042#1080#1076' '#1090'&'#1088#1072#1085#1089#1084#1080#1089#1089#1080#1080
       end
       object lbTr: TLabel
-        Left = 20
-        Top = 276
-        Width = 146
-        Height = 16
+        Left = 16
+        Top = 224
+        Width = 112
+        Height = 13
         Caption = #1042#1088#1077#1084#1103' '#1088#1072'&'#1079#1075#1088#1091#1079#1082#1080', '#1089#1077#1082
         FocusControl = dbeTr
       end
       object lbP: TLabel
-        Left = 20
-        Top = 69
-        Width = 56
-        Height = 16
+        Left = 16
+        Top = 56
+        Width = 44
+        Height = 13
         Caption = '&'#1052#1072#1089#1089#1072', '#1090
         FocusControl = dbeP
       end
       object lbRmin: TLabel
-        Left = 20
-        Top = 305
-        Width = 238
-        Height = 16
+        Left = 16
+        Top = 248
+        Width = 178
+        Height = 13
         Caption = #1052#1080#1085#1080#1084#1072#1083#1100#1085#1099#1081' '#1088#1072#1076#1080#1091#1089' &'#1087#1086#1074#1086#1088#1086#1090#1072', '#1084'.'
         FocusControl = dbeRmin
       end
       object lbTyresCount: TLabel
-        Left = 20
-        Top = 335
-        Width = 112
-        Height = 16
+        Left = 16
+        Top = 272
+        Width = 82
+        Height = 13
         Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' &'#1096#1080#1085
         FocusControl = dbeTyresCount
       end
       object lbLength: TLabel
-        Left = 20
-        Top = 364
-        Width = 63
-        Height = 16
+        Left = 16
+        Top = 296
+        Width = 50
+        Height = 13
         Caption = #1044#1083'&'#1080#1085#1072', '#1084'.'
         FocusControl = dbeLength
       end
       object lbWidth: TLabel
-        Left = 20
-        Top = 394
-        Width = 75
-        Height = 16
+        Left = 16
+        Top = 320
+        Width = 56
+        Height = 13
         Caption = '&'#1064#1080#1088#1080#1085#1072', '#1084'.'
         FocusControl = dbeWidth
       end
       object lbHeight: TLabel
-        Left = 20
-        Top = 423
-        Width = 71
-        Height = 16
+        Left = 16
+        Top = 344
+        Width = 55
+        Height = 13
         Caption = '&'#1042#1099#1089#1086#1090#1072', '#1084'.'
         FocusControl = dbeHeight
       end
       object lbTransmissionKPD: TLabel
-        Left = 20
-        Top = 246
-        Width = 123
-        Height = 16
+        Left = 16
+        Top = 200
+        Width = 94
+        Height = 13
         Caption = '&'#1050#1055#1044' '#1090#1088#1072#1085#1089#1084#1080#1089#1089#1080#1080
         FocusControl = dbeTransmissionKPD
       end
       object lbEngines: TLabel
-        Left = 20
-        Top = 158
-        Width = 76
-        Height = 16
+        Left = 16
+        Top = 128
+        Width = 55
+        Height = 13
         Caption = '&'#1044#1074#1080#1075#1072#1090#1077#1083#1100
         FocusControl = dblcbEngines
       end
       object lbF: TLabel
-        Left = 20
-        Top = 98
-        Width = 226
-        Height = 16
+        Left = 16
+        Top = 80
+        Width = 173
+        Height = 13
         Caption = '&'#1055#1083#1086#1097#1072#1076#1100' '#1083#1086#1073#1086#1074#1086#1075#1086' '#1089#1077#1095#1077#1085#1080#1103', '#1082#1074'.'#1084'.'
         FocusControl = dbeF
       end
       object lbRo: TLabel
-        Left = 20
-        Top = 128
-        Width = 204
-        Height = 16
+        Left = 16
+        Top = 104
+        Width = 145
+        Height = 13
         Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' &'#1086#1073#1090#1077#1082#1072#1077#1084#1086#1089#1090#1080
         FocusControl = dbeRo
       end
       object lbEngineNmax: TLabel
-        Left = 20
-        Top = 187
-        Width = 276
-        Height = 16
+        Left = 16
+        Top = 152
+        Width = 204
+        Height = 13
         Caption = #1053#1086#1084#1080#1085#1072#1083#1100#1085#1072#1103' '#1084#1086#1097#1085#1086#1089#1090#1100' '#1076#1074#1080#1075#1072#1090#1077#1083#1103', '#1082#1042#1090
         FocusControl = dbeEngineNmax
       end
       object dbeBodySpace: TDBEdit
-        Left = 297
-        Top = 10
-        Width = 177
+        Left = 241
+        Top = 8
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'BodySpace'
@@ -242,9 +242,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeTonnage: TDBEdit
-        Left = 297
-        Top = 39
-        Width = 177
+        Left = 241
+        Top = 32
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'Tonnage'
@@ -254,9 +254,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeTr: TDBEdit
-        Left = 297
-        Top = 276
-        Width = 177
+        Left = 241
+        Top = 224
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 't_r'
@@ -266,9 +266,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeP: TDBEdit
-        Left = 297
-        Top = 69
-        Width = 177
+        Left = 241
+        Top = 56
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'P'
@@ -278,9 +278,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeRmin: TDBEdit
-        Left = 297
-        Top = 305
-        Width = 177
+        Left = 241
+        Top = 248
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'Rmin'
@@ -290,9 +290,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeTyresCount: TDBEdit
-        Left = 297
-        Top = 335
-        Width = 177
+        Left = 241
+        Top = 272
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'TyresCount'
@@ -301,9 +301,9 @@ object fmAutoModels: TfmAutoModels
         TabOrder = 11
       end
       object dbeLength: TDBEdit
-        Left = 297
-        Top = 364
-        Width = 177
+        Left = 241
+        Top = 296
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'ALength'
@@ -313,9 +313,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeWidth: TDBEdit
-        Left = 297
-        Top = 394
-        Width = 177
+        Left = 241
+        Top = 320
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'AWidth'
@@ -325,9 +325,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeHeight: TDBEdit
-        Left = 297
-        Top = 423
-        Width = 177
+        Left = 241
+        Top = 344
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'AHeight'
@@ -337,9 +337,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeTransmissionKPD: TDBEdit
-        Left = 297
-        Top = 246
-        Width = 177
+        Left = 241
+        Top = 200
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'TransmissionKPD'
@@ -349,15 +349,15 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbcbTransmissionKind: TDBComboBox
-        Left = 297
-        Top = 217
-        Width = 177
-        Height = 24
+        Left = 241
+        Top = 176
+        Width = 144
+        Height = 21
         Style = csDropDownList
         Anchors = [akTop, akRight]
         DataField = 'TransmissionKind'
         DataSource = fmDM.dsAutos
-        ItemHeight = 16
+        ItemHeight = 13
         Items.Strings = (
           #1043#1052
           #1069#1052)
@@ -365,10 +365,10 @@ object fmAutoModels: TfmAutoModels
         TabOrder = 7
       end
       object dblcbEngines: TDBLookupComboBox
-        Left = 297
-        Top = 158
-        Width = 177
-        Height = 24
+        Left = 241
+        Top = 128
+        Width = 144
+        Height = 21
         Anchors = [akTop, akRight]
         DataField = 'Id_Engine'
         DataSource = fmDM.dsAutos
@@ -379,9 +379,9 @@ object fmAutoModels: TfmAutoModels
         TabOrder = 5
       end
       object dbeF: TDBEdit
-        Left = 297
-        Top = 98
-        Width = 177
+        Left = 241
+        Top = 80
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'F'
@@ -391,9 +391,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeRo: TDBEdit
-        Left = 297
-        Top = 128
-        Width = 177
+        Left = 241
+        Top = 104
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         DataField = 'Ro'
@@ -403,9 +403,9 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbeEngineNmax: TDBEdit
-        Left = 297
-        Top = 187
-        Width = 177
+        Left = 241
+        Top = 152
+        Width = 144
         Height = 24
         Anchors = [akTop, akRight]
         Color = clBtnFace
@@ -417,10 +417,10 @@ object fmAutoModels: TfmAutoModels
         OnKeyPress = dbeBodySpaceKeyPress
       end
       object dbmNote: TDBMemo
-        Left = 20
-        Top = 492
-        Width = 453
-        Height = 158
+        Left = 16
+        Top = 400
+        Width = 368
+        Height = 128
         DataField = 'Note'
         DataSource = fmDM.dsAutos
         TabOrder = 15
@@ -432,16 +432,16 @@ object fmAutoModels: TfmAutoModels
       object pbFks: TPaintBox
         Left = 0
         Top = 0
-        Width = 492
-        Height = 44
+        Width = 399
+        Height = 36
         Align = alTop
         OnPaint = pbFksPaint
       end
       object dbgFks: TDBGrid
         Left = 0
-        Top = 44
-        Width = 492
-        Height = 627
+        Top = 36
+        Width = 399
+        Height = 498
         Align = alClient
         DataSource = fmDM.dsAutoFks
         DefaultDrawing = False
@@ -450,7 +450,7 @@ object fmAutoModels: TfmAutoModels
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
-        TitleFont.Height = -14
+        TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
         OnDrawColumnCell = dbgFksDrawColumnCell
@@ -466,14 +466,21 @@ object fmAutoModels: TfmAutoModels
             Expanded = False
             FieldName = 'V'
             Title.Alignment = taCenter
-            Width = 150
+            Width = 100
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'Fk'
             Title.Alignment = taCenter
-            Width = 150
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'kg'
+            Title.Alignment = taCenter
+            Width = 100
             Visible = True
           end>
       end
@@ -484,8 +491,8 @@ object fmAutoModels: TfmAutoModels
       object dbchFks: TDBChart
         Left = 0
         Top = 0
-        Width = 492
-        Height = 671
+        Width = 400
+        Height = 545
         AllowPanning = pmNone
         AllowZoom = False
         BackWall.Brush.Color = clWhite
