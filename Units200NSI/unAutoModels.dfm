@@ -429,60 +429,37 @@ object fmAutoModels: TfmAutoModels
     object tsFK: TTabSheet
       Caption = #1058#1103#1075#1086#1074#1099#1077' '#1093#1072#1088#1072#1082'&'#1090#1077#1088#1080#1089#1090#1080#1082#1080
       ImageIndex = 1
-      object pbFks: TPaintBox
+      object Panel1: TPanel
         Left = 0
         Top = 0
         Width = 399
-        Height = 36
+        Height = 41
         Align = alTop
-        OnPaint = pbFksPaint
-      end
-      object dbgFks: TDBGrid
-        Left = 0
-        Top = 36
-        Width = 399
-        Height = 498
-        Align = alClient
-        DataSource = fmDM.dsAutoFks
-        DefaultDrawing = False
-        Options = [dgEditing, dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs]
-        PopupMenu = pmFks
         TabOrder = 0
-        TitleFont.Charset = DEFAULT_CHARSET
-        TitleFont.Color = clWindowText
-        TitleFont.Height = -11
-        TitleFont.Name = 'MS Sans Serif'
-        TitleFont.Style = []
-        OnDrawColumnCell = dbgFksDrawColumnCell
-        Columns = <
-          item
-            Expanded = False
-            FieldName = 'No'
-            ReadOnly = True
-            Width = 30
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'V'
-            Title.Alignment = taCenter
-            Width = 100
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'Fk'
-            Title.Alignment = taCenter
-            Width = 100
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'kg'
-            Title.Alignment = taCenter
-            Width = 100
-            Visible = True
-          end>
+        object Button1: TButton
+          Left = 16
+          Top = 8
+          Width = 75
+          Height = 25
+          Caption = 'Button1'
+          TabOrder = 0
+          OnClick = Button1Click
+        end
+      end
+      object sgFk: TStringGrid
+        Left = 0
+        Top = 41
+        Width = 399
+        Height = 493
+        Align = alClient
+        FixedColor = clWindow
+        FixedCols = 2
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing]
+        TabOrder = 1
+        OnDrawCell = sgFkDrawCell
+        OnKeyPress = sgFkKeyPress
+        OnKeyUp = sgFkKeyUp
+        OnSetEditText = sgFkSetEditText
       end
     end
     object tsGraph: TTabSheet

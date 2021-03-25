@@ -434,7 +434,7 @@ begin
         sgData.Cells[2,17]:= FormatFloat(',0.00', _cost_expluatation);
         _cost_expluatation_avg:= _cost_expluatation * _shiftKweek;
         sgData.Cells[3,17]:= FormatFloat(',0.00', _cost_expluatation_avg);
-        _cost_expluatation_period:= _cost_expluatation * _periodKshift;
+          _cost_expluatation_period:= _cost_expluatation * _periodKshift;
         sgData.Cells[4,17]:= FormatFloat(',0.00', _cost_expluatation_period);
       end;
       403: begin

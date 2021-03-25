@@ -5,6 +5,10 @@ uses
   Dialogs, StdCtrls, ExtCtrls, Grids, DBGrids, DB, DBCtrls, ComCtrls, Mask,
   TeeProcs, TeEngine, Chart, DbChart, Series, TeePrevi, Menus, ExtDlgs, types,
   ExcelEditors;
+const
+  BUTTONSELECT = 'Выбрать';
+  BUTTONCHANGE = 'Изменить';
+  BUTTONSAVE = 'Сохранить';
 type
   TfmAutoModels = class(TForm)
     pnAutos: TPanel;
@@ -39,10 +43,8 @@ type
     pbAutos: TPaintBox;
     lbEngines: TLabel;
     dblcbEngines: TDBLookupComboBox;
-    dbgFks: TDBGrid;
     dbchFks: TDBChart;
     Series1: TFastLineSeries;
-    pbFks: TPaintBox;
     pmChart: TPopupMenu;
     pmiChartSaveAs: TMenuItem;
     pmiChartPrint: TMenuItem;
@@ -77,6 +79,9 @@ type
     pmiFksSep1: TMenuItem;
     pmiFksImportFrom: TMenuItem;
     dbmNote: TDBMemo;
+    Panel1: TPanel;
+    Button1: TButton;
+    sgFk: TStringGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -109,11 +114,21 @@ type
     procedure dbeBodySpaceKeyPress(Sender: TObject; var Key: Char);
     procedure dbgFksDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure sgFkDrawCell(Sender: TObject; ACol, ARow: Integer;
+      Rect: TRect; State: TGridDrawState);
+    procedure Button1Click(Sender: TObject);
+    procedure sgFkKeyPress(Sender: TObject; var Key: Char);
+    procedure sgFkKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure sgFkSetEditText(Sender: TObject; ACol, ARow: Integer;
+      const Value: String);
   private
     FAutoSortIndex: Integer;         //Порядковый номер Auto
     FAutoName     : String;          //Уникальное название Auto
     FAutoColWidths: TIntegerDynArray;//Ширина столбцов таблицы Auto
     FFkColWidths  : TIntegerDynArray;//Ширина столбцов таблицы Fk
+    FCol: integer;
+    FRow: integer;
     procedure DoAutoAfterScroll(DataSet: TDataSet);
     procedure DoAutoAfterDelete(DataSet: TDataSet);
     procedure DoAutoAfterInsert(DataSet: TDataSet);
@@ -128,6 +143,9 @@ type
     procedure DoFkBeforePost(DataSet: TDataSet);
     procedure PrintAutoFks(XL: TExcelEditor);
     procedure PrintAutoModels(XL: TExcelEditor);
+    procedure string_grid_view();
+    procedure fetch_data_to_string_grid();
+    procedure string_grid_recalc(col, row: integer);
   public
   end;{TfmAutos}
 var
@@ -141,22 +159,22 @@ uses unDM, ADODb, unAutoModelDefaults, Math, Printers, esaMessages, esaGlobals;
 //Диалоговое окно моделей автосамосвалов
 procedure esaShowAutoModelsDlg();
 begin
-  fmAutoModels := TfmAutoModels.Create(nil);
+  fmAutoModels:= TfmAutoModels.Create(nil);
   try
     fmAutoModels.ShowModal;
   finally
     fmAutoModels.Free;
-  end;{try}
-end;{esaShowAutoModelsDlg}
+  end;
+end;
 
 procedure TfmAutoModels.FormCreate(Sender: TObject);
 begin
   HelpKeyword := Copy(Name,3,Length(Name)-2);
   PageControl.ActivePageIndex := 0;
-  dbgFks.Options := [dgEditing,dgAlwaysShowEditor,dgIndicator,dgColLines,dgRowLines,dgTabs];
+//  dbgFks.Options := [dgEditing,dgAlwaysShowEditor,dgIndicator,dgColLines,dgRowLines,dgTabs];
 
   SetLength(FAutoColWidths,dbgAutos.Columns.Count);
-  SetLength(FFkColWidths,dbgFks.Columns.Count);
+//  SetLength(FFkColWidths,dbgFks.Columns.Count);
   FAutoName := '';
 
   with fmDM do
@@ -181,8 +199,12 @@ begin
     quAutoFks.AfterPost := DoFkAfterPost;
     quAutoFks.BeforePost := DoFkBeforePost;
     quAutoFks.Open;
-  end;{with}
-end;{FormCreate}
+  end;
+  string_grid_view();
+  fetch_data_to_string_grid();
+  Button1.Caption:= BUTTONSAVE;
+  Button1.Enabled:= False;
+end;
 procedure TfmAutoModels.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   with fmDM do
@@ -215,8 +237,8 @@ procedure TfmAutoModels.FormResize(Sender: TObject);
 begin
   esaFitColumnByIndex(dbgAutos,1);
   esaUpdateColumnRights(dbgAutos,FAutoColWidths);
-  esaFitColumnByIndex(dbgFks,1);
-  esaUpdateColumnRights(dbgFks,FFkColWidths);
+//  esaFitColumnByIndex(dbgFks,1);
+//  esaUpdateColumnRights(dbgFks,FFkColWidths);
 end;{FormResize}
 procedure TfmAutoModels.pbAutosPaint(Sender: TObject);
 var Cvs: TCanvas;
@@ -290,9 +312,9 @@ begin
   end;{if}
   if PageControl.ActivePageIndex=1 then
   begin
-    esaFitColumnByIndex(dbgFks,1);
-    esaUpdateColumnRights(dbgFks,FFkColWidths);
-    pbFks.Invalidate;
+//    esaFitColumnByIndex(dbgFks,1);
+//    esaUpdateColumnRights(dbgFks,FFkColWidths);
+//    pbFks.Invalidate;
   end;{if}
 end;{DoAutoAfterScroll}
 procedure TfmAutoModels.DoAutoAfterDelete(DataSet: TDataSet);
@@ -352,21 +374,21 @@ end;{DoAutoAfterPost}
 procedure TfmAutoModels.pbFksPaint(Sender: TObject);
 var Cvs: TCanvas;
 begin
-  Cvs := pbFks.Canvas;
-  esaDrawGridTitle(pbFks,dbgFks,2,FFkColWidths);
-  with dbgFks do
-  begin
-    //остальные ячейки
-    with Columns[0] do
-      esaDrawGridCell(Cvs,FFkColWidths[0]-Width,1,FFkColWidths[0],hCell,['№']);
-    with Columns[1] do
-      esaDrawGridCell(Cvs,FFkColWidths[0]+1,1,FFkColWidths[1],hCell,['Скорость V, км/ч']);
-    with Columns[2] do
-      esaDrawGridCell(Cvs,FFkColWidths[1]+1,1,FFkColWidths[2],hCell,['Сила тяги Fk, кН']);
-    with Columns[3] do
-      esaDrawGridCell(Cvs,FFkColWidths[2]+1,1,FFkColWidths[3],hCell,['Масса, кg']);
-  end;{with}
-end;{pbFksPaint}
+//  Cvs := pbFks.Canvas;
+//  esaDrawGridTitle(pbFks,dbgFks,2,FFkColWidths);
+//  with dbgFks do
+//  begin
+//    //остальные ячейки
+//    with Columns[0] do
+//      esaDrawGridCell(Cvs,FFkColWidths[0]-Width,1,FFkColWidths[0],hCell,['№']);
+//    with Columns[1] do
+//      esaDrawGridCell(Cvs,FFkColWidths[0]+1,1,FFkColWidths[1],hCell,['Скорость V, км/ч']);
+//    with Columns[2] do
+//      esaDrawGridCell(Cvs,FFkColWidths[1]+1,1,FFkColWidths[2],hCell,['Сила тяги Fk, кН']);
+//    with Columns[3] do
+//      esaDrawGridCell(Cvs,FFkColWidths[2]+1,1,FFkColWidths[3],hCell,['Масса, кg']);
+//  end;{with}
+end;
 
 procedure TfmAutoModels.pmiChartSaveAsClick(Sender: TObject);
 var IsExist: Boolean;
@@ -820,7 +842,7 @@ begin
   DataSet.Tag := 0;
   Dataset.EnableControls;
   FormResize(Self);
-  pbFks.Invalidate;
+//  pbFks.Invalidate;
 end;{DoFkAfterDelete}
 procedure TfmAutoModels.DoFkAfterPost(DataSet: TDataSet);
 var Id_Fk: Integer;
@@ -832,7 +854,7 @@ begin
   Dataset.Locate('Id_Fk',Id_Fk,[]);
   Dataset.EnableControls;
   FormResize(Self);
-  pbFks.Invalidate;
+//  pbFks.Invalidate;
 end;{DoFkAfterPost}
 procedure TfmAutoModels.DoFkBeforePost(DataSet: TDataSet);
 begin
@@ -886,7 +908,7 @@ begin
     quAutoFks.AfterDelete := DoAutoAfterDelete;
     quAutoFks.BeforeDelete := DoAutoBeforeDelete;
     FormResize(Self);
-    pbFks.Invalidate;
+//    pbFks.Invalidate;
   end;{with}
 end;{pmiFksDeleteAllClick}
 procedure TfmAutoModels.pmiFksImportFromClick(Sender: TObject);
@@ -927,10 +949,138 @@ end;{dbeBodySpaceKeyPress}
 procedure TfmAutoModels.dbgFksDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  esaDrawDBGridColumnCell(dbgFks,Rect,DataCol,Column,State);
-end;{dbgFksDrawColumnCell}
+//  esaDrawDBGridColumnCell(dbgFks,Rect,DataCol,Column,State);
+end;
 
+procedure TfmAutoModels.string_grid_view;
+var
+  form_width: integer;
+  number_col, data_cols, value_col: integer;
+begin
+  form_width:= tsFk.Width;
+  number_col:= 25;
+  data_cols:= form_width - 30;
+  value_col:= ROUND((data_cols - 20) / 3);
 
+  sgFk.ColWidths[0]:= number_col;
+  sgFk.ColWidths[1]:= value_col;
+  sgFk.ColWidths[2]:= value_col;
+  sgFk.ColWidths[3]:= value_col;
 
+  sgFk.Cells[0,0]:= '№';
+  sgFk.Cells[1,0]:= 'Скорость, км/ч';
+  sgFk.Cells[2,0]:= 'Сила тяги, кН';
+  sgFk.Cells[3,0]:= 'Масса, кг';
 
+  sgFk.ColCount:= 4;
+end;
+
+procedure TfmAutoModels.fetch_data_to_string_grid;
+var
+  row, col: integer;
+begin
+  row:= 0;
+  col:= 1;
+  try
+    sgFk.RowCount:= fmDM.quAutoFks.RecordCount;
+    while not fmDM.quAutoFks.Eof do
+    begin
+      sgFk.Cells[row, col]:= fmDM.quAutoFks.FieldByName('No').AsString;
+      sgFk.Cells[row+1, col]:= FormatFloat(',0.00', fmDM.quAutoFks.FieldByName('V').AsFloat);
+      sgFk.Cells[row+2, col]:= FormatFloat(',0.00', fmDM.quAutoFks.FieldByName('Fk').AsFloat);
+      sgFk.Cells[row+3, col]:= FormatFloat(',0.00', fmDM.quAutoFks.FieldByName('kg').AsFloat);
+      col:= col+1;
+      fmDM.quAutoFks.Next();
+    end;
+  finally
+    fmDM.quAutoFks.Close();
+  end;
+end;
+
+procedure TfmAutoModels.sgFkDrawCell(Sender: TObject; ACol, ARow: Integer;
+  Rect: TRect; State: TGridDrawState);
+var
+  s: string;
+  savedAlign: word;
+begin
+  s:= sgFk.Cells[ACol, ARow];
+  savedAlign:= SetTextAlign(sgFk.Canvas.Handle, TA_CENTER);
+  if (ACol = 0) or (ARow = 0)then
+    sgFk.Canvas.Font.Style:= [fsBold];
+  sgFk.Canvas.TextRect(Rect, Rect.Left + (Rect.Right - Rect.Left) div 2, Rect.Top + 2, s);
+
+  SetTextAlign(sgFk.Canvas.Handle, savedAlign);
+  if (ACol <> 0) then
+    sgFk.RowHeights[ARow]:= 15;  
+end;
+
+procedure TfmAutoModels.Button1Click(Sender: TObject);
+var
+  col, row: integer;
+begin
+  TButton(Sender).Enabled:= False;
+  row:= 1;
+  col:= 0;
+  with fmDM.quAutoFks do
+    try
+      if not Active then
+        Open();
+
+      while not Eof do
+      begin
+        Edit();
+        FieldByName('Fk').AsFloat:= strtofloat(sgFk.Cells[col+2, row]);
+        row:= row+1;
+        Next();
+      end;
+    finally
+      Close();
+    end;
+end;
+
+procedure TfmAutoModels.sgFkKeyPress(Sender: TObject; var Key: Char);
+begin
+  if not (Key in [#8, '0'..'9', DecimalSeparator]) then begin
+    Key := #0;
+  end;
+end;
+
+procedure TfmAutoModels.string_grid_recalc(col, row: integer);
+var
+  mc2, kg, Hk: double;
+begin
+  mc2:= 9.80665;
+  if col = 2 then //Hk
+  begin
+    Hk:= strtofloat(sgFk.Cells[col, row]);
+    kg:= Hk / mc2;
+    sgFk.Cells[col+1, row]:= FormatFloat(',0.00', kg);
+  end
+  else
+    if col = 3 then //kg
+    begin
+      kg:= strtofloat(sgFk.Cells[col, row]);
+      Hk:= kg * mc2;
+      sgFk.Cells[col-1, row]:= FormatFloat(',0.00', Hk);
+    end;
+end;
+
+procedure TfmAutoModels.sgFkKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    string_grid_recalc(FCol, FRow);
+
+    Button1.Enabled:= True;
+    Button1.SetFocus;
+  end;
+end;
+
+procedure TfmAutoModels.sgFkSetEditText(Sender: TObject; ACol,
+  ARow: Integer; const Value: String);
+begin;
+  FCol:= ACol;
+  FRow:= ARow;
+end;
 end.
