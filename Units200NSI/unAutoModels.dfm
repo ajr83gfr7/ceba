@@ -99,7 +99,7 @@ object fmAutoModels: TfmAutoModels
     Top = 0
     Width = 407
     Height = 562
-    ActivePage = tsFK
+    ActivePage = tsGraph
     Align = alRight
     TabOrder = 1
     OnChange = PageControlChange
@@ -468,8 +468,8 @@ object fmAutoModels: TfmAutoModels
       object dbchFks: TDBChart
         Left = 0
         Top = 0
-        Width = 400
-        Height = 545
+        Width = 399
+        Height = 534
         AllowPanning = pmNone
         AllowZoom = False
         BackWall.Brush.Color = clWhite

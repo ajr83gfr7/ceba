@@ -981,20 +981,21 @@ var
 begin
   row:= 0;
   col:= 1;
-  try
-    sgFk.RowCount:= fmDM.quAutoFks.RecordCount;
-    while not fmDM.quAutoFks.Eof do
-    begin
-      sgFk.Cells[row, col]:= fmDM.quAutoFks.FieldByName('No').AsString;
-      sgFk.Cells[row+1, col]:= FormatFloat(',0.00', fmDM.quAutoFks.FieldByName('V').AsFloat);
-      sgFk.Cells[row+2, col]:= FormatFloat(',0.00', fmDM.quAutoFks.FieldByName('Fk').AsFloat);
-      sgFk.Cells[row+3, col]:= FormatFloat(',0.00', fmDM.quAutoFks.FieldByName('kg').AsFloat);
-      col:= col+1;
-      fmDM.quAutoFks.Next();
+  with fmDM.quAutoFks do
+    try
+      sgFk.RowCount:= RecordCount;
+      while not Eof do
+      begin
+        sgFk.Cells[row, col]:= FieldByName('No').AsString;
+        sgFk.Cells[row+1, col]:= FormatFloat(',0.00', FieldByName('V').AsFloat);
+        sgFk.Cells[row+2, col]:= FormatFloat(',0.00', FieldByName('Fk').AsFloat);
+        sgFk.Cells[row+3, col]:= FormatFloat(',0.00', FieldByName('kg').AsFloat);
+        col:= col+1;
+        Next();
+      end;
+    finally
+      //Close();
     end;
-  finally
-    fmDM.quAutoFks.Close();
-  end;
 end;
 
 procedure TfmAutoModels.sgFkDrawCell(Sender: TObject; ACol, ARow: Integer;
@@ -1034,7 +1035,7 @@ begin
         Next();
       end;
     finally
-      Close();
+    //  Close();
     end;
 end;
 
