@@ -1,6 +1,6 @@
 object fmAutoModels: TfmAutoModels
-  Left = 711
-  Top = 62
+  Left = 894
+  Top = 56
   Width = 800
   Height = 600
   HelpType = htKeyword
@@ -68,6 +68,8 @@ object fmAutoModels: TfmAutoModels
       TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
+      OnCellClick = dbgAutosCellClick
+      OnKeyUp = dbgAutosKeyUp
       Columns = <
         item
           Expanded = False
@@ -99,7 +101,7 @@ object fmAutoModels: TfmAutoModels
     Top = 0
     Width = 407
     Height = 562
-    ActivePage = tsGraph
+    ActivePage = tsFK
     Align = alRight
     TabOrder = 1
     OnChange = PageControlChange
@@ -444,6 +446,14 @@ object fmAutoModels: TfmAutoModels
           Caption = 'Button1'
           TabOrder = 0
           OnClick = Button1Click
+        end
+        object Button2: TButton
+          Left = 248
+          Top = 8
+          Width = 75
+          Height = 25
+          Caption = 'Button2'
+          TabOrder = 1
         end
       end
       object sgFk: TStringGrid

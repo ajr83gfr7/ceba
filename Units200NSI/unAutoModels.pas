@@ -82,6 +82,7 @@ type
     Panel1: TPanel;
     Button1: TButton;
     sgFk: TStringGrid;
+    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -122,6 +123,9 @@ type
       Shift: TShiftState);
     procedure sgFkSetEditText(Sender: TObject; ACol, ARow: Integer;
       const Value: String);
+    procedure dbgAutosCellClick(Column: TColumn);
+    procedure dbgAutosKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     FAutoSortIndex: Integer;         //Порядковый номер Auto
     FAutoName     : String;          //Уникальное название Auto
@@ -144,7 +148,7 @@ type
     procedure PrintAutoFks(XL: TExcelEditor);
     procedure PrintAutoModels(XL: TExcelEditor);
     procedure string_grid_view();
-    procedure fetch_data_to_string_grid();
+    procedure fetch_data_to_string_grid(id_auto: integer);
     procedure string_grid_recalc(col, row: integer);
   public
   end;{TfmAutos}
@@ -180,10 +184,10 @@ begin
   with fmDM do
   begin
     quAutoEngines.Open;
-    if quAutoEngines.RecordCount=0
-    then raise Exception.Create(EesaAutoEnginesEmpty);
-    if not quAutoEngines.Locate('Id_Engine',DefaultParams.AutoId_Engine,[])
-    then DefaultParams.AutoId_Engine := quAutoEnginesId_Engine.AsInteger;
+    if quAutoEngines.RecordCount=0 then
+      raise Exception.Create(EesaAutoEnginesEmpty);
+    if not quAutoEngines.Locate('Id_Engine',DefaultParams.AutoId_Engine,[]) then
+      DefaultParams.AutoId_Engine := quAutoEnginesId_Engine.AsInteger;
     quAutoEngines.First;
     quAutos.BeforeDelete := DoAutoBeforeDelete;
     quAutos.BeforeInsert := DoAutoBeforeInsert;
@@ -201,7 +205,7 @@ begin
     quAutoFks.Open;
   end;
   string_grid_view();
-  fetch_data_to_string_grid();
+  fetch_data_to_string_grid(dbgAutos.SelectedField.AsInteger);
   Button1.Caption:= BUTTONSAVE;
   Button1.Enabled:= False;
 end;
@@ -975,7 +979,7 @@ begin
   sgFk.ColCount:= 4;
 end;
 
-procedure TfmAutoModels.fetch_data_to_string_grid;
+procedure TfmAutoModels.fetch_data_to_string_grid(id_auto: integer);
 var
   row, col: integer;
 begin
@@ -983,6 +987,9 @@ begin
   col:= 1;
   with fmDM.quAutoFks do
     try
+      Close;
+      Parameters.ParamByName('Id_Auto').Value:= id_auto;
+      Open;
       sgFk.RowCount:= RecordCount;
       while not Eof do
       begin
@@ -1012,7 +1019,7 @@ begin
 
   SetTextAlign(sgFk.Canvas.Handle, savedAlign);
   if (ACol <> 0) then
-    sgFk.RowHeights[ARow]:= 15;  
+    sgFk.RowHeights[ARow]:= 15;
 end;
 
 procedure TfmAutoModels.Button1Click(Sender: TObject);
@@ -1084,4 +1091,16 @@ begin;
   FCol:= ACol;
   FRow:= ARow;
 end;
+procedure TfmAutoModels.dbgAutosCellClick(Column: TColumn);
+begin
+  fetch_data_to_string_grid(dbgAutos.SelectedField.AsInteger);
+end;
+
+procedure TfmAutoModels.dbgAutosKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (ord(Key) in [VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT]) then
+    fetch_data_to_string_grid(dbgAutos.SelectedField.AsInteger);
+end;
+
 end.
