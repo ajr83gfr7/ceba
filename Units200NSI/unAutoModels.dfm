@@ -447,14 +447,6 @@ object fmAutoModels: TfmAutoModels
           TabOrder = 0
           OnClick = Button1Click
         end
-        object Button2: TButton
-          Left = 248
-          Top = 8
-          Width = 75
-          Height = 25
-          Caption = 'Button2'
-          TabOrder = 1
-        end
       end
       object sgFk: TStringGrid
         Left = 0

@@ -9,6 +9,10 @@ const
   BUTTONSELECT = 'Выбрать';
   BUTTONCHANGE = 'Изменить';
   BUTTONSAVE = 'Сохранить';
+  TITLE_NO = '№';
+  TITLE_V = 'Скорость, км/ч';
+  TITLE_F = 'Сила тяги, Н';
+  TITLE_M = 'Сила тяги, кгс';
 type
   TfmAutoModels = class(TForm)
     pnAutos: TPanel;
@@ -82,7 +86,6 @@ type
     Panel1: TPanel;
     Button1: TButton;
     sgFk: TStringGrid;
-    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -971,10 +974,10 @@ begin
   sgFk.ColWidths[2]:= value_col;
   sgFk.ColWidths[3]:= value_col;
 
-  sgFk.Cells[0,0]:= '№';
-  sgFk.Cells[1,0]:= 'Скорость, км/ч';
-  sgFk.Cells[2,0]:= 'Сила тяги, кН';
-  sgFk.Cells[3,0]:= 'Масса, кг';
+  sgFk.Cells[0,0]:= TITLE_NO;
+  sgFk.Cells[1,0]:= TITLE_V;
+  sgFk.Cells[2,0]:= TITLE_F;
+  sgFk.Cells[3,0]:= TITLE_M;
 
   sgFk.ColCount:= 4;
 end;
@@ -990,7 +993,7 @@ begin
       Close;
       Parameters.ParamByName('Id_Auto').Value:= id_auto;
       Open;
-      sgFk.RowCount:= RecordCount;
+      sgFk.RowCount:= RecordCount + 1;
       while not Eof do
       begin
         sgFk.Cells[row, col]:= FieldByName('No').AsString;
@@ -1027,22 +1030,25 @@ var
   col, row: integer;
 begin
   TButton(Sender).Enabled:= False;
-  row:= 1;
+  row:= 0;
   col:= 0;
   with fmDM.quAutoFks do
     try
       if not Active then
-        Open();
+        Open;
+      First;
 
       while not Eof do
       begin
-        Edit();
-        FieldByName('Fk').AsFloat:= strtofloat(sgFk.Cells[col+2, row]);
         row:= row+1;
-        Next();
+
+        Edit;
+        FieldByName('Fk').AsFloat:= strtofloat(sgFk.Cells[col+2, row]);
+        Post;
+        Next;
       end;
     finally
-    //  Close();
+//      Close();
     end;
 end;
 
@@ -1076,7 +1082,8 @@ end;
 procedure TfmAutoModels.sgFkKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_RETURN then
+  //if Key = VK_RETURN then
+  if (ord(Key) in [VK_RETURN, VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT]) then
   begin
     string_grid_recalc(FCol, FRow);
 
